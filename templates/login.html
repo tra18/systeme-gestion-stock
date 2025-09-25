@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Système de Gestion</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .title {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .alert {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .demo-credentials {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .demo-credentials h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .demo-credentials p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .demo-credentials strong {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-rocket"></i>
+        </div>
+        <h1 class="title">Connexion</h1>
+        <p class="subtitle">Système de Gestion Intégré</p>
+        
+        <div class="alert" id="error-alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="error-message"></span>
+        </div>
+        
+        <div class="success" id="success-alert">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-message"></span>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Connexion en cours...</p>
+        </div>
+        
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-user"></i> Nom d'utilisateur
+                </label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Mot de passe
+                </label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn" id="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </button>
+        </form>
+        
+        <div class="demo-credentials">
+            <h4><i class="fas fa-info-circle"></i> Comptes de démonstration</h4>
+            <p><strong>Admin:</strong> admin / admin123</p>
+            <p><strong>Manager:</strong> manager / manager123</p>
+            <p><strong>Utilisateur:</strong> user / user123</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2024 Système de Gestion Intégré</p>
+            <p>Gestion des achats, stock et logistique</p>
+        </div>
+    </div>
+    
+    <script>
+        // Gestion du formulaire de connexion
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+            
+            try {
+                showLoading(true);
+                hideAlerts();
+                
+                const response = await fetch('/api/auth/login-json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'username': data.username,
+                        'password': data.password
+                    })
+                });
+                
+                if (response.ok) {
+                    const tokenData = await response.json();
+                    
+                    // Stocker le token
+                    localStorage.setItem('access_token', tokenData.access_token);
+                    localStorage.setItem('token_type', tokenData.token_type);
+                    
+                    showSuccess('Connexion réussie ! Redirection...');
+                    
+                    // Rediriger vers la page principale
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Identifiants incorrects'));
+                }
+            } catch (error) {
+                showError('Erreur de connexion: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+        
+        // Vérifier si l'utilisateur est déjà connecté
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                // Vérifier la validité du token
+                fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        // Token valide, rediriger
+                        window.location.href = '/';
+                    } else {
+                        // Token invalide, le supprimer
+                        localStorage.removeItem('access_token');
+                        localStorage.removeItem('token_type');
+                    }
+                });
+            }
+        });
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('login-btn').disabled = show;
+        }
+        
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-alert').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('error-alert').style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            document.getElementById('success-message').textContent = message;
+            document.getElementById('success-alert').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('success-alert').style.display = 'none';
+            }, 3000);
+        }
+        
+        function hideAlerts() {
+            document.getElementById('error-alert').style.display = 'none';
+            document.getElementById('success-alert').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

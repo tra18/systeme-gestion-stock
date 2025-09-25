@@ -1,0 +1,11 @@
+# Configuration de l'environnement
+DEBUG=True
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=sqlite:///./app.db
+
+# Configuration du serveur
+HOST=0.0.0.0
+PORT=8000
+
+# Configuration CORS (en production, spécifiez vos domaines)
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
