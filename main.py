@@ -1180,11 +1180,15 @@ async def stock_movements_page():
 
 # Point d'entrée pour lancer l'application
 if __name__ == "__main__":
-    from deployment_config import HOST, PORT, DEBUG
+    import os
+    from deployment_config import HOST, DEBUG
+    
+    # Utiliser le port de Railway ou le port par défaut
+    port = int(os.getenv("PORT", 8000))
     
     uvicorn.run(
         "main:app",
         host=HOST,
-        port=PORT,
+        port=port,
         reload=DEBUG  # Rechargement automatique seulement en développement
     )
