@@ -4,6 +4,7 @@ Script de démarrage ultra-simple pour Railway
 """
 
 import os
+import sys
 import uvicorn
 
 if __name__ == "__main__":
@@ -12,10 +13,13 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     
     print(f"🚀 Démarrage sur {host}:{port}")
+    print(f"🐍 Python version: {sys.version}")
+    print(f"📁 Working directory: {os.getcwd()}")
     
     # Démarrage simple sans options complexes
     uvicorn.run(
         "main:app",
         host=host,
-        port=port
+        port=port,
+        log_level="info"
     )

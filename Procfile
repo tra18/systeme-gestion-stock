@@ -1,1 +1,1 @@
-web: python railway_simple_start.py
+web: python3 railway_simple_start.py
