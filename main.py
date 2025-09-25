@@ -1180,9 +1180,11 @@ async def stock_movements_page():
 
 # Point d'entrée pour lancer l'application
 if __name__ == "__main__":
+    from deployment_config import HOST, PORT, DEBUG
+    
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True  # Rechargement automatique en développement
+        host=HOST,
+        port=PORT,
+        reload=DEBUG  # Rechargement automatique seulement en développement
     )

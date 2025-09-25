@@ -9,3 +9,4 @@ PORT=8000
 
 # Configuration CORS (en production, spécifiez vos domaines)
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
+

@@ -370,3 +370,4 @@ async def get_vehicle_complete_history(
         "fuel_count": len(fuel_records),
         "events": all_events
     }
+

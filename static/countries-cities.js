@@ -322,3 +322,4 @@ function getCitiesByCountry(country) {
 function getAllCountries() {
     return Object.keys(countriesAndCities).sort();
 }
+

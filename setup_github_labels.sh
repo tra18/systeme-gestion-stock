@@ -94,3 +94,4 @@ echo "   - Labels de type (frontend, backend, database, etc.)"
 echo "   - Labels de modules (auth, purchases, stock, etc.)"
 echo ""
 echo "🎉 Votre repository GitHub est maintenant configuré avec tous les labels !"
+

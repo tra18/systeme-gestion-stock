@@ -110,3 +110,4 @@ async def get_service_providers_stats(
         "inactive_providers": total_providers - active_providers,
         "service_types": [{"type": st[0], "count": st[1]} for st in service_types]
     }
+

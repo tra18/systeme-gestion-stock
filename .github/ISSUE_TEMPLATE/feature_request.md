@@ -71,3 +71,4 @@ Quand aimeriez-vous voir cette fonctionnalité implémentée ?
 - [ ] Court terme (dans le mois)
 - [ ] Moyen terme (dans les 3 mois)
 - [ ] Long terme (plus de 3 mois)
+

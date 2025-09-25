@@ -267,3 +267,4 @@ async def adjust_stock_quantity(
         "message": f"Stock ajusté de {old_quantity} à {new_quantity}",
         "new_quantity": new_quantity
     }
+

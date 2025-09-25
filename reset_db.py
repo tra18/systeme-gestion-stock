@@ -33,3 +33,4 @@ print("🔑 Comptes disponibles:")
 print("  - admin / admin123 (Administrateur)")
 print("  - manager / manager123 (Gestionnaire)")  
 print("  - user / user123 (Utilisateur)")
+

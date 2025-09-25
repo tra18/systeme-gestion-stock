@@ -3,14 +3,19 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime, timedelta
 from database import get_db
-from models import Purchase, PurchaseCategory, PurchasePeriod, StockItem, StockMovement
+from models import Purchase, PurchaseCategory, PurchasePeriod, StockItem, StockMovement, User
 from schemas import PurchaseCreate, PurchaseUpdate, Purchase as PurchaseSchema, PurchaseReport
+from auth import get_current_active_user
 import calendar
 
 router = APIRouter(prefix="/purchases", tags=["purchases"])
 
 @router.post("/", response_model=PurchaseSchema)
-async def create_purchase(purchase: PurchaseCreate, db: Session = Depends(get_db)):
+async def create_purchase(
+    purchase: PurchaseCreate, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Créer un nouvel achat et l'article de stock correspondant"""
     # Calculer le total automatiquement
     purchase_data = purchase.dict()
@@ -74,7 +79,11 @@ async def create_purchase(purchase: PurchaseCreate, db: Session = Depends(get_db
     return db_purchase
 
 @router.get("/{purchase_id}/stock-item")
-async def get_purchase_stock_item(purchase_id: int, db: Session = Depends(get_db)):
+async def get_purchase_stock_item(
+    purchase_id: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Récupérer l'article de stock lié à un achat"""
     purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
     if not purchase:
@@ -99,7 +108,8 @@ async def get_purchases(
     period: Optional[PurchasePeriod] = None,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Récupérer les achats avec filtres"""
     query = db.query(Purchase)
@@ -116,7 +126,11 @@ async def get_purchases(
     return query.offset(skip).limit(limit).all()
 
 @router.get("/{purchase_id}", response_model=PurchaseSchema)
-async def get_purchase(purchase_id: int, db: Session = Depends(get_db)):
+async def get_purchase(
+    purchase_id: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Récupérer un achat par ID"""
     purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
     if not purchase:
@@ -127,7 +141,8 @@ async def get_purchase(purchase_id: int, db: Session = Depends(get_db)):
 async def update_purchase(
     purchase_id: int, 
     purchase_update: PurchaseUpdate, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Mettre à jour un achat"""
     purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
@@ -144,7 +159,11 @@ async def update_purchase(
     return purchase
 
 @router.delete("/{purchase_id}")
-async def delete_purchase(purchase_id: int, db: Session = Depends(get_db)):
+async def delete_purchase(
+    purchase_id: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """Supprimer un achat"""
     purchase = db.query(Purchase).filter(Purchase.id == purchase_id).first()
     if not purchase:
@@ -160,7 +179,8 @@ async def get_purchase_report(
     year: int = Query(..., description="Année"),
     month: Optional[int] = Query(None, description="Mois (pour les rapports mensuels)"),
     week: Optional[int] = Query(None, description="Semaine (pour les rapports hebdomadaires)"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Générer un rapport d'achats par période"""
     
@@ -224,7 +244,8 @@ async def get_purchases_by_category(
     category: PurchaseCategory,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Récupérer les achats par catégorie avec filtres de date"""
     query = db.query(Purchase).filter(Purchase.category == category)
@@ -247,7 +268,8 @@ async def get_purchases_by_category(
 async def get_purchase_summary(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """Résumé des achats avec statistiques"""
     query = db.query(Purchase)

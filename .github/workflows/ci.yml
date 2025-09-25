@@ -90,3 +90,4 @@ jobs:
     - name: Test database connection
       run: |
         python -c "from database import engine; print('✅ Database connection successful')"
+

@@ -75,3 +75,4 @@ echo "📖 Documentation disponible:"
 echo "   - README.md: Documentation complète"
 echo "   - ETAT_AVANCEMENT.md: État détaillé du projet"
 echo "   - INSTRUCTIONS_REDEMARRAGE.md: Guide de redémarrage"
+

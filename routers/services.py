@@ -6,7 +6,7 @@ import string
 import random
 
 from database import get_db
-from models import Service as ServiceModel, User
+from models import Service as ServiceModel, User, UserRole
 from schemas import ServiceCreate, ServiceUpdate, Service
 from auth import get_current_active_user
 
@@ -27,7 +27,7 @@ async def create_service(
     current_user: User = Depends(get_current_active_user)
 ):
     """Créer un nouveau service (Admin seulement)"""
-    if not current_user.can_manage_users and current_user.role != "admin":
+    if not current_user.can_manage_users and current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Vous n'avez pas la permission de créer des services"
@@ -104,7 +104,7 @@ async def update_service(
     current_user: User = Depends(get_current_active_user)
 ):
     """Mettre à jour un service (Admin seulement)"""
-    if not current_user.can_manage_users and current_user.role != "admin":
+    if not current_user.can_manage_users and current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Vous n'avez pas la permission de modifier des services"
@@ -131,7 +131,7 @@ async def delete_service(
     current_user: User = Depends(get_current_active_user)
 ):
     """Supprimer un service (Admin seulement)"""
-    if not current_user.can_manage_users and current_user.role != "admin":
+    if not current_user.can_manage_users and current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Vous n'avez pas la permission de supprimer des services"
@@ -170,3 +170,4 @@ async def get_services_stats(
         "active_services": active_services,
         "inactive_services": inactive_services
     }
+

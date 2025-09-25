@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Service
+from models import Base, Service, UserRole
 import os
 
 # Configuration de la base de données
@@ -47,7 +47,7 @@ def init_database():
                     email="admin@example.com",
                     full_name="Administrateur",
                     hashed_password=get_password_hash("admin123"),
-                    role="admin",
+                    role=UserRole.ADMIN,
                     can_access_purchases=True,
                     can_access_stock=True,
                     can_access_vehicles=True,
@@ -62,7 +62,7 @@ def init_database():
                     email="manager@example.com",
                     full_name="Manager",
                     hashed_password=get_password_hash("manager123"),
-                    role="manager",
+                    role=UserRole.MANAGER,
                     can_access_purchases=True,
                     can_access_stock=True,
                     can_access_vehicles=True,
@@ -77,7 +77,7 @@ def init_database():
                     email="user@example.com",
                     full_name="Utilisateur",
                     hashed_password=get_password_hash("user123"),
-                    role="user",
+                    role=UserRole.USER,
                     can_access_purchases=True,
                     can_access_stock=True,
                     can_access_vehicles=True,

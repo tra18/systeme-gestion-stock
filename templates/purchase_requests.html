@@ -577,14 +577,14 @@
                     populateServicesSelect(services);
                 } else if (response) {
                     console.error('❌ Erreur lors du chargement des services:', response.status, response.statusText);
-                    alert(`Erreur de chargement des services: ${response.status} ${response.statusText}`);
+                    showError(`Erreur de chargement des services: ${response.status} ${response.statusText}`);
                 } else {
                     console.error('❌ Pas de réponse reçue pour les services');
-                    alert('Erreur: Pas de réponse du serveur pour les services');
+                    showError('Erreur: Pas de réponse du serveur pour les services');
                 }
             } catch (error) {
                 console.error('❌ Erreur lors du chargement des services:', error);
-                alert(`Erreur de connexion: ${error.message}`);
+                showError(`Erreur de connexion: ${error.message}`);
             }
         }
 
@@ -593,7 +593,7 @@
             const select = document.getElementById('department');
             if (!select) {
                 console.error('❌ Élément select avec ID "department" non trouvé');
-                alert('Erreur: Élément select non trouvé');
+                showError('Erreur: Élément select non trouvé');
                 return;
             }
             
@@ -609,7 +609,7 @@
                 option.disabled = true;
                 select.appendChild(option);
                 console.log('⚠️ Aucun service trouvé, message d\'aide affiché');
-                alert('Aucun service trouvé dans la base de données');
+                showError('Aucun service trouvé dans la base de données');
                 return;
             }
             
@@ -635,10 +635,10 @@
                 option.disabled = true;
                 select.appendChild(option);
                 console.log('⚠️ Aucun service actif trouvé');
-                alert('Aucun service actif trouvé');
+                showError('Aucun service actif trouvé');
             } else {
                 console.log(`🎉 ${servicesAdded} service(s) ajouté(s) avec succès !`);
-                alert(`✅ ${servicesAdded} service(s) chargé(s) avec succès !`);
+                showSuccess(`${servicesAdded} service(s) chargé(s) avec succès !`);
             }
         }
 
@@ -794,14 +794,14 @@
                 if (modal) {
                     document.body.appendChild(modal);
                     console.log('✅ Modal de service ajoutée au DOM');
-                    alert('✅ Modal de création de service ouverte');
+                    showSuccess('Modal de création de service ouverte');
                 } else {
                     console.error('❌ Erreur: modal de service non créée');
-                    alert('❌ Erreur: Impossible de créer la modal');
+                    showError('Erreur: Impossible de créer la modal');
                 }
             } catch (error) {
                 console.error('❌ Erreur dans openServiceModal:', error);
-                alert(`❌ Erreur: ${error.message}`);
+                showError(`Erreur: ${error.message}`);
             }
         }
 
@@ -2238,16 +2238,6 @@
             }
         }
 
-                    console.error('Erreur: modal de service non créée');
-                }
-            } catch (error) {
-                console.error('Erreur dans openServiceModal:', error);
-            }
-        }
-
-            
-            return modal;
-        }
 
         async function submitServiceFromModal(modal) {
             const form = modal.querySelector('#service-modal-form');

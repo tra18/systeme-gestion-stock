@@ -165,3 +165,4 @@ async def delete_user(
     db.delete(user)
     db.commit()
     return {"message": "Utilisateur supprimé avec succès"}
+

@@ -158,3 +158,4 @@ async def generate_receipt_pdf(
         media_type='application/pdf',
         filename=f"bon_reception_{request.request_number}.pdf"
     )
+
