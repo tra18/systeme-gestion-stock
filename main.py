@@ -687,7 +687,23 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Vérification de l'état de l'application"""
-    return {"status": "healthy", "message": "Système de gestion intégré opérationnel"}
+    try:
+        # Vérifier que la base de données est accessible
+        from database import get_db
+        db = next(get_db())
+        db.close()
+        
+        return {
+            "status": "healthy", 
+            "message": "Système de gestion intégré opérationnel",
+            "timestamp": "2025-01-25T10:00:00Z"
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy", 
+            "message": f"Erreur: {str(e)}",
+            "timestamp": "2025-01-25T10:00:00Z"
+        }
 
 # Routes pour les pages d'interface utilisateur
 @app.get("/login", response_class=HTMLResponse)
