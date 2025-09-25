@@ -1,0 +1,127 @@
+[
+  {
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Quelque chose ne fonctionne pas"
+  },
+  {
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "Nouvelle fonctionnalité ou demande"
+  },
+  {
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Améliorations ou ajouts à la documentation"
+  },
+  {
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Bon pour les nouveaux contributeurs"
+  },
+  {
+    "name": "help wanted",
+    "color": "008672",
+    "description": "Aide extra nécessaire"
+  },
+  {
+    "name": "priority: high",
+    "color": "ff6b6b",
+    "description": "Priorité haute"
+  },
+  {
+    "name": "priority: medium",
+    "color": "ffa726",
+    "description": "Priorité moyenne"
+  },
+  {
+    "name": "priority: low",
+    "color": "66bb6a",
+    "description": "Priorité basse"
+  },
+  {
+    "name": "status: in progress",
+    "color": "fbca04",
+    "description": "En cours de développement"
+  },
+  {
+    "name": "status: needs review",
+    "color": "0e8a16",
+    "description": "Nécessite une review"
+  },
+  {
+    "name": "status: blocked",
+    "color": "b60205",
+    "description": "Bloqué par autre chose"
+  },
+  {
+    "name": "type: frontend",
+    "color": "e99695",
+    "description": "Changements frontend"
+  },
+  {
+    "name": "type: backend",
+    "color": "c2e0c6",
+    "description": "Changements backend"
+  },
+  {
+    "name": "type: database",
+    "color": "d4c5f9",
+    "description": "Changements base de données"
+  },
+  {
+    "name": "type: api",
+    "color": "f9d0c4",
+    "description": "Changements API"
+  },
+  {
+    "name": "type: ui/ux",
+    "color": "fef2c0",
+    "description": "Changements interface utilisateur"
+  },
+  {
+    "name": "type: security",
+    "color": "ff6b6b",
+    "description": "Problèmes de sécurité"
+  },
+  {
+    "name": "type: performance",
+    "color": "00d4aa",
+    "description": "Améliorations de performance"
+  },
+  {
+    "name": "module: auth",
+    "color": "1d76db",
+    "description": "Module d'authentification"
+  },
+  {
+    "name": "module: purchases",
+    "color": "1d76db",
+    "description": "Module des achats"
+  },
+  {
+    "name": "module: stock",
+    "color": "1d76db",
+    "description": "Module du stock"
+  },
+  {
+    "name": "module: vehicles",
+    "color": "1d76db",
+    "description": "Module des véhicules"
+  },
+  {
+    "name": "module: suppliers",
+    "color": "1d76db",
+    "description": "Module des fournisseurs"
+  },
+  {
+    "name": "module: services",
+    "color": "1d76db",
+    "description": "Module des services"
+  },
+  {
+    "name": "module: reports",
+    "color": "1d76db",
+    "description": "Module des rapports"
+  }
+]

@@ -1,0 +1,169 @@
+name: 🤝 Collaboration
+description: Discussion sur la collaboration et le travail d'équipe
+title: "[COLLABORATION] "
+labels: ["discussion", "collaboration"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🤝 **Collaboration - VITACH GUINÉE**
+        
+        Utilisez cette section pour discuter de collaboration, de travail d'équipe et de coordination sur le projet.
+        
+  - type: textarea
+    id: collaboration-topic
+    attributes:
+      label: 🎯 Sujet de Collaboration
+      description: Décrivez le sujet de votre discussion de collaboration
+      placeholder: "Ex: Coordination sur le développement de la nouvelle fonctionnalité X"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: collaboration-details
+    attributes:
+      label: 📝 Détails de la Collaboration
+      description: Décrivez en détail votre discussion de collaboration
+      placeholder: "Décrivez ce sur quoi vous voulez collaborer, les objectifs, les défis..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: collaboration-type
+    attributes:
+      label: 🏷️ Type de Collaboration
+      description: Sélectionnez le type de collaboration
+      options:
+        - "👥 Travail d'Équipe"
+        - "🔄 Coordination"
+        - "📋 Planification"
+        - "🎯 Objectifs"
+        - "⏰ Délais"
+        - "📊 Ressources"
+        - "🔧 Outils"
+        - "📚 Formation"
+        - "💬 Communication"
+        - "🤝 Partenariat"
+        - "📈 Progression"
+        - "🎉 Célébration"
+        - "❓ Autre"
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: collaboration-scope
+    attributes:
+      label: 🎯 Portée
+      description: Quelle est la portée de cette collaboration ?
+      options:
+        - "🏢 Projet Complet"
+        - "📦 Module Spécifique"
+        - "🔧 Fonctionnalité"
+        - "🐛 Bug Fix"
+        - "📚 Documentation"
+        - "🧪 Tests"
+        - "📦 Déploiement"
+        - "🎨 Interface"
+        - "⚡ Performance"
+        - "🔒 Sécurité"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: collaboration-objectives
+    attributes:
+      label: 🎯 Objectifs
+      description: Quels sont les objectifs de cette collaboration ?
+      placeholder: "Décrivez les objectifs que vous voulez atteindre..."
+      
+  - type: textarea
+    id: collaboration-timeline
+    attributes:
+      label: 📅 Délai
+      description: Quel est le délai pour cette collaboration ?
+      placeholder: "Ex: 2 semaines, fin du mois, etc."
+      
+  - type: textarea
+    id: collaboration-resources
+    attributes:
+      label: 📊 Ressources
+      description: Quelles ressources sont nécessaires ?
+      placeholder: "Développeurs, temps, outils, budget, etc."
+      
+  - type: textarea
+    id: collaboration-challenges
+    attributes:
+      label: 🚧 Défis
+      description: Quels sont les défis identifiés ?
+      placeholder: "Décrivez les obstacles potentiels..."
+      
+  - type: textarea
+    id: collaboration-solutions
+    attributes:
+      label: 💡 Solutions Proposées
+      description: Quelles solutions proposez-vous ?
+      placeholder: "Décrivez vos idées pour résoudre les défis..."
+      
+  - type: checkboxes
+    id: collaboration-tags
+    attributes:
+      label: 🏷️ Tags de Collaboration
+      description: Sélectionnez les tags pertinents
+      options:
+        - label: "Équipe"
+        - label: "Coordination"
+        - label: "Planification"
+        - label: "Objectifs"
+        - label: "Délais"
+        - label: "Ressources"
+        - label: "Outils"
+        - label: "Formation"
+        - label: "Communication"
+        - label: "Partenariat"
+        - label: "Progression"
+        - label: "Célébration"
+        - label: "Développement"
+        - label: "Tests"
+        - label: "Déploiement"
+        - label: "Documentation"
+        - label: "Interface"
+        - label: "Performance"
+        - label: "Sécurité"
+        - label: "Bug"
+        - label: "Fonctionnalité"
+        
+  - type: textarea
+    id: collaboration-participants
+    attributes:
+      label: 👥 Participants
+      description: Qui participe à cette collaboration ?
+      placeholder: "Listez les personnes impliquées, leurs rôles..."
+      
+  - type: textarea
+    id: collaboration-tools
+    attributes:
+      label: 🔧 Outils Utilisés
+      description: Quels outils utilisez-vous pour cette collaboration ?
+      placeholder: "GitHub, Slack, email, réunions, etc."
+      
+  - type: textarea
+    id: collaboration-meetings
+    attributes:
+      label: 📅 Réunions
+      description: Y a-t-il des réunions planifiées ?
+      placeholder: "Décrivez les réunions, leur fréquence, leur format..."
+      
+  - type: checkboxes
+    id: collaboration-acknowledgments
+    attributes:
+      label: ✅ Confirmations
+      description: Confirmez que vous avez vérifié
+      options:
+        - label: "J'ai clarifié les objectifs"
+          required: true
+        - label: "J'ai identifié les participants"
+          required: true
+        - label: "J'ai considéré les ressources nécessaires"
+          required: true
+        - label: "J'ai respecté les guidelines de collaboration"
+          required: true

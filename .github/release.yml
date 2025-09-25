@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Générer un changelog basé sur les commits
+          echo "## 🎉 Nouvelle Version ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✨ Nouvelles Fonctionnalités" >> $GITHUB_STEP_SUMMARY
+          git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD | grep -E "^(feat|feature)" | sed 's/^feat: /- /' | sed 's/^feature: /- /' >> $GITHUB_STEP_SUMMARY || echo "- Aucune nouvelle fonctionnalité" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🐛 Corrections de Bugs" >> $GITHUB_STEP_SUMMARY
+          git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD | grep -E "^(fix|bug)" | sed 's/^fix: /- /' | sed 's/^bug: /- /' >> $GITHUB_STEP_SUMMARY || echo "- Aucune correction de bug" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📚 Documentation" >> $GITHUB_STEP_SUMMARY
+          git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD | grep -E "^(docs|doc)" | sed 's/^docs: /- /' | sed 's/^doc: /- /' >> $GITHUB_STEP_SUMMARY || echo "- Aucune mise à jour de documentation" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            ## 🎉 Nouvelle Version ${{ github.ref_name }}
+            
+            ### ✨ Nouvelles Fonctionnalités
+            - Système de gestion intégré VITACH GUINÉE
+            - Interface utilisateur moderne et intuitive
+            - Gestion complète des achats, stock, véhicules
+            - Système d'authentification sécurisé
+            - Export CSV et génération PDF
+            - Tableau de bord avec statistiques
+            
+            ### 🏗️ Architecture
+            - **Backend:** FastAPI (Python)
+            - **Base de données:** SQLite
+            - **Frontend:** HTML/CSS/JavaScript
+            - **Authentification:** JWT avec rôles
+            - **Serveur:** Uvicorn
+            
+            ### 👥 Utilisateurs par Défaut
+            - `admin` / `admin123` (Administrateur)
+            - `manager` / `manager123` (Manager)
+            - `user` / `user123` (Utilisateur)
+            - `viewer` / `viewer123` (Visualiseur)
+            
+            ### 🚀 Installation
+            ```bash
+            git clone https://github.com/${{ github.repository }}.git
+            cd vitach-guinee
+            pip install -r requirements.txt
+            python main.py
+            ```
+            
+            ### 📖 Documentation
+            - [README.md](README.md) - Documentation complète
+            - [CONTRIBUTING.md](CONTRIBUTING.md) - Guide de contribution
+            - [ETAT_AVANCEMENT.md](ETAT_AVANCEMENT.md) - État du projet
+            
+            ### 🔗 Liens
+            - **Application:** http://localhost:8000/
+            - **Issues:** https://github.com/${{ github.repository }}/issues
+            - **Discussions:** https://github.com/${{ github.repository }}/discussions
+            
+            ---
+            
+            **Statut:** ✅ Production Ready  
+            **Version:** ${{ github.ref_name }}  
+            **Date:** $(date +'%d %B %Y')
+          draft: false
+          prerelease: false

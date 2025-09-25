@@ -1,0 +1,166 @@
+name: ✨ Discussion de Fonctionnalité
+description: Discussion sur les nouvelles fonctionnalités ou améliorations
+title: "[FEATURE] "
+labels: ["discussion", "feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ✨ **Discussion de Fonctionnalité - VITACH GUINÉE**
+        
+        Utilisez cette section pour discuter de nouvelles fonctionnalités ou améliorations pour le projet.
+        
+  - type: textarea
+    id: feature-name
+    attributes:
+      label: 🎯 Nom de la Fonctionnalité
+      description: Donnez un nom à votre fonctionnalité
+      placeholder: "Ex: Système de notifications push"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 📝 Description
+      description: Décrivez en détail la fonctionnalité proposée
+      placeholder: "Décrivez ce que fait cette fonctionnalité, comment elle fonctionne..."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: feature-problem
+    attributes:
+      label: 🤔 Problème Résolu
+      description: Quel problème cette fonctionnalité résout-elle ?
+      placeholder: "Décrivez le problème actuel et comment cette fonctionnalité le résout..."
+    validations:
+      required: true
+      
+  - type: textarea
+    id: feature-solution
+    attributes:
+      label: 💡 Solution Proposée
+      description: Décrivez votre solution proposée
+      placeholder: "Décrivez comment vous proposez d'implémenter cette fonctionnalité..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: 🏷️ Catégorie de Fonctionnalité
+      description: Sélectionnez la catégorie de votre fonctionnalité
+      options:
+        - "🛒 Gestion des Achats"
+        - "📦 Gestion du Stock"
+        - "🚗 Gestion des Véhicules"
+        - "👥 Gestion des Fournisseurs"
+        - "🏢 Gestion des Services"
+        - "📋 Demandes d'Achat"
+        - "📊 Rapports et Statistiques"
+        - "🔐 Authentification"
+        - "🎨 Interface Utilisateur"
+        - "⚡ Performance"
+        - "🔒 Sécurité"
+        - "📱 Mobile"
+        - "☁️ Cloud"
+        - "🔔 Notifications"
+        - "📧 Email"
+        - "🔄 Synchronisation"
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: feature-priority
+    attributes:
+      label: 🎯 Priorité
+      description: Quelle est la priorité de cette fonctionnalité ?
+      options:
+        - "🔴 Critique"
+        - "🟠 Haute"
+        - "🟡 Moyenne"
+        - "🟢 Faible"
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: feature-complexity
+    attributes:
+      label: 🔧 Complexité Technique
+      description: Quelle est la complexité technique estimée ?
+      options:
+        - "🟢 Simple"
+        - "🟡 Moyenne"
+        - "🟠 Complexe"
+        - "🔴 Très Complexe"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: feature-alternatives
+    attributes:
+      label: 🔄 Alternatives Considérées
+      description: Quelles alternatives avez-vous considérées ?
+      placeholder: "Décrivez les autres solutions que vous avez envisagées..."
+      
+  - type: textarea
+    id: feature-impact
+    attributes:
+      label: 👥 Impact Utilisateur
+      description: Qui bénéficierait de cette fonctionnalité ?
+      placeholder: "Décrivez quels utilisateurs seraient impactés et comment..."
+      
+  - type: textarea
+    id: feature-timeline
+    attributes:
+      label: 📅 Délai Souhaité
+      description: Quand aimeriez-vous voir cette fonctionnalité implémentée ?
+      placeholder: "Ex: Dans les 3 prochains mois, pour la prochaine version..."
+      
+  - type: checkboxes
+    id: feature-tags
+    attributes:
+      label: 🏷️ Tags de Fonctionnalité
+      description: Sélectionnez les tags pertinents
+      options:
+        - label: "Nouvelle fonctionnalité"
+        - label: "Amélioration existante"
+        - label: "Interface utilisateur"
+        - label: "Backend"
+        - label: "Frontend"
+        - label: "Base de données"
+        - label: "API"
+        - label: "Sécurité"
+        - label: "Performance"
+        - label: "Mobile"
+        - label: "Cloud"
+        - label: "Notifications"
+        - label: "Export"
+        - label: "Import"
+        - label: "Rapports"
+        - label: "Analytics"
+        - label: "Intégration"
+        - label: "Automatisation"
+        
+  - type: textarea
+    id: feature-mockups
+    attributes:
+      label: 🎨 Mockups/Designs
+      description: Ajoutez des mockups, designs ou captures d'écran (si applicable)
+      placeholder: "Décrivez ou ajoutez des liens vers vos designs..."
+      
+  - type: checkboxes
+    id: feature-acknowledgments
+    attributes:
+      label: ✅ Confirmations
+      description: Confirmez que vous avez vérifié
+      options:
+        - label: "J'ai vérifié les fonctionnalités existantes"
+          required: true
+        - label: "J'ai vérifié les issues et discussions existantes"
+          required: true
+        - label: "J'ai considéré l'impact sur les utilisateurs existants"
+          required: true
+        - label: "J'ai évalué la complexité technique"
+          required: true
