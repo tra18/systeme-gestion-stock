@@ -1,1 +1,1 @@
-web: python3 railway_simple_start.py
+web: python3 heroku_start.py
