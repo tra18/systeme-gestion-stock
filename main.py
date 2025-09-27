@@ -183,12 +183,393 @@ async def login_page():
     </html>
     """
 
+# Route tableau de bord
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard():
+    """Tableau de bord de l'application"""
+    return """
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tableau de Bord - Système de Gestion</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: white;
+                padding: 2rem;
+            }
+            .dashboard {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 3rem;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+                margin-bottom: 3rem;
+            }
+            .stat-card {
+                background: rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                padding: 2rem;
+                text-align: center;
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+            .stat-number {
+                font-size: 3rem;
+                font-weight: bold;
+                margin-bottom: 0.5rem;
+            }
+            .stat-label {
+                font-size: 1.1rem;
+                opacity: 0.9;
+            }
+            .modules-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+            .module-card {
+                background: rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                padding: 2rem;
+                border: 1px solid rgba(255,255,255,0.2);
+                transition: transform 0.3s ease;
+            }
+            .module-card:hover {
+                transform: translateY(-5px);
+            }
+            .module-title {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .module-actions {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            .btn {
+                background: rgba(255,255,255,0.2);
+                border: 2px solid rgba(255,255,255,0.3);
+                color: white;
+                padding: 0.75rem 1.5rem;
+                text-decoration: none;
+                border-radius: 25px;
+                transition: all 0.3s ease;
+                font-weight: bold;
+            }
+            .btn:hover {
+                background: rgba(255,255,255,0.3);
+                transform: translateY(-2px);
+            }
+            .back-btn {
+                position: fixed;
+                top: 2rem;
+                left: 2rem;
+                background: rgba(255,255,255,0.2);
+                border: 2px solid rgba(255,255,255,0.3);
+                color: white;
+                padding: 1rem;
+                text-decoration: none;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+            }
+            .back-btn:hover {
+                background: rgba(255,255,255,0.3);
+            }
+        </style>
+    </head>
+    <body>
+        <a href="/" class="back-btn">←</a>
+        
+        <div class="dashboard">
+            <div class="header">
+                <h1>📊 Tableau de Bord</h1>
+                <p>Système de Gestion Intégré - Vue d'ensemble</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Articles en Stock</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Véhicules Actifs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Achats ce Mois</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Maintenances Pending</div>
+                </div>
+            </div>
+            
+            <div class="modules-grid">
+                <div class="module-card">
+                    <div class="module-title">
+                        📦 Gestion des Stocks
+                    </div>
+                    <p>Gérez vos articles, niveaux de stock et mouvements d'inventaire.</p>
+                    <div class="module-actions">
+                        <a href="/stock" class="btn">Voir Stock</a>
+                        <a href="/api/docs#/stock" class="btn">API Stock</a>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-title">
+                        🚗 Gestion des Véhicules
+                    </div>
+                    <p>Suivez vos véhicules, maintenance et coûts d'exploitation.</p>
+                    <div class="module-actions">
+                        <a href="/vehicles" class="btn">Voir Véhicules</a>
+                        <a href="/api/docs#/vehicles" class="btn">API Véhicules</a>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-title">
+                        💰 Gestion des Achats
+                    </div>
+                    <p>Planifiez et suivez vos achats et fournisseurs.</p>
+                    <div class="module-actions">
+                        <a href="/purchases" class="btn">Voir Achats</a>
+                        <a href="/api/docs#/purchases" class="btn">API Achats</a>
+                    </div>
+                </div>
+                
+                <div class="module-card">
+                    <div class="module-title">
+                        📋 Rapports & Analyses
+                    </div>
+                    <p>Générez des rapports et analysez vos données.</p>
+                    <div class="module-actions">
+                        <a href="/reports" class="btn">Voir Rapports</a>
+                        <a href="/api/docs#/reports" class="btn">API Rapports</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+# Route gestion de stock
+@app.get("/stock", response_class=HTMLResponse)
+async def stock_management():
+    """Interface de gestion de stock"""
+    return """
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gestion de Stock - Système de Gestion</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: white;
+                padding: 2rem;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 3rem;
+            }
+            .stock-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+                margin-bottom: 3rem;
+            }
+            .stock-card {
+                background: rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                padding: 2rem;
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+            .stock-title {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .stock-list {
+                list-style: none;
+            }
+            .stock-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .stock-item:last-child {
+                border-bottom: none;
+            }
+            .stock-quantity {
+                background: rgba(255,255,255,0.2);
+                padding: 0.25rem 0.75rem;
+                border-radius: 15px;
+                font-weight: bold;
+            }
+            .btn {
+                background: rgba(255,255,255,0.2);
+                border: 2px solid rgba(255,255,255,0.3);
+                color: white;
+                padding: 0.75rem 1.5rem;
+                text-decoration: none;
+                border-radius: 25px;
+                transition: all 0.3s ease;
+                font-weight: bold;
+                margin: 0.5rem;
+                display: inline-block;
+            }
+            .btn:hover {
+                background: rgba(255,255,255,0.3);
+                transform: translateY(-2px);
+            }
+            .back-btn {
+                position: fixed;
+                top: 2rem;
+                left: 2rem;
+                background: rgba(255,255,255,0.2);
+                border: 2px solid rgba(255,255,255,0.3);
+                color: white;
+                padding: 1rem;
+                text-decoration: none;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+            }
+            .back-btn:hover {
+                background: rgba(255,255,255,0.3);
+            }
+        </style>
+    </head>
+    <body>
+        <a href="/" class="back-btn">←</a>
+        
+        <div class="container">
+            <div class="header">
+                <h1>📦 Gestion de Stock</h1>
+                <p>Interface de gestion des articles et inventaire</p>
+            </div>
+            
+            <div class="stock-grid">
+                <div class="stock-card">
+                    <div class="stock-title">
+                        🔧 Outils & Équipements
+                    </div>
+                    <ul class="stock-list">
+                        <li class="stock-item">
+                            <span>Clés Allen</span>
+                            <span class="stock-quantity">45</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Tournevis</span>
+                            <span class="stock-quantity">23</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Pinces</span>
+                            <span class="stock-quantity">18</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Multimètre</span>
+                            <span class="stock-quantity">8</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="stock-card">
+                    <div class="stock-title">
+                        🔋 Batteries & Électronique
+                    </div>
+                    <ul class="stock-list">
+                        <li class="stock-item">
+                            <span>Batterie 12V</span>
+                            <span class="stock-quantity">12</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Câbles USB</span>
+                            <span class="stock-quantity">35</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Adaptateurs</span>
+                            <span class="stock-quantity">22</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Capteurs</span>
+                            <span class="stock-quantity">15</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="stock-card">
+                    <div class="stock-title">
+                        🛠️ Pièces de Rechange
+                    </div>
+                    <ul class="stock-list">
+                        <li class="stock-item">
+                            <span>Filtres à air</span>
+                            <span class="stock-quantity">28</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Courroies</span>
+                            <span class="stock-quantity">14</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Huile moteur</span>
+                            <span class="stock-quantity">6</span>
+                        </li>
+                        <li class="stock-item">
+                            <span>Bougies</span>
+                            <span class="stock-quantity">42</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="/api/docs#/stock" class="btn">📚 API Documentation</a>
+                <a href="/health" class="btn">🔍 État du Système</a>
+                <a href="/dashboard" class="btn">📊 Tableau de Bord</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
 # Route de santé
 @app.get("/health")
 async def health_check():
     """Vérification de l'état de l'application"""
-        return {
-            "status": "healthy", 
+    return {
+        "status": "healthy", 
         "message": "Système de Gestion Intégré - Opérationnel",
         "version": "2.0.0"
     }
@@ -268,7 +649,8 @@ async def root():
             <div class="buttons">
                 <a href="/api/docs" class="btn">📚 Documentation API</a>
                 <a href="/health" class="btn">🔍 État du Système</a>
-                <a href="/login" class="btn">🔐 Connexion</a>
+                <a href="/dashboard" class="btn">📊 Tableau de Bord</a>
+                <a href="/stock" class="btn">📦 Gestion Stock</a>
             </div>
             
             <div class="status">
@@ -286,7 +668,7 @@ async def root():
 async def startup_event():
     """Initialisation au démarrage de l'application"""
     try:
-        init_database()
+    init_database()
         print("✅ Base de données initialisée")
         
         # Créer l'utilisateur admin par défaut s'il n'existe pas
