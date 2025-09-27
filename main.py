@@ -162,15 +162,20 @@ async def login_page():
                     
                     if (response.ok) {
                         const data = await response.json();
-                        alert('Connexion réussie ! Token: ' + data.access_token.substring(0, 20) + '...');
-                        // Ici vous pouvez rediriger vers le dashboard
+                        alert('Connexion réussie ! Vous allez être redirigé vers la documentation API.');
                         window.location.href = '/api/docs';
+                    } else if (response.status === 401) {
+                        alert('Erreur d\'authentification: Nom d\'utilisateur ou mot de passe incorrect.\\n\\nUtilisez:\\n- Nom d\'utilisateur: admin\\n- Mot de passe: admin123');
                     } else {
-                        const error = await response.json();
+                        const error = await response.json().catch(() => ({ detail: 'Erreur inconnue' }));
                         alert('Erreur: ' + error.detail);
                     }
                 } catch (error) {
-                    alert('Erreur de connexion: ' + error.message);
+                    if (error.message.includes('ERR_NETWORK_CHANGED') || error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+                        alert('Erreur de connexion réseau. Veuillez réessayer dans quelques instants.');
+                    } else {
+                        alert('Erreur de connexion: ' + error.message);
+                    }
                 }
             });
         </script>
@@ -283,8 +288,44 @@ async def startup_event():
     try:
         init_database()
         print("✅ Base de données initialisée")
+        
+        # Créer l'utilisateur admin par défaut s'il n'existe pas
+        from models import User
+        from auth import get_password_hash
+        from sqlalchemy.orm import Session
+        from database import get_db
+        
+        db = next(get_db())
+        admin_user = db.query(User).filter(User.username == "admin").first()
+        
+        if not admin_user:
+            admin_user = User(
+                username="admin",
+                email="admin@systeme-gestion.com",
+                full_name="Administrateur",
+                hashed_password=get_password_hash("admin123"),
+                is_active=True,
+                is_admin=True,
+                can_manage_users=True,
+                can_access_purchases=True,
+                can_manage_stock=True,
+                can_access_reports=True,
+                can_manage_vehicles=True,
+                can_manage_maintenance=True,
+                can_manage_suppliers=True,
+                can_manage_services=True,
+                can_export_data=True
+            )
+            db.add(admin_user)
+            db.commit()
+            print("✅ Utilisateur admin créé automatiquement")
+        else:
+            print("✅ Utilisateur admin existe déjà")
+            
     except Exception as e:
-        print(f"❌ Erreur lors de l'initialisation de la base de données: {e}")
+        print(f"❌ Erreur lors de l'initialisation: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
