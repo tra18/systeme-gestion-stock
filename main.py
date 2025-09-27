@@ -42,6 +42,142 @@ app.include_router(reports.router, prefix="/api")
 app.include_router(maintenance.router, prefix="/api")
 app.include_router(stock_movements.router, prefix="/api")
 
+# Route de connexion (page HTML)
+@app.get("/login", response_class=HTMLResponse)
+async def login_page():
+    """Page de connexion HTML"""
+    return """
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Connexion - Système de Gestion</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .login-container {
+                background: rgba(255,255,255,0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                padding: 3rem;
+                width: 100%;
+                max-width: 400px;
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+            h1 {
+                text-align: center;
+                margin-bottom: 2rem;
+                font-size: 2rem;
+            }
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: bold;
+            }
+            input {
+                width: 100%;
+                padding: 1rem;
+                border: 2px solid rgba(255,255,255,0.3);
+                border-radius: 10px;
+                background: rgba(255,255,255,0.1);
+                color: white;
+                font-size: 1rem;
+            }
+            input::placeholder {
+                color: rgba(255,255,255,0.7);
+            }
+            button {
+                width: 100%;
+                padding: 1rem;
+                background: rgba(255,255,255,0.2);
+                border: 2px solid rgba(255,255,255,0.3);
+                border-radius: 10px;
+                color: white;
+                font-size: 1.1rem;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            button:hover {
+                background: rgba(255,255,255,0.3);
+                transform: translateY(-2px);
+            }
+            .back-btn {
+                display: block;
+                text-align: center;
+                margin-top: 1rem;
+                color: rgba(255,255,255,0.8);
+                text-decoration: none;
+            }
+            .back-btn:hover {
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <h1>🔐 Connexion</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" placeholder="Entrez votre nom d'utilisateur" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+                </div>
+                <button type="submit">Se connecter</button>
+            </form>
+            <a href="/" class="back-btn">← Retour à l'accueil</a>
+        </div>
+
+        <script>
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const username = formData.get('username');
+                const password = formData.get('password');
+                
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        alert('Connexion réussie ! Token: ' + data.access_token.substring(0, 20) + '...');
+                        // Ici vous pouvez rediriger vers le dashboard
+                        window.location.href = '/api/docs';
+                    } else {
+                        const error = await response.json();
+                        alert('Erreur: ' + error.detail);
+                    }
+                } catch (error) {
+                    alert('Erreur de connexion: ' + error.message);
+                }
+            });
+        </script>
+    </body>
+    </html>
+    """
+
 # Route de santé
 @app.get("/health")
 async def health_check():
@@ -127,7 +263,7 @@ async def root():
             <div class="buttons">
                 <a href="/api/docs" class="btn">📚 Documentation API</a>
                 <a href="/health" class="btn">🔍 État du Système</a>
-                <a href="/api/auth/login" class="btn">🔐 Connexion</a>
+                <a href="/login" class="btn">🔐 Connexion</a>
             </div>
             
             <div class="status">
