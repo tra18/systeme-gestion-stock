@@ -142,7 +142,7 @@ async def login_page():
             </form>
             <a href="/" class="back-btn">← Retour à l'accueil</a>
         </div>
-
+        
         <script>
             document.getElementById('loginForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -187,8 +187,8 @@ async def login_page():
 @app.get("/health")
 async def health_check():
     """Vérification de l'état de l'application"""
-    return {
-        "status": "healthy",
+        return {
+            "status": "healthy", 
         "message": "Système de Gestion Intégré - Opérationnel",
         "version": "2.0.0"
     }
@@ -290,37 +290,11 @@ async def startup_event():
         print("✅ Base de données initialisée")
         
         # Créer l'utilisateur admin par défaut s'il n'existe pas
-        from models import User
-        from auth import get_password_hash
-        from sqlalchemy.orm import Session
-        from database import get_db
-        
-        db = next(get_db())
-        admin_user = db.query(User).filter(User.username == "admin").first()
-        
-        if not admin_user:
-            admin_user = User(
-                username="admin",
-                email="admin@systeme-gestion.com",
-                full_name="Administrateur",
-                hashed_password=get_password_hash("admin123"),
-                is_active=True,
-                is_admin=True,
-                can_manage_users=True,
-                can_access_purchases=True,
-                can_manage_stock=True,
-                can_access_reports=True,
-                can_manage_vehicles=True,
-                can_manage_maintenance=True,
-                can_manage_suppliers=True,
-                can_manage_services=True,
-                can_export_data=True
-            )
-            db.add(admin_user)
-            db.commit()
-            print("✅ Utilisateur admin créé automatiquement")
-        else:
-            print("✅ Utilisateur admin existe déjà")
+        try:
+            from create_admin import create_admin_if_not_exists
+            create_admin_if_not_exists()
+        except Exception as e:
+            print(f"❌ Erreur lors de la création de l'utilisateur admin: {e}")
             
     except Exception as e:
         print(f"❌ Erreur lors de l'initialisation: {e}")
