@@ -1,1 +1,1 @@
-web: gunicorn main:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --timeout 120 --log-level info --access-logfile - --error-logfile -
+web: uvicorn main_simple:app --host 0.0.0.0 --port $PORT

@@ -1,5 +1,8 @@
+[providers]
+python = "3.12"
+
 [phases.setup]
-nixPkgs = ["python3", "gcc", "freetype", "libffi", "zlib"]
+nixPkgs = ["python3", "gcc"]
 
 [phases.install]
 cmds = [
