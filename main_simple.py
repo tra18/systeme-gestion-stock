@@ -7,7 +7,9 @@ import uvicorn
 app = FastAPI(
     title="Système de Gestion Intégré",
     description="Gestion complète des achats, stock et logistique",
-    version="2.0.0"
+    version="2.0.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
 )
 
 # Configuration CORS
