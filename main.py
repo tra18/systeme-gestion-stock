@@ -127,7 +127,7 @@ async def root():
             <div class="buttons">
                 <a href="/api/docs" class="btn">📚 Documentation API</a>
                 <a href="/health" class="btn">🔍 État du Système</a>
-                <a href="/api/login" class="btn">🔐 Connexion</a>
+                <a href="/api/auth/login" class="btn">🔐 Connexion</a>
             </div>
             
             <div class="status">
