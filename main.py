@@ -668,7 +668,7 @@ async def root():
 async def startup_event():
     """Initialisation au démarrage de l'application"""
     try:
-    init_database()
+        init_database()
         print("✅ Base de données initialisée")
         
         # Créer l'utilisateur admin par défaut s'il n'existe pas
