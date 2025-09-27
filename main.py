@@ -162,17 +162,17 @@ async def login_page():
                     
                     if (response.ok) {
                         const data = await response.json();
-                        alert('Connexion réussie ! Vous allez être redirigé vers la documentation API.');
+                        alert('Connexion reussie ! Vous allez etre redirige vers la documentation API.');
                         window.location.href = '/api/docs';
                     } else if (response.status === 401) {
-                        alert('Erreur d\'authentification: Nom d\'utilisateur ou mot de passe incorrect.\\n\\nUtilisez:\\n- Nom d\'utilisateur: admin\\n- Mot de passe: admin123');
+                        alert('Erreur d\\'authentification: Nom d\\'utilisateur ou mot de passe incorrect.\\n\\nUtilisez:\\n- Nom d\\'utilisateur: admin\\n- Mot de passe: admin123');
                     } else {
                         const error = await response.json().catch(() => ({ detail: 'Erreur inconnue' }));
                         alert('Erreur: ' + error.detail);
                     }
                 } catch (error) {
                     if (error.message.includes('ERR_NETWORK_CHANGED') || error.message.includes('ERR_NAME_NOT_RESOLVED')) {
-                        alert('Erreur de connexion réseau. Veuillez réessayer dans quelques instants.');
+                        alert('Erreur de connexion reseau. Veuillez reessayer dans quelques instants.');
                     } else {
                         alert('Erreur de connexion: ' + error.message);
                     }
