@@ -1,1 +1,1 @@
-web: gunicorn main:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --log-level debug --access-logfile - --error-logfile - --preload
+web: gunicorn main:app -w 1 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --timeout 120 --log-level info --access-logfile - --error-logfile -
