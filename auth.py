@@ -15,7 +15,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 24 * 60  # 24 heures
 
 # Configuration du hachage des mots de passe
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Utilisation de pbkdf2_sha256 temporairement pour éviter le bug bcrypt
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 # Configuration du bearer token
 security = HTTPBearer()

@@ -23,7 +23,7 @@ def create_admin_if_not_exists():
                 username="admin",
                 email="admin@systeme-gestion.com",
                 full_name="Administrateur",
-                hashed_password=get_password_hash("admin123"),
+                hashed_password="$pbkdf2-sha256$29000$Vcq51zqHMAZgTKnVGoPQ.g$c7d.RPXJ.3r8URqkbg20ApCowDwkdncxcazrdSXx6Bc",
                 is_active=True,
                 is_admin=True,
                 can_manage_users=True,
