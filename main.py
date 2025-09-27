@@ -302,5 +302,5 @@ async def startup_event():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    print("🚀 Starting application with bcrypt fix applied")
+    print("🚀 Starting application with bcrypt fix applied - VERSION 51fe13a")
     uvicorn.run(app, host="0.0.0.0", port=8000)
