@@ -1,1 +1,1 @@
-web: python heroku_start.py
+web: gunicorn main:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120
