@@ -1,1 +1,1 @@
-web: python3 heroku_start.py
+web: python heroku_start.py

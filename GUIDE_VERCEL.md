@@ -66,3 +66,4 @@ Vercel va automatiquement :
 ---
 
 **Vercel est parfait pour les applications FastAPI ! 🚀**
+

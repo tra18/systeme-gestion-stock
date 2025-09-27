@@ -130,3 +130,4 @@ curl -X POST http://localhost:8000/api/auth/login \
 ---
 
 **Avec ces solutions, votre application devrait se déployer correctement ! 🚀**
+

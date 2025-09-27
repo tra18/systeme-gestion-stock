@@ -86,3 +86,4 @@ Heroku va automatiquement :
 ---
 
 **Heroku est parfait pour les applications FastAPI ! 🚀**
+

@@ -176,3 +176,4 @@ Votre système de gestion de stock est maintenant prêt pour la production !
 
 **URL de l'application** : `https://votre-app.railway.app`
 **Connexion** : `admin` / `admin123`
+

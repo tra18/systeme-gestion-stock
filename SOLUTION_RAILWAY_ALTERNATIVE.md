@@ -65,3 +65,4 @@ Une fois déployé :
 ---
 
 **Railway est plus simple et supporte mieux Python 3.11 ! 🚀**
+

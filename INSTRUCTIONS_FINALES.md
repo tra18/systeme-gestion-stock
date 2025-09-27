@@ -68,3 +68,4 @@ Votre application sera accessible via :
 ---
 
 **Votre système de gestion de stock sera bientôt en ligne ! 🚀**
+

@@ -16,3 +16,4 @@ def handler(request):
 
 # Export pour Vercel
 app = app
+
