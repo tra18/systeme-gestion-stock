@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test des Fonctionnalités</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test des Fonctionnalités</h1>
+        <p>Ce guide vous aide à tester toutes les fonctionnalités de l'application.</p>
+        
+        <div class="status info">
+            <h3>📋 Étapes de Test</h3>
+            <ol>
+                <li><strong>Vérifiez que l'application fonctionne</strong></li>
+                <li><strong>Testez la connexion</strong></li>
+                <li><strong>Testez les commandes</strong></li>
+                <li><strong>Testez la maintenance</strong></li>
+                <li><strong>Testez le stock</strong></li>
+            </ol>
+        </div>
+        
+        <div>
+            <h3>🔗 Liens de Test</h3>
+            <a href="http://localhost:3000" class="btn" target="_blank">Ouvrir l'Application</a>
+            <a href="http://localhost:3000/commandes" class="btn" target="_blank">Page Commandes</a>
+            <a href="http://localhost:3000/maintenance" class="btn" target="_blank">Page Maintenance</a>
+            <a href="http://localhost:3000/stock" class="btn" target="_blank">Page Stock</a>
+        </div>
+        
+        <div>
+            <h3>📝 Checklist de Test</h3>
+            <div class="status info">
+                <h4>✅ Connexion</h4>
+                <ul>
+                    <li>Email : mouloukou@yahoo.fr</li>
+                    <li>Mot de passe : [votre mot de passe]</li>
+                    <li>Rôle : Directeur Général (accès complet)</li>
+                </ul>
+            </div>
+            
+            <div class="status info">
+                <h4>✅ Page Commandes</h4>
+                <ul>
+                    <li>Workflow visuel en haut (4 étapes colorées)</li>
+                    <li>Tableau avec des commandes</li>
+                    <li>Prix en GNF</li>
+                    <li>Boutons d'action selon le rôle</li>
+                </ul>
+            </div>
+            
+            <div class="status info">
+                <h4>✅ Actions DG</h4>
+                <ul>
+                    <li>Voir toutes les commandes</li>
+                    <li>Valider les commandes "en_attente_approbation"</li>
+                    <li>Approuver ou rejeter avec signature</li>
+                </ul>
+            </div>
+            
+            <div class="status info">
+                <h4>✅ Page Maintenance</h4>
+                <ul>
+                    <li>Gérer les véhicules</li>
+                    <li>Créer des maintenances</li>
+                    <li>Voir les alertes</li>
+                </ul>
+            </div>
+            
+            <div class="status info">
+                <h4>✅ Page Stock</h4>
+                <ul>
+                    <li>Voir les articles de stock</li>
+                    <li>Alertes de stock faible/rupture</li>
+                    <li>Créer/modifier des articles</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div>
+            <h3>🚨 Résolution de Problèmes</h3>
+            <div class="status error">
+                <h4>Si l'application ne se charge pas :</h4>
+                <ul>
+                    <li>Vérifiez que le serveur fonctionne (http://localhost:3000)</li>
+                    <li>Rechargez la page (F5)</li>
+                    <li>Vérifiez la console (F12) pour les erreurs</li>
+                </ul>
+            </div>
+            
+            <div class="status error">
+                <h4>Si les actions ne fonctionnent pas :</h4>
+                <ul>
+                    <li>Vérifiez que vous êtes connecté</li>
+                    <li>Vérifiez votre rôle (DG, Achat, Service)</li>
+                    <li>Rechargez la page après connexion</li>
+                </ul>
+            </div>
+            
+            <div class="status error">
+                <h4>Si le tableau est vide :</h4>
+                <ul>
+                    <li>Créez des données de test</li>
+                    <li>Utilisez les scripts HTML fournis</li>
+                    <li>Rechargez l'application</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div>
+            <h3>🎯 Test du Workflow Complet</h3>
+            <div class="status success">
+                <h4>1. Service (Créer une commande)</h4>
+                <p>Connectez-vous avec un utilisateur "service" et créez une commande</p>
+            </div>
+            
+            <div class="status success">
+                <h4>2. Achat (Ajouter le prix)</h4>
+                <p>Connectez-vous avec un utilisateur "achat" et ajoutez un prix</p>
+            </div>
+            
+            <div class="status success">
+                <h4>3. DG (Valider avec signature)</h4>
+                <p>Connectez-vous avec un utilisateur "dg" et validez la commande</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

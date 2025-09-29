@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Liste Articles</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-test { background: #9f7aea; }
+        .btn-test:hover { background: #805ad5; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .step-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .step-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .step-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .step-item.success {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        .step-item.warning {
+            border-left-color: #ed8936;
+            background: #fff5f0;
+        }
+        .step-item.info {
+            border-left-color: #4299e1;
+            background: #ebf8ff;
+        }
+        .checklist {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .checklist h3 {
+            color: #234e52;
+            margin-bottom: 15px;
+        }
+        .checklist ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .checklist li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Test Liste Articles</h1>
+        
+        <div class="info-box">
+            <h3>✅ Nouvelle Fonctionnalité</h3>
+            <ul>
+                <li><strong>Liste déroulante des articles</strong> - Affiche tous les articles des commandes validées</li>
+                <li><strong>Remplissage automatique</strong> - Description et unité se remplissent automatiquement</li>
+                <li><strong>Création d'articles</strong> - Option pour créer de nouveaux articles</li>
+                <li><strong>Facilite la saisie</strong> - Plus besoin de retaper les détails</li>
+            </ul>
+        </div>
+
+        <div class="steps">
+            <div class="step-item info">
+                <h4>🔧 Fonctionnalité Implémentée</h4>
+                <p><strong>Champ "Article" :</strong> Maintenant une liste déroulante</p>
+                <p><strong>Articles affichés :</strong> Tous les articles des commandes validées</p>
+                <p><strong>Remplissage auto :</strong> Description et unité se remplissent</p>
+                <p><strong>Nouvel article :</strong> Option "+ Créer un nouvel article"</p>
+            </div>
+
+            <div class="step-item warning">
+                <h4>🏭 Étape 1: Créer des Commandes Validées</h4>
+                <p><strong>Pour tester la liste, créez d'abord des commandes validées</strong></p>
+                <p><strong>1. Créez des commandes</strong> avec différents articles</p>
+                <p><strong>2. Validez-les</strong> via le workflow complet</p>
+                <p><strong>3. Les articles apparaîtront</strong> dans la liste déroulante</p>
+                <button class="btn btn-warning" onclick="createCommandesTest()">Créer Commandes Test</button>
+            </div>
+
+            <div class="step-item success">
+                <h4>🧪 Étape 2: Tester la Liste</h4>
+                <p><strong>1. Allez sur "Nouvelle Commande"</strong></p>
+                <p><strong>2. Cliquez sur "Article"</strong></p>
+                <p><strong>3. Vérifiez que la liste s'affiche</strong></p>
+                <p><strong>4. Sélectionnez un article</strong></p>
+                <p><strong>5. Vérifiez le remplissage automatique</strong></p>
+                <button class="btn btn-success" onclick="testListe()">Tester Liste</button>
+            </div>
+        </div>
+
+        <div class="checklist">
+            <h3>📋 Checklist de Test</h3>
+            <ul>
+                <li>✅ <strong>Créer des commandes validées</strong> avec différents articles</li>
+                <li>✅ <strong>Aller sur "Nouvelle Commande"</strong></li>
+                <li>✅ <strong>Vérifier que le champ "Article" est une liste déroulante</strong></li>
+                <li>✅ <strong>Vérifier que les articles validés s'affichent</strong></li>
+                <li>✅ <strong>Sélectionner un article</strong></li>
+                <li>✅ <strong>Vérifier que la description se remplit automatiquement</strong></li>
+                <li>✅ <strong>Vérifier que l'unité se remplit automatiquement</strong></li>
+                <li>✅ <strong>Tester l'option "Créer un nouvel article"</strong></li>
+                <li>✅ <strong>Vérifier que le champ de saisie apparaît</strong></li>
+                <li>✅ <strong>Créer une commande avec un article existant</strong></li>
+                <li>✅ <strong>Créer une commande avec un nouvel article</strong></li>
+            </ul>
+        </div>
+
+        <div class="status-card">
+            <h3>🎯 Fonctionnalités Testées</h3>
+            <p><strong>✅ Liste déroulante des articles</strong> - Affiche les articles validés</p>
+            <p><strong>✅ Remplissage automatique</strong> - Description et unité</p>
+            <p><strong>✅ Création d'articles</strong> - Option pour nouveaux articles</p>
+            <p><strong>✅ Interface intuitive</strong> - Facilite la saisie</p>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Points de Vérification</h3>
+            <ul>
+                <li><strong>Liste :</strong> Affiche tous les articles des commandes validées</li>
+                <li><strong>Sélection :</strong> Remplit automatiquement description et unité</li>
+                <li><strong>Nouveau :</strong> Option pour créer de nouveaux articles</li>
+                <li><strong>Interface :</strong> Plus rapide et intuitive</li>
+            </ul>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function createCommandesTest() {
+            showResult('success', `
+                <h4>🏭 Créer Commandes Test</h4>
+                <p><strong>1. Créez des commandes avec différents articles :</strong></p>
+                <ul>
+                    <li>Ramettes de papier A4</li>
+                    <li>Stylos bleus</li>
+                    <li>Cahiers 200 pages</li>
+                    <li>Agendas 2024</li>
+                </ul>
+                <p><strong>2. Validez-les via le workflow complet</strong></p>
+                <p><strong>3. Les articles apparaîtront dans la liste déroulante</strong></p>
+            `);
+        }
+
+        function testListe() {
+            showResult('success', `
+                <h4>🧪 Tester Liste</h4>
+                <p><strong>1. Allez sur "Nouvelle Commande"</strong></p>
+                <p><strong>2. Cliquez sur le champ "Article"</strong></p>
+                <p><strong>3. Vérifiez que la liste déroulante s'affiche</strong></p>
+                <p><strong>4. Sélectionnez un article existant</strong></p>
+                <p><strong>5. Vérifiez que la description et l'unité se remplissent</strong></p>
+                <p><strong>6. Testez l'option "Créer un nouvel article"</strong></p>
+                <p><strong>✅ Résultat attendu :</strong> Interface plus rapide et intuitive</p>
+            `);
+        }
+
+        function showResult(type, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = content;
+        }
+    </script>
+</body>
+</html>

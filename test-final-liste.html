@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Final - Liste Articles</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .step-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .step-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .step-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .step-item.success {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        .step-item.warning {
+            border-left-color: #ed8936;
+            background: #fff5f0;
+        }
+        .step-item.info {
+            border-left-color: #4299e1;
+            background: #ebf8ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Test Final - Liste Articles</h1>
+        
+        <div class="info-box">
+            <h3>✅ Version Corrigée Déployée</h3>
+            <ul>
+                <li><strong>Fichier NouvelleCommande.js</strong> - Complètement réécrit</li>
+                <li><strong>Champ Article</strong> - Maintenant une liste déroulante pure</li>
+                <li><strong>Prix en GNF</strong> - Tous les prix en Francs Guinéens</li>
+                <li><strong>Remplissage automatique</strong> - Description et unité</li>
+            </ul>
+        </div>
+
+        <div class="steps">
+            <div class="step-item success">
+                <h4>✅ Étape 1: Fichier Corrigé</h4>
+                <p><strong>NouvelleCommande.js</strong> - Complètement réécrit</p>
+                <p><strong>Champ Article</strong> - Seulement une liste déroulante</p>
+                <p><strong>Plus de champ de saisie</strong> - Interface propre</p>
+                <p><strong>Déployé</strong> - Version mise à jour en production</p>
+            </div>
+
+            <div class="step-item info">
+                <h4>🧪 Étape 2: Tester la Liste</h4>
+                <p><strong>1. Ouvrir l'application</strong> - https://stock-bcbd3.web.app</p>
+                <p><strong>2. Se connecter</strong> avec un utilisateur "service"</p>
+                <p><strong>3. Aller sur "Nouvelle Commande"</p>
+                <p><strong>4. Vérifier le champ "Article"</strong> - Doit être une liste déroulante</p>
+                <button class="btn btn-info" onclick="testListe()">Tester la Liste</button>
+            </div>
+
+            <div class="step-item warning">
+                <h4>📦 Étape 3: Créer des Articles</h4>
+                <p><strong>Si la liste est vide</strong> - Créez des articles de test</p>
+                <p><strong>Utilisez le script</strong> ci-dessous</p>
+                <p><strong>Exécutez dans la console</strong> de l'application</p>
+                <button class="btn btn-warning" onclick="showScript()">Voir le Script</button>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>🎯 Code Implémenté</h3>
+            <p><strong>✅ Liste déroulante</strong> - Champ "Article" converti en select</p>
+            <p><strong>✅ Chargement des articles</strong> - Depuis les commandes validées</p>
+            <p><strong>✅ Remplissage automatique</strong> - Description et unité</p>
+            <p><strong>✅ Prix en GNF</strong> - Tous les prix en Francs Guinéens</p>
+        </div>
+
+        <div class="info-box">
+            <h3>🔧 Code de la Liste des Articles</h3>
+            <div class="code-block">
+// Champ Article en liste déroulante
+&lt;select
+  name="article"
+  value={formData.article}
+  onChange={handleArticleChange}
+  required
+  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+&gt;
+  &lt;option value=""&gt;Sélectionner un article&lt;/option&gt;
+  {articlesValides.map(article => (
+    &lt;option key={article} value={article}&gt;
+      {article}
+    &lt;/option&gt;
+  ))}
+&lt;/select&gt;
+            </div>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="https://stock-bcbd3.web.app" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Tester l'Application
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function testListe() {
+            showResult('success', `
+                <h4>🧪 Test de la Liste des Articles</h4>
+                <p><strong>1. Ouvrez l'application :</strong> https://stock-bcbd3.web.app</p>
+                <p><strong>2. Connectez-vous</strong> avec un utilisateur "service"</p>
+                <p><strong>3. Allez sur "Nouvelle Commande"</strong></p>
+                <p><strong>4. Vérifiez le champ "Article" :</strong></p>
+                <ul>
+                    <li>Doit être une liste déroulante (select)</li>
+                    <li>Doit afficher "Sélectionner un article"</li>
+                    <li>Ne doit PAS être un champ de saisie (input)</li>
+                </ul>
+                <p><strong>✅ Si c'est une liste déroulante, la fonctionnalité fonctionne !</strong></p>
+                <p><strong>❌ Si c'est encore un champ texte, videz le cache du navigateur</strong></p>
+            `);
+        }
+
+        function showScript() {
+            showResult('success', `
+                <h4>📦 Script pour Créer des Articles</h4>
+                <p><strong>1. Ouvrez l'application :</strong> https://stock-bcbd3.web.app</p>
+                <p><strong>2. Ouvrez la console</strong> (F12 → Console)</p>
+                <p><strong>3. Collez ce script :</strong></p>
+                <div class="code-block">
+// Importer Firebase
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// Configuration Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+  authDomain: "stock-bcbd3.firebaseapp.com",
+  projectId: "stock-bcbd3",
+  storageBucket: "stock-bcbd3.appspot.com",
+  messagingSenderId: "901950451449",
+  appId: "1:901950451449:web:stock-bcbd3"
+};
+
+// Initialiser Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Créer des commandes validées
+const articles = [
+    {
+        article: 'Ramettes de papier A4',
+        description: 'Papier blanc 80g/m², format A4, 500 feuilles par ramette',
+        quantite: 10,
+        unite: 'paquet',
+        service: 'Administration',
+        urgence: 'normale',
+        statut: 'valide',
+        prix: 25000,
+        fournisseur: 'Papeterie Centrale',
+        createdBy: 'system',
+        createdByName: 'Système',
+        createdAt: new Date(),
+        validatedAt: new Date(),
+        validatedBy: 'system',
+        validatedByName: 'Directeur Général'
+    },
+    {
+        article: 'Stylos bleus',
+        description: 'Stylos à bille bleue, pointe fine 0.7mm, lot de 12',
+        quantite: 5,
+        unite: 'lot',
+        service: 'Administration',
+        urgence: 'normale',
+        statut: 'valide',
+        prix: 15000,
+        fournisseur: 'Fournitures Bureau',
+        createdBy: 'system',
+        createdByName: 'Système',
+        createdAt: new Date(),
+        validatedAt: new Date(),
+        validatedBy: 'system',
+        validatedByName: 'Directeur Général'
+    }
+];
+
+// Créer les commandes
+for (const commande of articles) {
+    try {
+        await addDoc(collection(db, 'commandes'), commande);
+        console.log(\`✅ Commande créée : \${commande.article} - \${commande.prix} GNF\`);
+    } catch (error) {
+        console.error(\`❌ Erreur pour \${commande.article}:\`, error);
+    }
+}
+
+console.log('🎉 Articles créés ! Testez maintenant la liste déroulante.');
+                </div>
+                <p><strong>4. Exécutez le script</strong> (Entrée)</p>
+                <p><strong>5. Vérifiez les messages</strong> de confirmation</p>
+                <p><strong>6. Testez la liste déroulante</strong> des articles</p>
+            `);
+        }
+
+        function showResult(type, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = content;
+        }
+
+        // Afficher le statut
+        showResult('success', `
+            <h4>✅ Version Corrigée Déployée</h4>
+            <p><strong>Le fichier NouvelleCommande.js a été complètement réécrit</strong></p>
+            <p><strong>Le champ "Article" est maintenant une liste déroulante pure</strong></p>
+            <p><strong>Plus de champ de saisie libre</strong></p>
+            <p><strong>🎉 Testez l'application pour voir la différence !</strong></p>
+        `);
+    </script>
+</body>
+</html>

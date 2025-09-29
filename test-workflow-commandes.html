@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Workflow Commandes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-test { background: #9f7aea; }
+        .btn-test:hover { background: #805ad5; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .step-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .step-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .step-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .step-item.service {
+            border-left-color: #4299e1;
+            background: #ebf8ff;
+        }
+        .step-item.achat {
+            border-left-color: #ed8936;
+            background: #fff5f0;
+        }
+        .step-item.dg {
+            border-left-color: #9f7aea;
+            background: #faf5ff;
+        }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+        .checklist {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .checklist h3 {
+            color: #234e52;
+            margin-bottom: 15px;
+        }
+        .checklist ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .checklist li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Test Workflow Commandes</h1>
+        
+        <div class="info-box">
+            <h3>✅ Problème Résolu</h3>
+            <ul>
+                <li><strong>Problème :</strong> Commandes créées avec statut 'en_attente'</li>
+                <li><strong>Solution :</strong> Changé en 'en_attente_prix' pour cohérence</li>
+                <li><strong>Résultat :</strong> Commandes visibles dans la page "Achat"</li>
+            </ul>
+        </div>
+
+        <div class="workflow-steps">
+            <div class="step-item service">
+                <h4>📝 Étape 1: Service - Créer Commande</h4>
+                <p><strong>Page :</strong> Nouvelle Commande</p>
+                <p><strong>Action :</strong> Remplir le formulaire et créer</p>
+                <p><strong>Statut :</strong> 'en_attente_prix'</p>
+                <p><strong>Résultat :</strong> Commande créée et visible dans "Achat"</p>
+            </div>
+
+            <div class="step-item achat">
+                <h4>💰 Étape 2: Achat - Ajouter Prix</h4>
+                <p><strong>Page :</strong> Achat</p>
+                <p><strong>Action :</strong> Voir la commande et ajouter prix</p>
+                <p><strong>Statut :</strong> 'en_attente_approbation'</p>
+                <p><strong>Résultat :</strong> Commande avec prix visible dans "Validation DG"</p>
+            </div>
+
+            <div class="step-item dg">
+                <h4>✍️ Étape 3: DG - Valider</h4>
+                <p><strong>Page :</strong> Validation DG</p>
+                <p><strong>Action :</strong> Signer et valider/rejeter</p>
+                <p><strong>Statut :</strong> 'valide' ou 'rejete'</p>
+                <p><strong>Résultat :</strong> Workflow terminé</p>
+            </div>
+        </div>
+
+        <div class="checklist">
+            <h3>📋 Checklist de Test</h3>
+            <ul>
+                <li>✅ <strong>Connectez-vous avec un utilisateur Service</strong></li>
+                <li>✅ <strong>Allez sur "Nouvelle Commande"</strong></li>
+                <li>✅ <strong>Créez une commande</strong></li>
+                <li>✅ <strong>Vérifiez que le statut est "en_attente_prix"</strong></li>
+                <li>✅ <strong>Connectez-vous avec un utilisateur Achat</strong></li>
+                <li>✅ <strong>Allez sur "Achat"</strong></li>
+                <li>✅ <strong>Vérifiez que la commande est visible</strong></li>
+                <li>✅ <strong>Ajoutez un prix et un fournisseur</strong></li>
+                <li>✅ <strong>Vérifiez que le statut devient "en_attente_approbation"</strong></li>
+                <li>✅ <strong>Connectez-vous avec un utilisateur DG</strong></li>
+                <li>✅ <strong>Allez sur "Validation DG"</strong></li>
+                <li>✅ <strong>Vérifiez que la commande est visible</strong></li>
+                <li>✅ <strong>Validez ou rejetez avec signature</strong></li>
+            </ul>
+        </div>
+
+        <div class="status-card">
+            <h3>🎯 Statuts des Commandes</h3>
+            <p><strong>1. Création :</strong> 'en_attente_prix' (Service → Achat)</p>
+            <p><strong>2. Prix ajouté :</strong> 'en_attente_approbation' (Achat → DG)</p>
+            <p><strong>3. Validation :</strong> 'valide' ou 'rejete' (DG → Terminé)</p>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Points de Vérification</h3>
+            <ul>
+                <li><strong>Service :</strong> Peut créer des commandes</li>
+                <li><strong>Achat :</strong> Voit les commandes en attente de prix</li>
+                <li><strong>DG :</strong> Voit les commandes en attente d'approbation</li>
+                <li><strong>Navigation :</strong> Chaque rôle voit ses pages spécifiques</li>
+                <li><strong>Workflow :</strong> Progression logique des statuts</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+</body>
+</html>

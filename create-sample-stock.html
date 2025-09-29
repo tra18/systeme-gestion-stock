@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer des Articles de Stock d'Exemple</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Créer des Articles de Stock d'Exemple</h1>
+        <p>Ce script va créer des articles de stock avec différents niveaux d'alerte pour tester le système d'alertes.</p>
+        
+        <div id="status"></div>
+        
+        <div>
+            <h3>Types d'alertes de stock :</h3>
+            <ul>
+                <li><strong>Stock normal</strong> : Quantité > seuil minimum</li>
+                <li><strong>Stock faible</strong> : Quantité ≤ seuil minimum</li>
+                <li><strong>Rupture de stock</strong> : Quantité = 0</li>
+            </ul>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="createSampleStock()">Créer des Articles de Stock</button>
+            <button class="btn btn-success" onclick="createStockAlerts()">Créer des Alertes de Stock</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "901950451449",
+            appId: "1:901950451449:web:your-app-id"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addResult(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `<div class="status info">${message}</div>`;
+        }
+
+        async function createSampleStock() {
+            showStatus('Création des articles de stock d\'exemple...', 'info');
+            
+            try {
+                const articles = [
+                    {
+                        nom: "Ordinateur portable Dell",
+                        reference: "DELL-LAT-001",
+                        description: "Laptop Dell Latitude pour le bureau",
+                        categorie: "Informatique",
+                        quantite: 15,
+                        seuilMinimum: 5,
+                        prixUnitaire: 1200.00,
+                        fournisseur: "Dell France",
+                        emplacement: "Entrepôt A - Étage 1",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Imprimante HP LaserJet",
+                        reference: "HP-LJ-002",
+                        description: "Imprimante laser monochrome",
+                        categorie: "Informatique",
+                        quantite: 8,
+                        seuilMinimum: 3,
+                        prixUnitaire: 450.00,
+                        fournisseur: "HP France",
+                        emplacement: "Entrepôt A - Étage 2",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Câbles réseau CAT6",
+                        reference: "CAB-CAT6-003",
+                        description: "Câbles réseau Ethernet CAT6 - 5m",
+                        categorie: "Réseau",
+                        quantite: 200,
+                        seuilMinimum: 50,
+                        prixUnitaire: 12.50,
+                        fournisseur: "CableTech",
+                        emplacement: "Entrepôt B - Rack 1",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Papier A4 80g",
+                        reference: "PAP-A4-004",
+                        description: "Rame de papier A4 blanc 80g/m²",
+                        categorie: "Fournitures",
+                        quantite: 45,
+                        seuilMinimum: 20,
+                        prixUnitaire: 4.50,
+                        fournisseur: "Papeterie Pro",
+                        emplacement: "Entrepôt C - Zone 1",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Stylos Bic bleu",
+                        reference: "STY-BIC-005",
+                        description: "Paquet de 10 stylos Bic bleu",
+                        categorie: "Fournitures",
+                        quantite: 25,
+                        seuilMinimum: 10,
+                        prixUnitaire: 2.80,
+                        fournisseur: "Bic France",
+                        emplacement: "Entrepôt C - Zone 2",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const article of articles) {
+                    await db.collection('stock').add(article);
+                    addResult(`✅ Article créé: ${article.nom} (${article.reference}) - Stock: ${article.quantite}`);
+                }
+
+                showStatus('✅ Tous les articles de stock ont été créés avec succès !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+
+        async function createStockAlerts() {
+            showStatus('Création d\'articles avec alertes de stock...', 'info');
+            
+            try {
+                const articlesAlerte = [
+                    {
+                        nom: "Cartouches d'encre HP",
+                        reference: "CAR-HP-006",
+                        description: "Cartouches d'encre HP 305 - Noir",
+                        categorie: "Informatique",
+                        quantite: 2, // Stock faible
+                        seuilMinimum: 5,
+                        prixUnitaire: 35.00,
+                        fournisseur: "HP France",
+                        emplacement: "Entrepôt A - Étage 2",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Claviers USB",
+                        reference: "CLAV-USB-007",
+                        description: "Claviers USB standard",
+                        categorie: "Informatique",
+                        quantite: 0, // Rupture de stock
+                        seuilMinimum: 10,
+                        prixUnitaire: 25.00,
+                        fournisseur: "Logitech France",
+                        emplacement: "Entrepôt A - Étage 1",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Souris optiques",
+                        reference: "SOUR-OPT-008",
+                        description: "Souris optiques USB",
+                        categorie: "Informatique",
+                        quantite: 3, // Stock faible
+                        seuilMinimum: 8,
+                        prixUnitaire: 15.00,
+                        fournisseur: "Logitech France",
+                        emplacement: "Entrepôt A - Étage 1",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Agendas 2024",
+                        reference: "AGA-2024-009",
+                        description: "Agendas de bureau 2024",
+                        categorie: "Fournitures",
+                        quantite: 0, // Rupture de stock
+                        seuilMinimum: 15,
+                        prixUnitaire: 8.50,
+                        fournisseur: "Papeterie Pro",
+                        emplacement: "Entrepôt C - Zone 1",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Surgeurs de bureau",
+                        reference: "SUR-BUR-010",
+                        description: "Surgeurs 6 prises avec protection",
+                        categorie: "Électricité",
+                        quantite: 1, // Stock très faible
+                        seuilMinimum: 5,
+                        prixUnitaire: 45.00,
+                        fournisseur: "ElectroPro",
+                        emplacement: "Entrepôt B - Rack 2",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const article of articlesAlerte) {
+                    await db.collection('stock').add(article);
+                    let alerteType = '';
+                    if (article.quantite === 0) {
+                        alerteType = '🚨 RUPTURE DE STOCK';
+                    } else if (article.quantite <= article.seuilMinimum) {
+                        alerteType = '⚠️ STOCK FAIBLE';
+                    }
+                    addResult(`✅ Article créé: ${article.nom} (${article.reference}) - Stock: ${article.quantite} ${alerteType}`);
+                }
+
+                showStatus('🎯 Articles avec alertes créés ! Vous verrez maintenant des alertes sur le tableau de bord.', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

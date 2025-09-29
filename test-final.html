@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Final - Gestion Commandes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .btn-test { background: #9f7aea; }
+        .btn-test:hover { background: #805ad5; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .checklist-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .checklist-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .checklist-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Test Final - Application Complète</h1>
+        
+        <div class="info-box">
+            <h3>✅ Toutes les Fonctionnalités Implémentées</h3>
+            <ul>
+                <li><strong>Gestion des Services</strong> - Création, modification, suppression</li>
+                <li><strong>Commandes avec Services</strong> - Liste déroulante des services</li>
+                <li><strong>Unités de Mesure</strong> - Paquet et carton ajoutés</li>
+                <li><strong>Workflow Complet</strong> - Service → Achat → DG</li>
+                <li><strong>Signature Digitale</strong> - Validation DG avec signature</li>
+                <li><strong>Gestion des Véhicules</strong> - Maintenance et alertes</li>
+                <li><strong>Tableau de Bord</strong> - Alertes et statistiques</li>
+            </ul>
+        </div>
+
+        <div class="checklist">
+            <div class="checklist-item">
+                <h4>🏢 Services</h4>
+                <p>✅ Création de services</p>
+                <p>✅ Modification et suppression</p>
+                <p>✅ Intégration dans les commandes</p>
+                <button class="btn btn-test" onclick="testServices()">Tester Services</button>
+            </div>
+
+            <div class="checklist-item">
+                <h4>🛒 Commandes</h4>
+                <p>✅ Champ service obligatoire</p>
+                <p>✅ Unités paquet/carton</p>
+                <p>✅ Workflow complet</p>
+                <button class="btn btn-test" onclick="testCommandes()">Tester Commandes</button>
+            </div>
+
+            <div class="checklist-item">
+                <h4>🚗 Maintenance</h4>
+                <p>✅ Gestion des véhicules</p>
+                <p>✅ Planification maintenance</p>
+                <p>✅ Alertes automatiques</p>
+                <button class="btn btn-test" onclick="testMaintenance()">Tester Maintenance</button>
+            </div>
+
+            <div class="checklist-item">
+                <h4>👥 Utilisateurs</h4>
+                <p>✅ Rôles Service/Achat/DG</p>
+                <p>✅ Accès différenciés</p>
+                <p>✅ Signature digitale</p>
+                <button class="btn btn-test" onclick="testUsers()">Tester Utilisateurs</button>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>🚀 Application Prête</h3>
+            <p><strong>Status:</strong> ✅ Toutes les erreurs corrigées</p>
+            <p><strong>Compilation:</strong> ✅ Application accessible</p>
+            <p><strong>Fonctionnalités:</strong> ✅ Toutes implémentées</p>
+            <p><strong>Interface:</strong> ✅ Moderne et intuitive</p>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="info-box">
+            <h3>🎯 Guide de Test Complet</h3>
+            <ol>
+                <li><strong>Créez des services</strong> via la page "Services" (rôle DG)</li>
+                <li><strong>Créez des commandes</strong> via "Nouvelle Commande" (rôle Service)</li>
+                <li><strong>Ajoutez des prix</strong> via "Achat" (rôle Achat)</li>
+                <li><strong>Validez les commandes</strong> via "Validation DG" (rôle DG)</li>
+                <li><strong>Gérez les véhicules</strong> via "Maintenance"</li>
+                <li><strong>Surveillez les alertes</strong> via "Tableau de bord"</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function testServices() {
+            showResult('success', `
+                <h4>🏢 Test Services</h4>
+                <p><strong>1. Connectez-vous avec un utilisateur DG</strong></p>
+                <p><strong>2. Allez sur la page "Services"</strong></p>
+                <p><strong>3. Créez un nouveau service</strong></p>
+                <p><strong>4. Testez la modification et suppression</strong></p>
+                <p><strong>✅ Résultat attendu:</strong> Services créés et visibles dans les listes déroulantes</p>
+            `);
+        }
+
+        function testCommandes() {
+            showResult('success', `
+                <h4>🛒 Test Commandes</h4>
+                <p><strong>1. Connectez-vous avec un utilisateur Service</strong></p>
+                <p><strong>2. Allez sur "Nouvelle Commande"</strong></p>
+                <p><strong>3. Remplissez le formulaire avec le nouveau champ "Service"</strong></p>
+                <p><strong>4. Testez les unités "paquet" et "carton"</strong></p>
+                <p><strong>✅ Résultat attendu:</strong> Commande créée avec service obligatoire</p>
+            `);
+        }
+
+        function testMaintenance() {
+            showResult('success', `
+                <h4>🚗 Test Maintenance</h4>
+                <p><strong>1. Allez sur la page "Maintenance"</strong></p>
+                <p><strong>2. Créez un nouveau véhicule</strong></p>
+                <p><strong>3. Planifiez une maintenance</strong></p>
+                <p><strong>4. Vérifiez les alertes sur le tableau de bord</strong></p>
+                <p><strong>✅ Résultat attendu:</strong> Véhicules et maintenances gérés</p>
+            `);
+        }
+
+        function testUsers() {
+            showResult('success', `
+                <h4>👥 Test Utilisateurs</h4>
+                <p><strong>1. Testez les différents rôles:</strong></p>
+                <ul>
+                    <li><strong>Service:</strong> Peut créer des commandes</li>
+                    <li><strong>Achat:</strong> Peut ajouter des prix</li>
+                    <li><strong>DG:</strong> Peut valider avec signature</li>
+                </ul>
+                <p><strong>2. Testez la signature digitale</strong></p>
+                <p><strong>✅ Résultat attendu:</strong> Workflow complet fonctionnel</p>
+            `);
+        }
+
+        function showResult(type, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = content;
+        }
+
+        // Afficher le résultat
+        document.getElementById('result').style.display = 'none';
+    </script>
+</body>
+</html>

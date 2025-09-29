@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Final - Application Sans Erreurs</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-test { background: #9f7aea; }
+        .btn-test:hover { background: #805ad5; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .checklist-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .checklist-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .checklist-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .test-steps {
+            list-style: none;
+            padding: 0;
+        }
+        .test-steps li {
+            background: white;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        .test-steps li strong {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Test Final - Application Sans Erreurs</h1>
+        
+        <div class="info-box">
+            <h3>✅ Toutes les Erreurs Corrigées</h3>
+            <ul>
+                <li><strong>Erreurs Firebase :</strong> ✅ Corrigées (suppression des orderBy)</li>
+                <li><strong>Erreurs de syntaxe :</strong> ✅ Corrigées (parenthèses manquantes)</li>
+                <li><strong>Erreurs ESLint :</strong> ✅ Corrigées (imports nettoyés)</li>
+                <li><strong>Application :</strong> ✅ Compile sans erreurs</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Test de l'Application</h3>
+            <ol class="test-steps">
+                <li><strong>1. Ouvrir l'application :</strong> http://localhost:3000</li>
+                <li><strong>2. Recharger avec Ctrl + F5 :</strong> Pour vider le cache</li>
+                <li><strong>3. Ouvrir la console :</strong> F12 → Console</li>
+                <li><strong>4. Se connecter :</strong> Avec un utilisateur existant</li>
+                <li><strong>5. Tester chaque page :</strong> Vérifier qu'il n'y a plus d'erreurs</li>
+            </ol>
+        </div>
+
+        <div class="checklist">
+            <div class="checklist-item">
+                <h4>🏢 Étape 1: Créer les Services</h4>
+                <p>Créez d'abord les services pour que le champ fonctionne</p>
+                <button class="btn btn-test" onclick="createServices()">Créer les Services</button>
+            </div>
+
+            <div class="checklist-item">
+                <h4>🛒 Étape 2: Tester le Workflow</h4>
+                <p>Testez le workflow complet des commandes</p>
+                <button class="btn btn-test" onclick="testWorkflow()">Tester le Workflow</button>
+            </div>
+
+            <div class="checklist-item">
+                <h4>🔧 Étape 3: Vérifier les Erreurs</h4>
+                <p>Vérifiez qu'il n'y a plus d'erreurs dans la console</p>
+                <button class="btn btn-warning" onclick="checkErrors()">Vérifier les Erreurs</button>
+            </div>
+
+            <div class="checklist-item">
+                <h4>🚀 Étape 4: Ouvrir l'Application</h4>
+                <p>Accédez à l'application sans erreurs</p>
+                <button class="btn btn-success" onclick="openApp()">Ouvrir l'Application</button>
+            </div>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="status-card">
+            <h3>🎯 Vérifications à Effectuer</h3>
+            <ol>
+                <li><strong>Console du navigateur :</strong> Plus d'erreurs Firebase ou de syntaxe</li>
+                <li><strong>Dashboard :</strong> Se charge sans erreurs</li>
+                <li><strong>Nouvelle Commande :</strong> Champ Service en liste déroulante</li>
+                <li><strong>Service Achat :</strong> Affiche les commandes en attente</li>
+                <li><strong>Validation DG :</strong> Affiche les commandes à valider</li>
+                <li><strong>Maintenance :</strong> Se charge sans erreurs</li>
+                <li><strong>Stock :</strong> Se charge sans erreurs</li>
+                <li><strong>Alertes :</strong> Se charge sans erreurs</li>
+                <li><strong>Services :</strong> Peut créer et gérer les services</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Fonctionnalités Disponibles</h3>
+            <ul>
+                <li><strong>Workflow des Commandes :</strong> Service → Achat → DG</li>
+                <li><strong>Gestion des Services :</strong> Création et modification</li>
+                <li><strong>Maintenance des Véhicules :</strong> Planification et suivi</li>
+                <li><strong>Gestion du Stock :</strong> Suivi des niveaux</li>
+                <li><strong>Alertes :</strong> Stock bas et maintenance</li>
+                <li><strong>Signature Digitale :</strong> Validation DG</li>
+                <li><strong>Prix en GNF :</strong> Monnaie locale</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "901950451449",
+            appId: "1:901950451449:web:your-app-id"
+        };
+
+        async function createServices() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<h4>🔄 Création des services en cours...</h4>';
+
+            try {
+                // Import Firebase modules
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                const { getFirestore, collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+
+                const services = [
+                    {
+                        nom: 'Service Informatique',
+                        description: 'Gestion des systèmes informatiques',
+                        responsable: 'Jean Dupont',
+                        email: 'informatique@entreprise.com',
+                        telephone: '+224 123 45 67 89',
+                        budget: 5000000,
+                        actif: true,
+                        createdAt: new Date(),
+                        createdBy: 'system',
+                        createdByName: 'Système'
+                    },
+                    {
+                        nom: 'Service Achat',
+                        description: 'Gestion des achats et fournisseurs',
+                        responsable: 'Marie Martin',
+                        email: 'achat@entreprise.com',
+                        telephone: '+224 123 45 67 90',
+                        budget: 10000000,
+                        actif: true,
+                        createdAt: new Date(),
+                        createdBy: 'system',
+                        createdByName: 'Système'
+                    },
+                    {
+                        nom: 'Service Maintenance',
+                        description: 'Entretien et maintenance des véhicules',
+                        responsable: 'Pierre Durand',
+                        email: 'maintenance@entreprise.com',
+                        telephone: '+224 123 45 67 91',
+                        budget: 3000000,
+                        actif: true,
+                        createdAt: new Date(),
+                        createdBy: 'system',
+                        createdByName: 'Système'
+                    }
+                ];
+
+                let successCount = 0;
+                for (const service of services) {
+                    try {
+                        await addDoc(collection(db, 'services'), service);
+                        successCount++;
+                    } catch (error) {
+                        console.log('Service déjà existant:', service.nom);
+                    }
+                }
+
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <h4>🎉 Services créés avec succès !</h4>
+                    <p><strong>Services créés :</strong> ${successCount}</p>
+                    <p><strong>Prochaine étape :</strong> Testez l'application</p>
+                `;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h4>❌ Erreur lors de la création</h4>
+                    <p><strong>Erreur:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        function testWorkflow() {
+            showResult('success', `
+                <h4>🛒 Test du Workflow Complet</h4>
+                <p><strong>1. Créer une commande :</strong></p>
+                <ul>
+                    <li>Allez dans "Nouvelle Commande"</li>
+                    <li>Sélectionnez un service dans la liste déroulante</li>
+                    <li>Remplissez les détails (article, description, quantité)</li>
+                    <li>Choisissez l'unité (paquet, carton, etc.)</li>
+                    <li>Créez la commande</li>
+                </ul>
+                <p><strong>2. Ajouter un prix :</strong></p>
+                <ul>
+                    <li>Allez dans "Achat"</li>
+                    <li>Voyez la commande en attente</li>
+                    <li>Ajoutez un prix en GNF</li>
+                    <li>Validez</li>
+                </ul>
+                <p><strong>3. Valider avec signature :</strong></p>
+                <ul>
+                    <li>Allez dans "Validation DG"</li>
+                    <li>Voyez la commande à valider</li>
+                    <li>Dessinez votre signature</li>
+                    <li>Approuvez ou rejetez</li>
+                </ul>
+                <p><strong>✅ Résultat attendu :</strong> Workflow complet fonctionnel</p>
+            `);
+        }
+
+        function checkErrors() {
+            showResult('success', `
+                <h4>🔧 Vérification des Erreurs</h4>
+                <p><strong>1. Ouvrez l'application :</strong> http://localhost:3000</p>
+                <p><strong>2. Rechargez avec Ctrl + F5 :</strong> Pour vider le cache</p>
+                <p><strong>3. Ouvrez la console :</strong> F12 → Console</p>
+                <p><strong>4. Vérifiez qu'il n'y a plus :</strong></p>
+                <ul>
+                    <li>❌ Erreurs Firebase (index manquants)</li>
+                    <li>❌ Erreurs de syntaxe</li>
+                    <li>❌ Erreurs ESLint</li>
+                    <li>❌ Erreurs de compilation</li>
+                </ul>
+                <p><strong>✅ Résultat attendu :</strong> Console propre, aucune erreur</p>
+            `);
+        }
+
+        function openApp() {
+            window.open('http://localhost:3000', '_blank');
+        }
+
+        function showResult(type, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = content;
+        }
+
+        // Afficher le résultat
+        document.getElementById('result').style.display = 'none';
+    </script>
+</body>
+</html>

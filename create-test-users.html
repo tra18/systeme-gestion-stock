@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer des Utilisateurs de Test</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        .user-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9fafb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👥 Créer des Utilisateurs de Test</h1>
+        <p>Ce script crée des utilisateurs avec différents rôles pour tester le workflow complet.</p>
+        
+        <div id="status"></div>
+        
+        <div>
+            <button class="btn" onclick="createTestUsers()">Créer des Utilisateurs de Test</button>
+            <button class="btn btn-success" onclick="createCompleteTestData()">Créer Toutes les Données de Test</button>
+        </div>
+        
+        <div id="results"></div>
+        
+        <div id="users-list"></div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "901950451449",
+            appId: "1:901950451449:web:your-app-id"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addResult(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `<div class="status info">${message}</div>`;
+        }
+
+        function displayUsers(users) {
+            const usersListDiv = document.getElementById('users-list');
+            usersListDiv.innerHTML = '<h3>👥 Utilisateurs Créés</h3>';
+            
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                userCard.innerHTML = `
+                    <h4>${user.nom} ${user.prenom}</h4>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <p><strong>Rôle:</strong> ${user.role}</p>
+                    <p><strong>Service:</strong> ${user.service || 'N/A'}</p>
+                    <p><strong>Mot de passe:</strong> ${user.password}</p>
+                `;
+                usersListDiv.appendChild(userCard);
+            });
+        }
+
+        async function createTestUsers() {
+            showStatus('Création des utilisateurs de test...', 'info');
+            
+            try {
+                const users = [
+                    {
+                        email: 'service1@test.com',
+                        password: 'service123',
+                        nom: 'Diallo',
+                        prenom: 'Aminata',
+                        role: 'service',
+                        service: 'Informatique',
+                        telephone: '+224 123 456 789'
+                    },
+                    {
+                        email: 'achat1@test.com',
+                        password: 'achat123',
+                        nom: 'Camara',
+                        prenom: 'Moussa',
+                        role: 'achat',
+                        service: 'Achats',
+                        telephone: '+224 123 456 790'
+                    },
+                    {
+                        email: 'dg1@test.com',
+                        password: 'dg123',
+                        nom: 'Traoré',
+                        prenom: 'Fatoumata',
+                        role: 'dg',
+                        service: 'Direction',
+                        telephone: '+224 123 456 791'
+                    }
+                ];
+
+                const createdUsers = [];
+
+                for (const userData of users) {
+                    try {
+                        // Créer l'utilisateur dans Firebase Auth
+                        const userCredential = await auth.createUserWithEmailAndPassword(userData.email, userData.password);
+                        const user = userCredential.user;
+                        
+                        // Créer le profil dans Firestore
+                        await db.collection('users').doc(user.uid).set({
+                            email: userData.email,
+                            nom: userData.nom,
+                            prenom: userData.prenom,
+                            role: userData.role,
+                            service: userData.service,
+                            telephone: userData.telephone,
+                            createdAt: new Date(),
+                            isActive: true
+                        });
+                        
+                        createdUsers.push({
+                            ...userData,
+                            uid: user.uid
+                        });
+                        
+                        addResult(`✅ Utilisateur créé: ${userData.nom} ${userData.prenom} (${userData.role})`);
+                        
+                    } catch (error) {
+                        if (error.code === 'auth/email-already-in-use') {
+                            addResult(`⚠️ Utilisateur existe déjà: ${userData.email}`);
+                        } else {
+                            addResult(`❌ Erreur pour ${userData.email}: ${error.message}`);
+                        }
+                    }
+                }
+
+                displayUsers(createdUsers);
+                showStatus('✅ Utilisateurs de test créés !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+
+        async function createCompleteTestData() {
+            showStatus('Création de toutes les données de test...', 'info');
+            
+            try {
+                // Créer les utilisateurs
+                await createTestUsers();
+                
+                // Créer des commandes
+                const commandes = [
+                    {
+                        article: "Ordinateur portable Dell",
+                        description: "Laptop pour le service informatique",
+                        service: "Informatique",
+                        quantite: 2,
+                        prix: 11400000, // 1200 EUR * 9500
+                        statut: "en_attente_approbation",
+                        devise: "GNF",
+                        createdAt: new Date(),
+                        createdBy: "service-user-1",
+                        dateAjoutPrix: new Date(),
+                        prixAjoutePar: "achat-user-1"
+                    },
+                    {
+                        article: "Imprimante HP LaserJet",
+                        description: "Imprimante laser pour le bureau",
+                        service: "Administration",
+                        quantite: 1,
+                        prix: 4275000, // 450 EUR * 9500
+                        statut: "approuve",
+                        devise: "GNF",
+                        createdAt: new Date(),
+                        createdBy: "service-user-2",
+                        dateAjoutPrix: new Date(),
+                        prixAjoutePar: "achat-user-1",
+                        dateApprobation: new Date(),
+                        approuvePar: "dg-user-1",
+                        signatureDG: "Traoré Fatoumata - DG",
+                        commentaireDG: "Approuvé pour améliorer l'efficacité"
+                    }
+                ];
+
+                for (const commande of commandes) {
+                    await db.collection('commandes').add(commande);
+                    addResult(`✅ Commande créée: ${commande.article} - ${commande.prix.toLocaleString()} GNF`);
+                }
+
+                // Créer des véhicules
+                const vehicules = [
+                    {
+                        marque: "Toyota",
+                        modele: "Corolla",
+                        immatriculation: "AB-123-CD",
+                        annee: "2020",
+                        kilometrage: "45000",
+                        type: "voiture",
+                        statut: "actif",
+                        createdAt: new Date()
+                    },
+                    {
+                        marque: "Ford",
+                        modele: "Transit",
+                        immatriculation: "EF-456-GH",
+                        annee: "2019",
+                        kilometrage: "78000",
+                        type: "camion",
+                        statut: "actif",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const vehicule of vehicules) {
+                    await db.collection('vehicules').add(vehicule);
+                    addResult(`✅ Véhicule créé: ${vehicule.marque} ${vehicule.modele}`);
+                }
+
+                // Créer des prestataires
+                const prestataires = [
+                    {
+                        nom: "Garage Auto Plus",
+                        adresse: "123 Rue de la République, Conakry",
+                        telephone: "224 123 456 789",
+                        email: "contact@garageautoplus.gn",
+                        specialite: "Entretien général",
+                        statut: "actif",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const prestataire of prestataires) {
+                    await db.collection('prestataires').add(prestataire);
+                    addResult(`✅ Prestataire créé: ${prestataire.nom}`);
+                }
+
+                // Créer des articles de stock
+                const articles = [
+                    {
+                        nom: "Ordinateur portable Dell",
+                        reference: "DELL-LAT-001",
+                        description: "Laptop Dell Latitude pour le bureau",
+                        categorie: "Informatique",
+                        quantite: 15,
+                        seuilMinimum: 5,
+                        prixUnitaire: 11400000, // 1200 EUR * 9500
+                        fournisseur: "Dell Guinée",
+                        emplacement: "Entrepôt A - Étage 1",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Cartouches d'encre HP",
+                        reference: "CAR-HP-006",
+                        description: "Cartouches d'encre HP 305 - Noir",
+                        categorie: "Informatique",
+                        quantite: 2, // Stock faible
+                        seuilMinimum: 5,
+                        prixUnitaire: 332500, // 35 EUR * 9500
+                        fournisseur: "HP Guinée",
+                        emplacement: "Entrepôt A - Étage 2",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const article of articles) {
+                    await db.collection('stock').add(article);
+                    addResult(`✅ Article créé: ${article.nom} (Stock: ${article.quantite})`);
+                }
+
+                showStatus('🎉 Toutes les données de test ont été créées !', 'success');
+                addResult('🔄 Rechargez votre application pour voir les données.');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

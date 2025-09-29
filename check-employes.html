@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérifier les Employés</title>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "901950451449",
+            appId: "1:901950451449:web:stock-bcbd3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        async function checkEmployes() {
+            try {
+                console.log('Connexion en tant que DG...');
+                
+                // Se connecter avec un compte DG
+                const userCredential = await signInWithEmailAndPassword(auth, 'dg@test.com', 'password123');
+                console.log('Utilisateur connecté:', userCredential.user.email);
+                console.log('UID utilisateur:', userCredential.user.uid);
+                
+                // Vérifier les employés
+                console.log('Vérification des employés...');
+                const employesQuery = collection(db, 'employes');
+                const snapshot = await getDocs(employesQuery);
+                
+                console.log('Nombre total d\'employés:', snapshot.docs.length);
+                
+                if (snapshot.docs.length === 0) {
+                    console.warn('❌ Aucun employé trouvé dans la collection "employes"');
+                    document.getElementById('result').innerHTML += '<p style="color: red;">❌ Aucun employé trouvé dans la collection "employes"</p>';
+                } else {
+                    console.log('✅ Employés trouvés:');
+                    document.getElementById('result').innerHTML += '<p style="color: green;">✅ ' + snapshot.docs.length + ' employé(s) trouvé(s)</p>';
+                    
+                    snapshot.docs.forEach((doc, index) => {
+                        const data = doc.data();
+                        console.log(`Employé ${index + 1}:`, {
+                            id: doc.id,
+                            nom: data.nom,
+                            prenom: data.prenom,
+                            service: data.service,
+                            poste: data.poste
+                        });
+                        
+                        document.getElementById('result').innerHTML += 
+                            '<div style="border: 1px solid #ccc; margin: 10px 0; padding: 10px; border-radius: 5px;">' +
+                            '<strong>' + data.nom + ' ' + data.prenom + '</strong><br>' +
+                            'Service: ' + (data.service || 'Non défini') + '<br>' +
+                            'Poste: ' + (data.poste || 'Non défini') + '<br>' +
+                            'Email: ' + (data.email || 'Non défini') +
+                            '</div>';
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors de la vérification:', error);
+                document.getElementById('result').innerHTML += '<p style="color: red;">❌ Erreur: ' + error.message + '</p>';
+            }
+        }
+
+        // Exposer la fonction globalement
+        window.checkEmployes = checkEmployes;
+    </script>
+</head>
+<body>
+    <h1>Vérifier les Employés</h1>
+    <p>Ce script vérifie si des employés existent dans la base de données.</p>
+    <button onclick="checkEmployes()" style="padding: 10px 20px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Vérifier les Employés
+    </button>
+    <div id="result" style="margin-top: 20px;"></div>
+    
+    <script>
+        // Afficher les résultats
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            document.getElementById('result').innerHTML += '<p style="color: green;">LOG: ' + args.join(' ') + '</p>';
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            document.getElementById('result').innerHTML += '<p style="color: orange;">WARN: ' + args.join(' ') + '</p>';
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            document.getElementById('result').innerHTML += '<p style="color: red;">ERROR: ' + args.join(' ') + '</p>';
+        };
+    </script>
+</body>
+</html>

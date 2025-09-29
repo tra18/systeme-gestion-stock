@@ -1,0 +1,215 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import LoginForm from './components/auth/LoginForm';
+import Layout from './components/layout/Layout';
+import Dashboard from './pages/Dashboard';
+import NouvelleCommande from './pages/NouvelleCommande';
+import ServiceAchat from './pages/ServiceAchat';
+import ValidationDG from './pages/ValidationDG';
+import Commandes from './pages/Commandes';
+import Maintenance from './pages/Maintenance';
+import Stock from './pages/Stock';
+import Articles from './pages/Articles';
+import Services from './pages/Services';
+import Fournisseurs from './pages/Fournisseurs';
+import Prestataires from './pages/Prestataires';
+import Employes from './pages/Employes';
+import Alertes from './pages/Alertes';
+import Parametres from './pages/Parametres';
+
+// Composant de protection des routes
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+  const { currentUser, userProfile, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(userProfile?.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+};
+
+// Composant principal de l'application
+const AppContent = () => {
+  const { currentUser } = useAuth();
+
+  return (
+    <Router future={{ v7_relativeSplatPath: true }}>
+      <div className="App">
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: '#22c55e',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 5000,
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+        
+        <Routes>
+          <Route 
+            path="/login" 
+            element={currentUser ? <Navigate to="/dashboard" replace /> : <LoginForm />} 
+          />
+          
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route 
+              path="nouvelle-commande" 
+              element={
+                <ProtectedRoute allowedRoles={['service', 'dg']}>
+                  <NouvelleCommande />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="service-achat" 
+              element={
+                <ProtectedRoute allowedRoles={['achat', 'dg']}>
+                  <ServiceAchat />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="validation-dg" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <ValidationDG />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="commandes" 
+              element={
+                <ProtectedRoute allowedRoles={['service', 'achat', 'dg']}>
+                  <Commandes />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="maintenance" 
+              element={
+                <ProtectedRoute allowedRoles={['service', 'achat', 'dg']}>
+                  <Maintenance />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="stock" 
+              element={
+                <ProtectedRoute allowedRoles={['service', 'achat', 'dg']}>
+                  <Stock />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="articles" 
+              element={
+                <ProtectedRoute allowedRoles={['service', 'achat', 'dg']}>
+                  <Articles />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="services" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <Services />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="fournisseurs" 
+              element={
+                <ProtectedRoute allowedRoles={['achat', 'dg']}>
+                  <Fournisseurs />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="prestataires" 
+              element={
+                <ProtectedRoute allowedRoles={['achat', 'dg']}>
+                  <Prestataires />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="employes" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <Employes />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="alertes" 
+              element={
+                <ProtectedRoute allowedRoles={['service', 'achat', 'dg']}>
+                  <Alertes />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="parametres" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <Parametres />
+                </ProtectedRoute>
+              } 
+            />
+          </Route>
+          
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+};
+
+// Composant racine avec le provider d'authentification
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+};
+
+export default App;

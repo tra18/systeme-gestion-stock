@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer Articles Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Créer Articles Test</h1>
+        
+        <div class="info-box">
+            <h3>✅ Créer des Commandes avec Articles Validés</h3>
+            <ul>
+                <li><strong>Ramettes de papier A4</strong> - Article de bureau</li>
+                <li><strong>Stylos bleus</strong> - Fournitures de bureau</li>
+                <li><strong>Cahiers 200 pages</strong> - Matériel scolaire</li>
+                <li><strong>Agendas 2024</strong> - Organisation</li>
+                <li><strong>Claviers USB</strong> - Matériel informatique</li>
+            </ul>
+        </div>
+
+        <div class="code-block">
+// Script à exécuter dans la console de l'application
+// 1. Ouvrir l'application : https://stock-bcbd3.web.app
+// 2. Se connecter avec un utilisateur "service"
+// 3. Ouvrir la console (F12)
+// 4. Coller et exécuter ce script :
+
+const { db } = await import('./src/firebase/config.js');
+const { collection, addDoc } = await import('firebase/firestore');
+
+// Créer des commandes avec différents articles
+const articles = [
+    {
+        article: 'Ramettes de papier A4',
+        description: 'Papier blanc 80g/m², format A4, 500 feuilles par ramette',
+        quantite: 10,
+        unite: 'paquet',
+        service: 'Administration',
+        urgence: 'normale',
+        statut: 'valide',
+        prix: 25000,
+        fournisseur: 'Papeterie Centrale',
+        createdBy: 'system',
+        createdByName: 'Système',
+        createdAt: new Date(),
+        validatedAt: new Date(),
+        validatedBy: 'system',
+        validatedByName: 'Directeur Général'
+    },
+    {
+        article: 'Stylos bleus',
+        description: 'Stylos à bille bleue, pointe fine 0.7mm, lot de 12',
+        quantite: 5,
+        unite: 'lot',
+        service: 'Administration',
+        urgence: 'normale',
+        statut: 'valide',
+        prix: 15000,
+        fournisseur: 'Fournitures Bureau',
+        createdBy: 'system',
+        createdByName: 'Système',
+        createdAt: new Date(),
+        validatedAt: new Date(),
+        validatedBy: 'system',
+        validatedByName: 'Directeur Général'
+    },
+    {
+        article: 'Cahiers 200 pages',
+        description: 'Cahiers à spirale, 200 pages, format A4, lignés',
+        quantite: 20,
+        unite: 'unité',
+        service: 'Formation',
+        urgence: 'normale',
+        statut: 'valide',
+        prix: 8000,
+        fournisseur: 'Matériel Scolaire',
+        createdBy: 'system',
+        createdByName: 'Système',
+        createdAt: new Date(),
+        validatedAt: new Date(),
+        validatedBy: 'system',
+        validatedByName: 'Directeur Général'
+    },
+    {
+        article: 'Agendas 2024',
+        description: 'Agendas de bureau 2024, format A5, couverture rigide',
+        quantite: 15,
+        unite: 'unité',
+        service: 'Direction',
+        urgence: 'normale',
+        statut: 'valide',
+        prix: 12000,
+        fournisseur: 'Papeterie Centrale',
+        createdBy: 'system',
+        createdByName: 'Système',
+        createdAt: new Date(),
+        validatedAt: new Date(),
+        validatedBy: 'system',
+        validatedByName: 'Directeur Général'
+    },
+    {
+        article: 'Claviers USB',
+        description: 'Claviers informatiques USB, français, noir',
+        quantite: 8,
+        unite: 'unité',
+        service: 'Informatique',
+        urgence: 'normale',
+        statut: 'valide',
+        prix: 35000,
+        fournisseur: 'Informatique Pro',
+        createdBy: 'system',
+        createdByName: 'Système',
+        createdAt: new Date(),
+        validatedAt: new Date(),
+        validatedBy: 'system',
+        validatedByName: 'Directeur Général'
+    }
+];
+
+// Créer les commandes
+for (const commande of articles) {
+    try {
+        await addDoc(collection(db, 'commandes'), commande);
+        console.log(`✅ Commande créée : ${commande.article}`);
+    } catch (error) {
+        console.error(`❌ Erreur pour ${commande.article}:`, error);
+    }
+}
+
+console.log('🎉 Toutes les commandes ont été créées !');
+console.log('📋 Les articles sont maintenant disponibles dans la liste déroulante');
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn btn-success" onclick="showInstructions()" style="font-size: 1.2rem; padding: 15px 30px;">
+                📋 Voir les Instructions
+            </button>
+            <a href="https://stock-bcbd3.web.app" class="btn btn-warning" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function showInstructions() {
+            showResult('success', `
+                <h4>📋 Instructions pour Créer les Articles Test</h4>
+                <p><strong>1. Ouvrir l'application :</strong> https://stock-bcbd3.web.app</p>
+                <p><strong>2. Se connecter</strong> avec un utilisateur "service"</p>
+                <p><strong>3. Ouvrir la console</strong> (F12 → Console)</p>
+                <p><strong>4. Coller le script</strong> du code-block ci-dessus</p>
+                <p><strong>5. Exécuter le script</strong> (Entrée)</p>
+                <p><strong>6. Vérifier les messages</strong> de confirmation</p>
+                <p><strong>7. Aller sur "Nouvelle Commande"</strong></p>
+                <p><strong>8. Vérifier la liste déroulante</strong> des articles</p>
+                <p><strong>✅ Les articles devraient maintenant s'afficher !</strong></p>
+            `);
+        }
+
+        function showResult(type, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = content;
+        }
+
+        // Afficher les instructions par défaut
+        showInstructions();
+    </script>
+</body>
+</html>

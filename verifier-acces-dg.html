@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérifier Accès DG</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-test { background: #9f7aea; }
+        .btn-test:hover { background: #805ad5; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .access-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .access-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .access-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .access-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .access-item.accessible {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        .access-item.restricted {
+            border-left-color: #ed8936;
+            background: #fff5f0;
+        }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👑 Vérifier Accès DG</h1>
+        
+        <div class="info-box">
+            <h3>✅ Accès DG Configuré</h3>
+            <ul>
+                <li><strong>DG a maintenant accès à TOUTES les pages</strong></li>
+                <li><strong>Rôles mis à jour :</strong> DG inclus dans toutes les routes</li>
+                <li><strong>Navigation :</strong> Toutes les pages visibles pour le DG</li>
+                <li><strong>Fonctionnalités :</strong> Accès complet à toutes les fonctionnalités</li>
+            </ul>
+        </div>
+
+        <div class="access-list">
+            <div class="access-item accessible">
+                <h4>📊 Tableau de bord</h4>
+                <p><strong>Accès :</strong> ✅ DG</p>
+                <p><strong>Fonctionnalité :</strong> Vue d'ensemble complète</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>➕ Nouvelle Commande</h4>
+                <p><strong>Accès :</strong> ✅ Service, DG</p>
+                <p><strong>Fonctionnalité :</strong> Créer des commandes</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>💰 Achat</h4>
+                <p><strong>Accès :</strong> ✅ Achat, DG</p>
+                <p><strong>Fonctionnalité :</strong> Ajouter des prix</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>✍️ Validation DG</h4>
+                <p><strong>Accès :</strong> ✅ DG uniquement</p>
+                <p><strong>Fonctionnalité :</strong> Valider avec signature</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>🛒 Commandes</h4>
+                <p><strong>Accès :</strong> ✅ Service, Achat, DG</p>
+                <p><strong>Fonctionnalité :</strong> Voir toutes les commandes</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>🚗 Maintenance</h4>
+                <p><strong>Accès :</strong> ✅ Service, Achat, DG</p>
+                <p><strong>Fonctionnalité :</strong> Gérer la maintenance</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>📦 Stock</h4>
+                <p><strong>Accès :</strong> ✅ Service, Achat, DG</p>
+                <p><strong>Fonctionnalité :</strong> Gérer le stock</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>🏢 Services</h4>
+                <p><strong>Accès :</strong> ✅ DG uniquement</p>
+                <p><strong>Fonctionnalité :</strong> Gérer les services</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>👥 Employés</h4>
+                <p><strong>Accès :</strong> ✅ DG uniquement</p>
+                <p><strong>Fonctionnalité :</strong> Gérer les employés</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>🏭 Fournisseurs</h4>
+                <p><strong>Accès :</strong> ✅ Achat, DG</p>
+                <p><strong>Fonctionnalité :</strong> Gérer les fournisseurs</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>🔧 Prestataires</h4>
+                <p><strong>Accès :</strong> ✅ Achat, DG</p>
+                <p><strong>Fonctionnalité :</strong> Gérer les prestataires</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>🔔 Alertes</h4>
+                <p><strong>Accès :</strong> ✅ Service, Achat, DG</p>
+                <p><strong>Fonctionnalité :</strong> Voir les alertes</p>
+            </div>
+
+            <div class="access-item accessible">
+                <h4>⚙️ Paramètres</h4>
+                <p><strong>Accès :</strong> ✅ DG uniquement</p>
+                <p><strong>Fonctionnalité :</strong> Configuration système</p>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>🎯 Test de l'Accès DG</h3>
+            <ol>
+                <li><strong>Connectez-vous avec un utilisateur DG</strong></li>
+                <li><strong>Vérifiez la navigation :</strong> Toutes les pages doivent être visibles</li>
+                <li><strong>Testez chaque page :</strong> Toutes doivent être accessibles</li>
+                <li><strong>Fonctionnalités :</strong> Toutes les actions doivent être disponibles</li>
+            </ol>
+            <button class="btn btn-test" onclick="testDGAccess()">Tester l'Accès DG</button>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="info-box">
+            <h3>💡 Fonctionnalités DG</h3>
+            <ul>
+                <li><strong>Accès complet :</strong> Toutes les pages et fonctionnalités</li>
+                <li><strong>Gestion administrative :</strong> Services, employés, paramètres</li>
+                <li><strong>Workflow complet :</strong> Créer, valider, gérer les commandes</li>
+                <li><strong>Maintenance :</strong> Gérer les véhicules et entretiens</li>
+                <li><strong>Stock :</strong> Suivre les niveaux et alertes</li>
+                <li><strong>Signature :</strong> Valider les commandes avec signature digitale</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function testDGAccess() {
+            showResult('success', `
+                <h4>👑 Test de l'Accès DG</h4>
+                <p><strong>1. Ouvrez l'application :</strong> http://localhost:3000</p>
+                <p><strong>2. Connectez-vous avec un utilisateur DG</strong></p>
+                <p><strong>3. Vérifiez la navigation :</strong> Toutes les pages doivent être visibles</p>
+                <p><strong>4. Testez chaque page :</strong></p>
+                <ul>
+                    <li>✅ <strong>Tableau de bord :</strong> Vue d'ensemble</li>
+                    <li>✅ <strong>Nouvelle Commande :</strong> Créer des commandes</li>
+                    <li>✅ <strong>Achat :</strong> Ajouter des prix</li>
+                    <li>✅ <strong>Validation DG :</strong> Valider avec signature</li>
+                    <li>✅ <strong>Commandes :</strong> Voir toutes les commandes</li>
+                    <li>✅ <strong>Maintenance :</strong> Gérer les véhicules</li>
+                    <li>✅ <strong>Stock :</strong> Suivre les niveaux</li>
+                    <li>✅ <strong>Services :</strong> Gérer les services</li>
+                    <li>✅ <strong>Employés :</strong> Gérer les employés</li>
+                    <li>✅ <strong>Fournisseurs :</strong> Gérer les fournisseurs</li>
+                    <li>✅ <strong>Prestataires :</strong> Gérer les prestataires</li>
+                    <li>✅ <strong>Alertes :</strong> Voir les alertes</li>
+                    <li>✅ <strong>Paramètres :</strong> Configuration</li>
+                </ul>
+                <p><strong>✅ Résultat attendu :</strong> Accès complet à toutes les fonctionnalités</p>
+            `);
+        }
+
+        function showResult(type, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = content;
+        }
+
+        // Afficher le résultat
+        document.getElementById('result').style.display = 'none';
+    </script>
+</body>
+</html>

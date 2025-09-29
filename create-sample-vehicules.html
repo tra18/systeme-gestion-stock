@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer des Véhicules d'Exemple</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 Créer des Véhicules d'Exemple</h1>
+        <p>Ce script va créer des véhicules et des prestataires d'exemple pour tester la gestion de maintenance.</p>
+        
+        <div id="status"></div>
+        
+        <div>
+            <button class="btn" onclick="createSampleVehicules()">Créer des Véhicules</button>
+            <button class="btn" onclick="createSamplePrestataires()">Créer des Prestataires</button>
+            <button class="btn btn-success" onclick="createSampleMaintenance()">Créer des Maintenances</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "901950451449",
+            appId: "1:901950451449:web:your-app-id"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addResult(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `<div class="status info">${message}</div>`;
+        }
+
+        async function createSampleVehicules() {
+            showStatus('Création des véhicules d\'exemple...', 'info');
+            
+            try {
+                const vehicules = [
+                    {
+                        marque: "Toyota",
+                        modele: "Corolla",
+                        immatriculation: "AB-123-CD",
+                        annee: "2020",
+                        kilometrage: "45000",
+                        type: "voiture",
+                        statut: "actif",
+                        createdAt: new Date()
+                    },
+                    {
+                        marque: "Ford",
+                        modele: "Transit",
+                        immatriculation: "EF-456-GH",
+                        annee: "2019",
+                        kilometrage: "78000",
+                        type: "camion",
+                        statut: "actif",
+                        createdAt: new Date()
+                    },
+                    {
+                        marque: "Peugeot",
+                        modele: "308",
+                        immatriculation: "IJ-789-KL",
+                        annee: "2021",
+                        kilometrage: "32000",
+                        type: "voiture",
+                        statut: "actif",
+                        createdAt: new Date()
+                    },
+                    {
+                        marque: "Renault",
+                        modele: "Master",
+                        immatriculation: "MN-012-OP",
+                        annee: "2018",
+                        kilometrage: "95000",
+                        type: "camion",
+                        statut: "maintenance",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const vehicule of vehicules) {
+                    await db.collection('vehicules').add(vehicule);
+                    addResult(`✅ Véhicule créé: ${vehicule.marque} ${vehicule.modele} (${vehicule.immatriculation})`);
+                }
+
+                showStatus('✅ Tous les véhicules ont été créés avec succès !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+
+        async function createSamplePrestataires() {
+            showStatus('Création des prestataires d\'exemple...', 'info');
+            
+            try {
+                const prestataires = [
+                    {
+                        nom: "Garage Auto Plus",
+                        adresse: "123 Rue de la République, Paris",
+                        telephone: "01 23 45 67 89",
+                        email: "contact@garageautoplus.fr",
+                        specialite: "Entretien général",
+                        statut: "actif",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Mécanique Express",
+                        adresse: "456 Avenue des Champs, Lyon",
+                        telephone: "04 56 78 90 12",
+                        email: "info@mecanique-express.fr",
+                        specialite: "Réparation rapide",
+                        statut: "actif",
+                        createdAt: new Date()
+                    },
+                    {
+                        nom: "Service Poids Lourds",
+                        adresse: "789 Route Nationale, Marseille",
+                        telephone: "04 12 34 56 78",
+                        email: "contact@service-poids-lourds.fr",
+                        specialite: "Véhicules utilitaires",
+                        statut: "actif",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const prestataire of prestataires) {
+                    await db.collection('prestataires').add(prestataire);
+                    addResult(`✅ Prestataire créé: ${prestataire.nom}`);
+                }
+
+                showStatus('✅ Tous les prestataires ont été créés avec succès !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+
+        async function createSampleMaintenance() {
+            showStatus('Création des maintenances d\'exemple...', 'info');
+            
+            try {
+                // Récupérer les véhicules et prestataires
+                const vehiculesSnapshot = await db.collection('vehicules').get();
+                const prestatairesSnapshot = await db.collection('prestataires').get();
+                
+                const vehicules = vehiculesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const prestataires = prestatairesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                if (vehicules.length === 0 || prestataires.length === 0) {
+                    showStatus('❌ Veuillez d\'abord créer des véhicules et des prestataires', 'error');
+                    return;
+                }
+
+                const maintenances = [
+                    {
+                        vehiculeId: vehicules[0].id,
+                        type: "Vidange",
+                        dateEntretien: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Dans 7 jours
+                        prestataireId: prestataires[0].id,
+                        cout: 120.00,
+                        description: "Vidange d'huile et changement de filtre",
+                        statut: "planifie",
+                        createdAt: new Date()
+                    },
+                    {
+                        vehiculeId: vehicules[1].id,
+                        type: "Contrôle technique",
+                        dateEntretien: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Dans 30 jours
+                        prestataireId: prestataires[1].id,
+                        cout: 80.00,
+                        description: "Contrôle technique obligatoire",
+                        statut: "planifie",
+                        createdAt: new Date()
+                    },
+                    {
+                        vehiculeId: vehicules[2].id,
+                        type: "Réparation freins",
+                        dateEntretien: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // Il y a 2 jours (en retard)
+                        prestataireId: prestataires[0].id,
+                        cout: 350.00,
+                        description: "Changement des plaquettes et disques de frein",
+                        statut: "en_cours",
+                        createdAt: new Date()
+                    }
+                ];
+
+                for (const maintenance of maintenances) {
+                    await db.collection('maintenance').add(maintenance);
+                    const vehicule = vehicules.find(v => v.id === maintenance.vehiculeId);
+                    addResult(`✅ Maintenance créée: ${maintenance.type} pour ${vehicule.marque} ${vehicule.modele}`);
+                }
+
+                showStatus('✅ Toutes les maintenances ont été créées avec succès !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

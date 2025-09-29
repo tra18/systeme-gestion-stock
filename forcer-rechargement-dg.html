@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forcer Rechargement - Accès DG</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .btn-danger { background: #e53e3e; }
+        .btn-danger:hover { background: #c53030; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .step-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .step-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .step-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .step-item.warning {
+            border-left-color: #ed8936;
+            background: #fff5f0;
+        }
+        .step-item.success {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Forcer Rechargement - Accès DG</h1>
+        
+        <div class="info-box">
+            <h3>⚠️ Problème Identifié</h3>
+            <ul>
+                <li><strong>Problème :</strong> Le DG ne voit pas la page "Achat"</li>
+                <li><strong>Cause :</strong> Cache du navigateur ou application non rechargée</li>
+                <li><strong>Solution :</strong> Forcer le rechargement complet</li>
+            </ul>
+        </div>
+
+        <div class="steps">
+            <div class="step-item warning">
+                <h4>🔄 Étape 1: Forcer le Rechargement</h4>
+                <p><strong>Méthode 1 :</strong> Ctrl + F5 (Windows) ou Cmd + Shift + R (Mac)</p>
+                <p><strong>Méthode 2 :</strong> F12 → Network → Cocher "Disable cache"</p>
+                <p><strong>Méthode 3 :</strong> Mode incognito</p>
+                <button class="btn btn-warning" onclick="forceReload()">Forcer le Rechargement</button>
+            </div>
+
+            <div class="step-item warning">
+                <h4>🗑️ Étape 2: Vider le Cache</h4>
+                <p><strong>Chrome/Edge :</strong> F12 → Application → Storage → Clear storage</p>
+                <p><strong>Firefox :</strong> F12 → Storage → Clear All</p>
+                <p><strong>Safari :</strong> Develop → Empty Caches</p>
+                <button class="btn btn-warning" onclick="clearCache()">Vider le Cache</button>
+            </div>
+
+            <div class="step-item warning">
+                <h4>🔄 Étape 3: Redémarrer l'Application</h4>
+                <p><strong>Terminal :</strong> Ctrl + C puis npm start</p>
+                <p><strong>Ou :</strong> Fermer et rouvrir le terminal</p>
+                <button class="btn btn-danger" onclick="restartApp()">Redémarrer l'App</button>
+            </div>
+
+            <div class="step-item success">
+                <h4>✅ Étape 4: Vérifier l'Accès</h4>
+                <p><strong>Connectez-vous avec un utilisateur DG</strong></p>
+                <p><strong>Vérifiez que "Achat" est visible dans la navigation</strong></p>
+                <button class="btn btn-success" onclick="checkAccess()">Vérifier l'Accès</button>
+            </div>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="status-card">
+            <h3>🎯 Pages que le DG doit voir</h3>
+            <ol>
+                <li><strong>Tableau de bord</strong> ✅</li>
+                <li><strong>Nouvelle Commande</strong> ✅</li>
+                <li><strong>Achat</strong> ⚠️ (Problème ici)</li>
+                <li><strong>Validation DG</strong> ✅</li>
+                <li><strong>Commandes</strong> ✅</li>
+                <li><strong>Maintenance</strong> ✅</li>
+                <li><strong>Stock</strong> ✅</li>
+                <li><strong>Services</strong> ✅</li>
+                <li><strong>Employés</strong> ✅</li>
+                <li><strong>Fournisseurs</strong> ✅</li>
+                <li><strong>Prestataires</strong> ✅</li>
+                <li><strong>Alertes</strong> ✅</li>
+                <li><strong>Paramètres</strong> ✅</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Solutions si le Problème Persiste</h3>
+            <ul>
+                <li><strong>Vérifiez le rôle :</strong> Assurez-vous que l'utilisateur a bien le rôle "dg"</li>
+                <li><strong>Reconnectez-vous :</strong> Déconnectez-vous et reconnectez-vous</li>
+                <li><strong>Vérifiez la console :</strong> F12 → Console pour voir les erreurs</li>
+                <li><strong>Mode incognito :</strong> Testez dans une fenêtre privée</li>
+                <li><strong>Redémarrez le navigateur :</strong> Fermez et rouvrez complètement</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function forceReload() {
+            showResult('success', `
+                <h4>🔄 Forcer le Rechargement</h4>
+                <p><strong>1. Ouvrez l'application :</strong> http://localhost:3000</p>
+                <p><strong>2. Rechargez avec :</strong></p>
+                <ul>
+                    <li><strong>Windows/Linux :</strong> Ctrl + F5</li>
+                    <li><strong>Mac :</strong> Cmd + Shift + R</li>
+                    <li><strong>Alternative :</strong> F12 → Network → Disable cache</li>
+                </ul>
+                <p><strong>3. Vérifiez que "Achat" est visible pour le DG</strong></p>
+                <p><strong>✅ Résultat attendu :</strong> Page "Achat" visible dans la navigation</p>
+            `);
+        }
+
+        function clearCache() {
+            showResult('success', `
+                <h4>🗑️ Vider le Cache</h4>
+                <p><strong>Chrome/Edge :</strong></p>
+                <ul>
+                    <li>F12 → Application → Storage</li>
+                    <li>Cliquez sur "Clear storage"</li>
+                    <li>Rechargez la page</li>
+                </ul>
+                <p><strong>Firefox :</strong></p>
+                <ul>
+                    <li>F12 → Storage</li>
+                    <li>Cliquez sur "Clear All"</li>
+                    <li>Rechargez la page</li>
+                </ul>
+                <p><strong>Safari :</strong></p>
+                <ul>
+                    <li>Develop → Empty Caches</li>
+                    <li>Rechargez la page</li>
+                </ul>
+                <p><strong>✅ Résultat attendu :</strong> Cache vidé, modifications visibles</p>
+            `);
+        }
+
+        function restartApp() {
+            showResult('success', `
+                <h4>🔄 Redémarrer l'Application</h4>
+                <p><strong>1. Dans le terminal :</strong></p>
+                <ul>
+                    <li>Appuyez sur <strong>Ctrl + C</strong> pour arrêter l'application</li>
+                    <li>Attendez que l'application s'arrête complètement</li>
+                    <li>Relancez avec <strong>npm start</strong></li>
+                </ul>
+                <p><strong>2. Vérifiez que l'application redémarre :</strong></p>
+                <ul>
+                    <li>Attendez le message "webpack compiled successfully"</li>
+                    <li>Ouvrez http://localhost:3000</li>
+                </ul>
+                <p><strong>✅ Résultat attendu :</strong> Application redémarrée avec toutes les modifications</p>
+            `);
+        }
+
+        function checkAccess() {
+            showResult('success', `
+                <h4>✅ Vérifier l'Accès DG</h4>
+                <p><strong>1. Ouvrez l'application :</strong> http://localhost:3000</p>
+                <p><strong>2. Connectez-vous avec un utilisateur DG</strong></p>
+                <p><strong>3. Vérifiez la navigation :</strong> Toutes ces pages doivent être visibles</p>
+                <ul>
+                    <li>✅ <strong>Tableau de bord</strong></li>
+                    <li>✅ <strong>Nouvelle Commande</strong></li>
+                    <li>⚠️ <strong>Achat</strong> (Doit être visible maintenant)</li>
+                    <li>✅ <strong>Validation DG</strong></li>
+                    <li>✅ <strong>Commandes</strong></li>
+                    <li>✅ <strong>Maintenance</strong></li>
+                    <li>✅ <strong>Stock</strong></li>
+                    <li>✅ <strong>Services</strong></li>
+                    <li>✅ <strong>Employés</strong></li>
+                    <li>✅ <strong>Fournisseurs</strong></li>
+                    <li>✅ <strong>Prestataires</strong></li>
+                    <li>✅ <strong>Alertes</strong></li>
+                    <li>✅ <strong>Paramètres</strong></li>
+                </ul>
+                <p><strong>✅ Résultat attendu :</strong> Toutes les pages visibles, y compris "Achat"</p>
+            `);
+        }
+
+        function showResult(type, content) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type} show`;
+            resultDiv.innerHTML = content;
+        }
+
+        // Afficher le résultat
+        document.getElementById('result').style.display = 'none';
+    </script>
+</body>
+</html>

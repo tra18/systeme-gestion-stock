@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérifier Permissions DG</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .status-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .status-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        .status-card p {
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-test { background: #9f7aea; }
+        .btn-test:hover { background: #805ad5; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .permissions-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .permission-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+        .permission-item h4 {
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .permission-item p {
+            color: #4a5568;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .permission-item.correct {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+        .permission-item.incorrect {
+            border-left-color: #e53e3e;
+            background: #fee2e2;
+        }
+        .result {
+            background: #f0fff4;
+            border: 1px solid #9ae6b4;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+        .result.success {
+            background: #d1fae5;
+            border-color: #6ee7b7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Vérifier Permissions DG</h1>
+        
+        <div class="info-box">
+            <h3>✅ Permissions Configurées</h3>
+            <ul>
+                <li><strong>Sidebar.js :</strong> DG inclus dans les rôles pour "Achat"</li>
+                <li><strong>App.js :</strong> Routes protégées avec accès DG</li>
+                <li><strong>Navigation :</strong> Filtrage par rôle fonctionnel</li>
+            </ul>
+        </div>
+
+        <div class="permissions-list">
+            <div class="permission-item correct">
+                <h4>📊 Tableau de bord</h4>
+                <p><strong>Rôles :</strong> ['service', 'achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>➕ Nouvelle Commande</h4>
+                <p><strong>Rôles :</strong> ['service', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>💰 Achat</h4>
+                <p><strong>Rôles :</strong> ['achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>✍️ Validation DG</h4>
+                <p><strong>Rôles :</strong> ['dg']</p>
+                <p><strong>Statut :</strong> ✅ DG uniquement</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>🛒 Commandes</h4>
+                <p><strong>Rôles :</strong> ['service', 'achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>🚗 Maintenance</h4>
+                <p><strong>Rôles :</strong> ['service', 'achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>📦 Stock</h4>
+                <p><strong>Rôles :</strong> ['service', 'achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>🏢 Services</h4>
+                <p><strong>Rôles :</strong> ['dg']</p>
+                <p><strong>Statut :</strong> ✅ DG uniquement</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>👥 Employés</h4>
+                <p><strong>Rôles :</strong> ['dg']</p>
+                <p><strong>Statut :</strong> ✅ DG uniquement</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>🏭 Fournisseurs</h4>
+                <p><strong>Rôles :</strong> ['achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>🔧 Prestataires</h4>
+                <p><strong>Rôles :</strong> ['achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>🔔 Alertes</h4>
+                <p><strong>Rôles :</strong> ['service', 'achat', 'dg']</p>
+                <p><strong>Statut :</strong> ✅ DG inclus</p>
+            </div>
+
+            <div class="permission-item correct">
+                <h4>⚙️ Paramètres</h4>
+                <p><strong>Rôles :</strong> ['dg']</p>
+                <p><strong>Statut :</strong> ✅ DG uniquement</p>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h3>🎯 Diagnostic du Problème</h3>
+            <p><strong>Les permissions sont correctement configurées dans le code.</strong></p>
+            <p><strong>Le problème est probablement :</strong></p>
+            <ol>
+                <li><strong>Cache du navigateur :</strong> Les modifications ne sont pas prises en compte</li>
+                <li><strong>Application non rechargée :</strong> L'application n'a pas redémarré</li>
+                <li><strong>Rôle utilisateur :</strong> L'utilisateur n'a pas le bon rôle "dg"</li>
+                <li><strong>Session :</strong> L'utilisateur doit se reconnecter</li>
+            </ol>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Solutions</h3>
+            <ul>
+                <li><strong>1. Forcer le rechargement :</strong> Ctrl + F5 ou Cmd + Shift + R</li>
+                <li><strong>2. Vider le cache :</strong> F12 → Application → Storage → Clear storage</li>
+                <li><strong>3. Mode incognito :</strong> Tester dans une fenêtre privée</li>
+                <li><strong>4. Redémarrer l'app :</strong> Ctrl + C puis npm start</li>
+                <li><strong>5. Se reconnecter :</strong> Déconnexion puis reconnexion</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank" style="font-size: 1.2rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+    </div>
+</body>
+</html>

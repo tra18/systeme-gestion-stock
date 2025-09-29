@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer des Commandes d'Exemple</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Créer des Commandes d'Exemple</h1>
+        <p>Ce script va créer des commandes d'exemple pour tester le workflow complet.</p>
+        
+        <div id="status"></div>
+        
+        <div>
+            <h3>Étapes du Workflow :</h3>
+            <ol>
+                <li><strong>Service</strong> : Crée une commande (statut: en_attente)</li>
+                <li><strong>Achat</strong> : Ajoute le prix (statut: en_attente_approbation)</li>
+                <li><strong>DG</strong> : Valide avec signature (statut: approuve)</li>
+            </ol>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="createSampleCommandes()">Créer des Commandes d'Exemple</button>
+            <button class="btn btn-success" onclick="createCompleteWorkflow()">Créer un Workflow Complet</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "901950451449",
+            appId: "1:901950451449:web:your-app-id"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addResult(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `<div class="status info">${message}</div>`;
+        }
+
+        async function createSampleCommandes() {
+            showStatus('Création des commandes d\'exemple...', 'info');
+            
+            try {
+                const commandes = [
+                    {
+                        article: "Ordinateur portable Dell",
+                        description: "Laptop pour le service informatique",
+                        service: "Informatique",
+                        quantite: 2,
+                        statut: "en_attente",
+                        createdAt: new Date(),
+                        createdBy: "service-user-1"
+                    },
+                    {
+                        article: "Imprimante HP LaserJet",
+                        description: "Imprimante laser pour le bureau",
+                        service: "Administration",
+                        quantite: 1,
+                        statut: "en_attente",
+                        createdAt: new Date(),
+                        createdBy: "service-user-2"
+                    },
+                    {
+                        article: "Câbles réseau CAT6",
+                        description: "Câbles pour l'infrastructure réseau",
+                        service: "Informatique",
+                        quantite: 50,
+                        statut: "en_attente",
+                        createdAt: new Date(),
+                        createdBy: "service-user-1"
+                    },
+                    {
+                        article: "Mobilier de bureau",
+                        description: "Bureau et chaise ergonomique",
+                        service: "RH",
+                        quantite: 1,
+                        statut: "en_attente",
+                        createdAt: new Date(),
+                        createdBy: "service-user-3"
+                    }
+                ];
+
+                for (const commande of commandes) {
+                    await db.collection('commandes').add(commande);
+                    addResult(`✅ Commande créée: ${commande.article} (${commande.service})`);
+                }
+
+                showStatus('✅ Toutes les commandes d\'exemple ont été créées avec succès !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+
+        async function createCompleteWorkflow() {
+            showStatus('Création d\'un workflow complet...', 'info');
+            
+            try {
+                // Étape 1: Commande en attente de prix
+                const commande1 = await db.collection('commandes').add({
+                    article: "Serveur Dell PowerEdge",
+                    description: "Serveur pour l'infrastructure",
+                    service: "Informatique",
+                    quantite: 1,
+                    statut: "en_attente",
+                    createdAt: new Date(),
+                    createdBy: "service-user-1"
+                });
+                addResult(`✅ Étape 1: Commande créée - ${commande1.id}`);
+
+                // Étape 2: Commande avec prix ajouté
+                const commande2 = await db.collection('commandes').add({
+                    article: "Licences Microsoft Office",
+                    description: "Licences pour 50 utilisateurs",
+                    service: "Informatique",
+                    quantite: 50,
+                    prix: 2500.00,
+                    statut: "en_attente_approbation",
+                    createdAt: new Date(),
+                    createdBy: "service-user-1",
+                    dateAjoutPrix: new Date(),
+                    prixAjoutePar: "achat-user-1"
+                });
+                addResult(`✅ Étape 2: Prix ajouté - ${commande2.id}`);
+
+                // Étape 3: Commande approuvée
+                const commande3 = await db.collection('commandes').add({
+                    article: "Formation sécurité informatique",
+                    description: "Formation pour l'équipe IT",
+                    service: "Formation",
+                    quantite: 1,
+                    prix: 1500.00,
+                    statut: "approuve",
+                    createdAt: new Date(),
+                    createdBy: "service-user-2",
+                    dateAjoutPrix: new Date(),
+                    prixAjoutePar: "achat-user-1",
+                    dateApprobation: new Date(),
+                    approuvePar: "dg-user-1",
+                    signatureDG: "Jean Dupont - DG",
+                    commentaireDG: "Formation essentielle pour la sécurité"
+                });
+                addResult(`✅ Étape 3: Commande approuvée - ${commande3.id}`);
+
+                // Étape 4: Commande rejetée
+                const commande4 = await db.collection('commandes').add({
+                    article: "Équipement de luxe",
+                    description: "Équipement non essentiel",
+                    service: "Administration",
+                    quantite: 1,
+                    prix: 5000.00,
+                    statut: "rejete",
+                    createdAt: new Date(),
+                    createdBy: "service-user-3",
+                    dateAjoutPrix: new Date(),
+                    prixAjoutePar: "achat-user-1",
+                    dateRejet: new Date(),
+                    rejetePar: "dg-user-1",
+                    commentaireRejet: "Budget insuffisant pour cet achat"
+                });
+                addResult(`✅ Étape 4: Commande rejetée - ${commande4.id}`);
+
+                showStatus('🎉 Workflow complet créé ! Vous pouvez maintenant tester toutes les étapes.', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

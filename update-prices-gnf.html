@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mettre à jour les prix en GNF</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn-success {
+            background: #10b981;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Mettre à jour les prix en GNF</h1>
+        <p>Ce script va convertir tous les prix existants en Francs Guinéens (GNF).</p>
+        <p><strong>Taux de conversion :</strong> 1 EUR = 9,500 GNF (approximatif)</p>
+        
+        <div id="status"></div>
+        
+        <div>
+            <button class="btn" onclick="updatePricesToGNF()">Convertir les prix en GNF</button>
+            <button class="btn btn-success" onclick="createNewCommandesGNF()">Créer de nouvelles commandes en GNF</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "901950451449",
+            appId: "1:901950451449:web:your-app-id"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addResult(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML += `<div class="status info">${message}</div>`;
+        }
+
+        async function updatePricesToGNF() {
+            showStatus('Conversion des prix en GNF...', 'info');
+            
+            try {
+                // Récupérer toutes les commandes
+                const commandesSnapshot = await db.collection('commandes').get();
+                
+                for (const doc of commandesSnapshot.docs) {
+                    const commande = doc.data();
+                    if (commande.prix) {
+                        // Convertir EUR en GNF (1 EUR = 9,500 GNF)
+                        const prixGNF = Math.round(commande.prix * 9500);
+                        
+                        await db.collection('commandes').doc(doc.id).update({
+                            prix: prixGNF,
+                            prixOriginalEUR: commande.prix,
+                            devise: 'GNF',
+                            dateConversion: new Date()
+                        });
+                        
+                        addResult(`✅ ${commande.article}: ${commande.prix} EUR → ${prixGNF} GNF`);
+                    }
+                }
+
+                showStatus('✅ Tous les prix ont été convertis en GNF !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la conversion: ${error.message}`, 'error');
+            }
+        }
+
+        async function createNewCommandesGNF() {
+            showStatus('Création de nouvelles commandes en GNF...', 'info');
+            
+            try {
+                const commandes = [
+                    {
+                        article: "Ordinateur portable Dell",
+                        description: "Laptop pour le service informatique",
+                        service: "Informatique",
+                        quantite: 2,
+                        prix: 11400000, // 1200 EUR * 9500
+                        statut: "en_attente_approbation",
+                        devise: "GNF",
+                        createdAt: new Date(),
+                        createdBy: "service-user-1",
+                        dateAjoutPrix: new Date(),
+                        prixAjoutePar: "achat-user-1"
+                    },
+                    {
+                        article: "Imprimante HP LaserJet",
+                        description: "Imprimante laser pour le bureau",
+                        service: "Administration",
+                        quantite: 1,
+                        prix: 4275000, // 450 EUR * 9500
+                        statut: "approuve",
+                        devise: "GNF",
+                        createdAt: new Date(),
+                        createdBy: "service-user-2",
+                        dateAjoutPrix: new Date(),
+                        prixAjoutePar: "achat-user-1",
+                        dateApprobation: new Date(),
+                        approuvePar: "dg-user-1",
+                        signatureDG: "Jean Dupont - DG",
+                        commentaireDG: "Approuvé pour améliorer l'efficacité"
+                    },
+                    {
+                        article: "Formation sécurité informatique",
+                        description: "Formation pour l'équipe IT",
+                        service: "Formation",
+                        quantite: 1,
+                        prix: 14250000, // 1500 EUR * 9500
+                        statut: "approuve",
+                        devise: "GNF",
+                        createdAt: new Date(),
+                        createdBy: "service-user-2",
+                        dateAjoutPrix: new Date(),
+                        prixAjoutePar: "achat-user-1",
+                        dateApprobation: new Date(),
+                        approuvePar: "dg-user-1",
+                        signatureDG: "Jean Dupont - DG",
+                        commentaireDG: "Formation essentielle pour la sécurité"
+                    },
+                    {
+                        article: "Équipement de luxe",
+                        description: "Équipement non essentiel",
+                        service: "Administration",
+                        quantite: 1,
+                        prix: 47500000, // 5000 EUR * 9500
+                        statut: "rejete",
+                        devise: "GNF",
+                        createdAt: new Date(),
+                        createdBy: "service-user-3",
+                        dateAjoutPrix: new Date(),
+                        prixAjoutePar: "achat-user-1",
+                        dateRejet: new Date(),
+                        rejetePar: "dg-user-1",
+                        commentaireRejet: "Budget insuffisant pour cet achat"
+                    }
+                ];
+
+                for (const commande of commandes) {
+                    await db.collection('commandes').add(commande);
+                    addResult(`✅ Commande créée: ${commande.article} - ${commande.prix.toLocaleString()} GNF (${commande.statut})`);
+                }
+
+                showStatus('🎉 Nouvelles commandes en GNF créées !', 'success');
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus(`❌ Erreur lors de la création: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification des Pages - Gestion Commandes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .page-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        .page-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .page-card p {
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-service { background: #4299e1; }
+        .btn-service:hover { background: #3182ce; }
+        .btn-achat { background: #f6ad55; }
+        .btn-achat:hover { background: #ed8936; }
+        .btn-dg { background: #9f7aea; }
+        .btn-dg:hover { background: #805ad5; }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .status-accessible { background: #d1fae5; color: #065f46; }
+        .status-restricted { background: #fef3c7; color: #92400e; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .troubleshooting {
+            background: #fef5e7;
+            border: 1px solid #f6ad55;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .troubleshooting h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Vérification des Pages</h1>
+        
+        <div class="info-box">
+            <h3>📋 Pages Créées</h3>
+            <ul>
+                <li><strong>Nouvelle Commande</strong> - Accessible uniquement aux Services</li>
+                <li><strong>Service Achat</strong> - Accessible uniquement au Service Achat</li>
+                <li><strong>Validation DG</strong> - Accessible uniquement au Directeur Général</li>
+            </ul>
+        </div>
+
+        <div class="pages-grid">
+            <div class="page-card">
+                <h3>📝 Nouvelle Commande</h3>
+                <p><strong>Rôles:</strong> Service, DG</p>
+                <p><strong>Route:</strong> /nouvelle-commande</p>
+                <span class="status status-accessible">Service + DG</span>
+                <br>
+                <a href="http://localhost:3000/nouvelle-commande" class="btn btn-service" target="_blank">
+                    Tester la Page
+                </a>
+            </div>
+
+            <div class="page-card">
+                <h3>💰 Service Achat</h3>
+                <p><strong>Rôles:</strong> Achat, DG</p>
+                <p><strong>Route:</strong> /service-achat</p>
+                <span class="status status-accessible">Achat + DG</span>
+                <br>
+                <a href="http://localhost:3000/service-achat" class="btn btn-achat" target="_blank">
+                    Tester la Page
+                </a>
+            </div>
+
+            <div class="page-card">
+                <h3>✍️ Validation DG</h3>
+                <p><strong>Rôle:</strong> Directeur Général uniquement</p>
+                <p><strong>Route:</strong> /validation-dg</p>
+                <span class="status status-restricted">DG uniquement</span>
+                <br>
+                <a href="http://localhost:3000/validation-dg" class="btn btn-dg" target="_blank">
+                    Tester la Page
+                </a>
+            </div>
+        </div>
+
+        <div class="troubleshooting">
+            <h3>🚨 Si vous ne voyez que "Validation DG"</h3>
+            <ul>
+                <li><strong>Vous êtes connecté en tant que DG:</strong> C'est normal, vous devriez voir TOUTES les pages</li>
+                <li><strong>Vérifiez la navigation:</strong> Le DG doit voir toutes les pages dans le menu</li>
+                <li><strong>Pages DG:</strong> Nouvelle Commande, Service Achat, Validation DG, Commandes, Maintenance, Stock, Employés, Fournisseurs, Prestataires, Alertes, Paramètres</li>
+                <li><strong>Si problème:</strong> Rechargez la page ou reconnectez-vous</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>🎯 Comment Tester Toutes les Pages</h3>
+            <ul>
+                <li><strong>Étape 1:</strong> Créez des utilisateurs avec différents rôles</li>
+                <li><strong>Étape 2:</strong> Connectez-vous avec chaque rôle</li>
+                <li><strong>Étape 3:</strong> Vérifiez que chaque rôle voit ses pages dédiées</li>
+                <li><strong>Étape 4:</strong> Testez le workflow complet</li>
+                <li><strong>Étape 5:</strong> Le DG doit voir TOUTES les pages</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:3000" class="btn" target="_blank" style="font-size: 1.1rem; padding: 15px 30px;">
+                🚀 Ouvrir l'Application
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; color: #666;">
+            <p><strong>Note:</strong> Le DG (Directeur Général) voit TOUTES les pages. Les autres rôles voient leurs pages autorisées.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Fonction pour vérifier si l'utilisateur est DG
+    function isDG() {
+      return request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'dg';
+    }
+    
+    // Règles pour les utilisateurs
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['dg', 'achat']);
+      // Le DG peut tout faire sur les utilisateurs
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les commandes
+    match /commandes/{commandeId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['service', 'dg'];
+      allow update: if request.auth != null && (
+        // Le créateur peut modifier sa commande si elle est en attente
+        (resource.data.createdBy == request.auth.uid && resource.data.statut == 'en_attente') ||
+        // Le service achat peut ajouter le prix
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'achat' && 
+         resource.data.statut == 'en_attente_prix') ||
+        // Le DG peut approuver/rejeter
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'dg' && 
+         resource.data.statut == 'en_attente_approbation')
+      );
+      // Le DG peut tout faire sur les commandes
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour la maintenance
+    match /maintenance/{maintenanceId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['achat', 'dg'];
+      // Le DG peut tout faire sur la maintenance
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les véhicules
+    match /vehicules/{vehiculeId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['achat', 'dg'];
+      // Le DG peut tout faire sur les véhicules
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les fournisseurs
+    match /fournisseurs/{fournisseurId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['achat', 'dg'];
+      // Le DG peut tout faire sur les fournisseurs
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les prestataires
+    match /prestataires/{prestataireId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['achat', 'dg'];
+      // Le DG peut tout faire sur les prestataires
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les agendas
+    match /agendas/{agendaId} {
+      allow read, write: if request.auth != null;
+      // Le DG peut tout faire sur les agendas
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les plannings
+    match /plannings/{planningId} {
+      allow read, write: if request.auth != null;
+      // Le DG peut tout faire sur les plannings
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour le stock
+    match /stock/{stockId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['achat', 'dg'];
+      // Le DG peut tout faire sur le stock
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les services
+    match /services/{serviceId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'dg';
+      // Le DG peut tout faire sur les services
+      allow read, write: if isDG();
+    }
+    
+    // Règles pour les employés
+    match /employes/{employeId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'dg';
+      // Le DG peut tout faire sur les employés
+      allow read, write: if isDG();
+    }
+    
+        // Règles pour les articles
+        match /articles/{articleId} {
+          allow read: if request.auth != null;
+          allow write: if request.auth != null && 
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['service', 'achat', 'dg'];
+          // Le DG peut tout faire sur les articles
+          allow read, write: if isDG();
+        }
+        
+        // Règles pour les sorties de stock
+        match /sorties_stock/{sortieId} {
+          allow read: if request.auth != null;
+          allow write: if request.auth != null && 
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['service', 'achat', 'dg'];
+          // Le DG peut tout faire sur les sorties de stock
+          allow read, write: if isDG();
+        }
+      }
+    }

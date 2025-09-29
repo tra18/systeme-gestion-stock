@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forcer le Rechargement - Gestion Commandes</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .btn {
+            display: inline-block;
+            background: #4299e1;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        .btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+        .btn-success { background: #38a169; }
+        .btn-success:hover { background: #2f855a; }
+        .btn-warning { background: #ed8936; }
+        .btn-warning:hover { background: #dd6b20; }
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #234e52;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            color: #2d3748;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .steps h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        .steps ol {
+            color: #4a5568;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Forcer le Rechargement</h1>
+        
+        <div class="info-box">
+            <h3>⚠️ Problème de Cache</h3>
+            <p>Les modifications ne sont pas visibles car le navigateur utilise une version en cache. Voici comment forcer le rechargement :</p>
+        </div>
+
+        <div class="steps">
+            <h3>🔧 Solutions pour Forcer le Rechargement</h3>
+            <ol>
+                <li><strong>Rechargement forcé :</strong> Appuyez sur <kbd>Ctrl + F5</kbd> (Windows) ou <kbd>Cmd + Shift + R</kbd> (Mac)</li>
+                <li><strong>Vider le cache :</strong> Ouvrez les outils de développement (F12) → Onglet Network → Cochez "Disable cache"</li>
+                <li><strong>Mode incognito :</strong> Ouvrez l'application dans une fenêtre privée</li>
+                <li><strong>Redémarrage navigateur :</strong> Fermez et rouvrez complètement votre navigateur</li>
+            </ol>
+        </div>
+
+        <div class="steps">
+            <h3>🎯 Vérification des Modifications</h3>
+            <ol>
+                <li><strong>Champ Service :</strong> Doit être une liste déroulante (pas un champ texte)</li>
+                <li><strong>Unités de mesure :</strong> Doit inclure "Paquet" et "Carton"</li>
+                <li><strong>Validation :</strong> Le service doit être obligatoire</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="http://localhost:3000" class="btn btn-success" target="_blank">
+                🚀 Ouvrir l'Application (Nouvel Onglet)
+            </a>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="btn btn-warning" onclick="openIncognito()">
+                🔒 Ouvrir en Mode Incognito
+            </button>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Si les modifications ne sont toujours pas visibles</h3>
+            <ul>
+                <li><strong>Attendez 30 secondes</strong> après le redémarrage</li>
+                <li><strong>Vérifiez la console</strong> pour d'éventuelles erreurs</li>
+                <li><strong>Testez sur un autre navigateur</strong> (Chrome, Firefox, Safari)</li>
+                <li><strong>Redémarrez votre ordinateur</strong> si nécessaire</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function openIncognito() {
+            // Ouvrir en mode incognito (nécessite une extension ou action manuelle)
+            alert('Pour ouvrir en mode incognito :\n\n1. Clic droit sur le lien ci-dessus\n2. Sélectionnez "Ouvrir dans une fenêtre privée"\n\nOu utilisez Ctrl+Shift+N (Chrome) ou Ctrl+Shift+P (Firefox)');
+        }
+
+        // Auto-refresh de la page toutes les 30 secondes
+        setTimeout(() => {
+            if (confirm('Voulez-vous recharger automatiquement la page pour vérifier les modifications ?')) {
+                location.reload();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
