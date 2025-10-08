@@ -16,13 +16,21 @@ import {
   UserCheck,
   Building,
   Hash,
-  X
+  X,
+  BarChart3,
+  Brain,
+  Workflow,
+  Wifi,
+  TestTube,
+  Briefcase
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const Sidebar = ({ onClose }) => {
   const location = useLocation();
   const { userProfile, logout } = useAuth();
+  const { isDark } = useTheme();
 
   const navigation = [
     { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard, roles: ['service', 'achat', 'dg'] },
@@ -35,13 +43,27 @@ const Sidebar = ({ onClose }) => {
     { name: 'Articles', href: '/articles', icon: Hash, roles: ['service', 'achat', 'dg'] },
     { name: 'Services', href: '/services', icon: Building, roles: ['dg'] },
     { name: 'Employés', href: '/employes', icon: Users, roles: ['dg'] },
+    { name: 'Ressources Humaines', href: '/ressources-humaines', icon: Briefcase, roles: ['dg'] },
     { name: 'Fournisseurs', href: '/fournisseurs', icon: Building2, roles: ['achat', 'dg'] },
     { name: 'Prestataires', href: '/prestataires', icon: Wrench, roles: ['achat', 'dg'] },
     { name: 'Alertes', href: '/alertes', icon: Bell, roles: ['service', 'achat', 'dg'] },
     { name: 'Paramètres', href: '/parametres', icon: Settings, roles: ['dg'] },
   ];
 
+  // Nouvelles pages avancées (uniquement pour le DG)
+  const advancedNavigation = [
+    { name: 'Dashboard Avancé', href: '/dashboard-avance', icon: BarChart3, roles: ['dg'] },
+    { name: 'Prédictions IA', href: '/predictions-ia', icon: Brain, roles: ['dg'] },
+    { name: 'Workflows', href: '/workflows', icon: Workflow, roles: ['dg'] },
+    { name: 'Mode Hors Ligne', href: '/hors-ligne', icon: Wifi, roles: ['dg'] },
+    { name: 'Tests', href: '/tests', icon: TestTube, roles: ['dg'] },
+  ];
+
   const filteredNavigation = navigation.filter(item => 
+    item.roles.includes(userProfile?.role)
+  );
+
+  const filteredAdvancedNavigation = advancedNavigation.filter(item => 
     item.roles.includes(userProfile?.role)
   );
 
@@ -104,6 +126,39 @@ const Sidebar = ({ onClose }) => {
               </Link>
             );
           })}
+          
+          {/* Section des fonctionnalités avancées */}
+          {filteredAdvancedNavigation.length > 0 && (
+            <>
+              <div className="border-t border-gray-200 my-4"></div>
+              <div className="px-2 mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Fonctionnalités Avancées
+                </h3>
+              </div>
+              {filteredAdvancedNavigation.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`${
+                      isActive
+                        ? 'bg-primary-100 text-primary-900'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    } group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200`}
+                  >
+                    <item.icon
+                      className={`${
+                        isActive ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'
+                      } mr-3 flex-shrink-0 h-5 w-5`}
+                    />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </>
+          )}
         </nav>
       </div>
       

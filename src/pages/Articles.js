@@ -136,13 +136,13 @@ const Articles = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                   Code
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Article
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                   Description
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -153,7 +153,7 @@ const Articles = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredArticles.map((article) => (
                 <tr key={article.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                     <div className="flex items-center">
                       <Hash className="h-4 w-4 text-gray-400 mr-2" />
                       <span className="text-sm font-mono text-gray-900">{article.code}</span>
@@ -167,7 +167,7 @@ const Articles = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate hidden md:table-cell">
                     {article.description}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

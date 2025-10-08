@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Bell, Search, Menu } from 'lucide-react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
+import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import NotificationSystem from '../notifications/NotificationSystem';
+import ThemeToggle from '../theme/ThemeToggle';
 import '../../styles/animations.css';
 
 const Header = ({ onMenuClick }) => {
+  const { userProfile } = useAuth();
+  const { isDark } = useTheme();
   const [hasAlerts, setHasAlerts] = useState(false);
   const [alertCount, setAlertCount] = useState(0);
 
@@ -53,7 +59,7 @@ const Header = ({ onMenuClick }) => {
     return () => clearInterval(interval);
   }, []);
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm border-b`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -63,7 +69,7 @@ const Header = ({ onMenuClick }) => {
             >
               <Menu className="h-6 w-6" />
             </button>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+            <h2 className={`text-lg sm:text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               Tableau de bord
             </h2>
           </div>
@@ -76,10 +82,21 @@ const Header = ({ onMenuClick }) => {
               <input
                 type="text"
                 placeholder="Rechercher..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                className={`block w-full pl-10 pr-3 py-2 border rounded-md leading-5 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-white border-gray-300'
+                }`}
               />
             </div>
             
+            {/* Système de notifications avancé */}
+            <NotificationSystem />
+            
+            {/* Bouton de basculement de thème */}
+            <ThemeToggle />
+            
+            {/* Ancien système d'alertes (fallback) */}
             <button className="relative p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full">
               <Bell className={`h-5 w-5 sm:h-6 sm:w-6 ${hasAlerts ? 'alert-blink alert-pulse-red' : ''}`} />
               {hasAlerts && (

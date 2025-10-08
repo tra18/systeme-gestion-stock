@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import LoginForm from './components/auth/LoginForm';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
@@ -18,6 +19,14 @@ import Prestataires from './pages/Prestataires';
 import Employes from './pages/Employes';
 import Alertes from './pages/Alertes';
 import Parametres from './pages/Parametres';
+import RessourcesHumaines from './pages/RessourcesHumaines';
+
+// Nouveaux composants avancés
+import AdvancedDashboard from './components/dashboard/AdvancedDashboardSimple';
+import StockPrediction from './components/ai/StockPredictionSimple';
+import WorkflowManager from './components/workflow/WorkflowManager';
+import OfflineManager from './components/offline/OfflineManager';
+import TestRunner from './components/testing/TestRunnerSimple';
 
 // Composant de protection des routes
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -47,7 +56,7 @@ const AppContent = () => {
   const { currentUser } = useAuth();
 
   return (
-    <Router future={{ v7_relativeSplatPath: true }}>
+    <Router future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
       <div className="App">
         <Toaster
           position="top-right"
@@ -179,6 +188,14 @@ const AppContent = () => {
               } 
             />
             <Route 
+              path="ressources-humaines" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <RessourcesHumaines />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="alertes" 
               element={
                 <ProtectedRoute allowedRoles={['service', 'achat', 'dg']}>
@@ -194,6 +211,48 @@ const AppContent = () => {
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Nouvelles routes avancées */}
+            <Route 
+              path="dashboard-avance" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <AdvancedDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="predictions-ia" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <StockPrediction />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="workflows" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <WorkflowManager />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="hors-ligne" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <OfflineManager />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="tests" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <TestRunner />
+                </ProtectedRoute>
+              } 
+            />
           </Route>
           
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -203,12 +262,14 @@ const AppContent = () => {
   );
 };
 
-// Composant racine avec le provider d'authentification
+// Composant racine avec les providers
 const App = () => {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Initialisation Données RH</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-bottom: 15px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .progress {
+      margin-top: 20px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 30px;
+      background: #e9ecef;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Initialisation des Données RH</h1>
+    <p class="subtitle">Créer des données de test pour le système de gestion des ressources humaines</p>
+    
+    <div id="loginInfo">
+      <div class="info">
+        ⏳ Vérification de l'authentification...
+      </div>
+    </div>
+
+    <div class="info">
+      <strong>ℹ️ Ce script va créer :</strong><br>
+      • Données de congés (demandes approuvées, en attente, refusées)<br>
+      • Données de présences (7 derniers jours)<br>
+      • Données de salaires (historique des paiements)<br>
+      • Données d'évaluations (performances des employés)
+    </div>
+
+    <button onclick="initAllData()" id="initBtn" disabled>
+      🚀 Initialiser toutes les données RH
+    </button>
+
+    <div class="progress" id="progress" style="display: none;">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+      </div>
+      <p id="progressText" style="text-align: center; margin-top: 10px; color: #666;"></p>
+    </div>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js';
+    import { getFirestore, collection, addDoc, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+      authDomain: "stock-bcbd3.firebaseapp.com",
+      projectId: "stock-bcbd3",
+      storageBucket: "stock-bcbd3.appspot.com",
+      messagingSenderId: "901950451449",
+      appId: "1:901950451449:web:stock-bcbd3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let employeIds = [];
+    let currentUser = null;
+
+    // Vérifier l'authentification
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        // Vérifier si l'utilisateur est DG
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const userData = userDoc.data();
+        
+        if (userData && userData.role === 'dg') {
+          document.getElementById('initBtn').disabled = false;
+          document.getElementById('loginInfo').innerHTML = `
+            <div class="info" style="background: #d4edda; color: #155724; border-color: #c3e6cb;">
+              ✅ Connecté en tant que: <strong>${user.email}</strong> (DG)
+            </div>
+          `;
+        } else {
+          showResult('⚠️ Vous devez être Directeur Général pour utiliser ce script.', 'error');
+        }
+      } else {
+        document.getElementById('initBtn').disabled = true;
+        document.getElementById('loginInfo').innerHTML = `
+          <div class="info" style="background: #f8d7da; color: #721c24; border-color: #f5c6cb;">
+            ⚠️ Vous devez être connecté en tant que DG. Veuillez d'abord vous connecter à l'application sur <a href="http://localhost:3000" target="_blank" style="text-decoration: underline;">localhost:3000</a>
+          </div>
+        `;
+      }
+    });
+
+    function updateProgress(percent, text) {
+      document.getElementById('progress').style.display = 'block';
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('progressFill').textContent = percent + '%';
+      document.getElementById('progressText').textContent = text;
+    }
+
+    function showResult(message, type) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.className = `result ${type}`;
+      resultDiv.innerHTML = message;
+      resultDiv.style.display = 'block';
+    }
+
+    async function loadEmployes() {
+      const snapshot = await getDocs(collection(db, 'employes'));
+      employeIds = snapshot.docs.map(doc => doc.id);
+      
+      if (employeIds.length === 0) {
+        throw new Error('Aucun employé trouvé. Créez d\'abord des employés.');
+      }
+      
+      return employeIds;
+    }
+
+    async function createConges() {
+      updateProgress(20, 'Création des congés...');
+      
+      const typesConges = ['Congé annuel', 'Congé maladie', 'Congé sans solde', 'Congé maternité'];
+      const statuts = ['en_attente', 'approuve', 'refuse'];
+      
+      const conges = [];
+      for (let i = 0; i < 10; i++) {
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 60) - 30);
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + Math.floor(Math.random() * 15) + 1);
+        
+        const duree = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        
+        const conge = {
+          employeId: employeIds[Math.floor(Math.random() * employeIds.length)],
+          type: typesConges[Math.floor(Math.random() * typesConges.length)],
+          dateDebut: startDate,
+          dateFin: endDate,
+          duree: duree,
+          statut: statuts[Math.floor(Math.random() * statuts.length)],
+          motif: 'Motif de test',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        await addDoc(collection(db, 'conges'), conge);
+        conges.push(conge);
+      }
+      
+      return conges;
+    }
+
+    async function createPresences() {
+      updateProgress(40, 'Création des présences...');
+      
+      const statuts = ['present', 'absent', 'retard', 'absent_justifie'];
+      const presences = [];
+      
+      // Créer des présences pour les 7 derniers jours
+      for (let day = 0; day < 7; day++) {
+        const date = new Date();
+        date.setDate(date.getDate() - day);
+        
+        // Pour chaque employé
+        for (const employeId of employeIds) {
+          const heureArrivee = `${8 + Math.floor(Math.random() * 2)}:${Math.floor(Math.random() * 60)}`;
+          const heureDepart = `${17 + Math.floor(Math.random() * 2)}:${Math.floor(Math.random() * 60)}`;
+          
+          const presence = {
+            employeId: employeId,
+            date: date,
+            statut: statuts[Math.floor(Math.random() * 100) > 85 ? Math.floor(Math.random() * statuts.length) : 0], // 85% présent
+            heureArrivee: heureArrivee,
+            heureDepart: heureDepart,
+            commentaire: '',
+            createdAt: new Date()
+          };
+          
+          await addDoc(collection(db, 'presences'), presence);
+          presences.push(presence);
+        }
+      }
+      
+      return presences;
+    }
+
+    async function createSalaires() {
+      updateProgress(60, 'Création des salaires...');
+      
+      const salaires = [];
+      
+      // Créer l'historique des 3 derniers mois
+      for (let month = 0; month < 3; month++) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - month);
+        
+        for (const employeId of employeIds) {
+          const salaireBase = 3000000 + Math.floor(Math.random() * 7000000); // Entre 3M et 10M GNF
+          const primes = Math.floor(Math.random() * 1000000); // Jusqu'à 1M GNF
+          const deductions = Math.floor(Math.random() * 500000); // Jusqu'à 500K GNF
+          
+          const salaire = {
+            employeId: employeId,
+            mois: date.toLocaleString('fr-FR', { month: 'long', year: 'numeric' }),
+            salaireBase: salaireBase,
+            primes: primes,
+            deductions: deductions,
+            salaireNet: salaireBase + primes - deductions,
+            statut: 'paye',
+            datePaiement: date,
+            methodePaiement: Math.random() > 0.5 ? 'Virement' : 'Espèces',
+            createdAt: new Date()
+          };
+          
+          await addDoc(collection(db, 'salaires'), salaire);
+          salaires.push(salaire);
+        }
+      }
+      
+      return salaires;
+    }
+
+    async function createEvaluations() {
+      updateProgress(80, 'Création des évaluations...');
+      
+      const typesEvaluation = ['Évaluation annuelle', 'Évaluation trimestrielle', 'Évaluation probatoire'];
+      const criteres = ['Performance', 'Ponctualité', 'Travail d\'équipe', 'Initiative', 'Compétences techniques'];
+      
+      const evaluations = [];
+      
+      for (const employeId of employeIds) {
+        // 1-2 évaluations par employé
+        const nbEvaluations = Math.floor(Math.random() * 2) + 1;
+        
+        for (let i = 0; i < nbEvaluations; i++) {
+          const date = new Date();
+          date.setMonth(date.getMonth() - Math.floor(Math.random() * 12));
+          
+          const noteGlobale = (Math.random() * 2 + 3).toFixed(1); // Entre 3.0 et 5.0
+          
+          const notesDetaillees = {};
+          criteres.forEach(critere => {
+            notesDetaillees[critere] = (Math.random() * 2 + 3).toFixed(1);
+          });
+          
+          const evaluation = {
+            employeId: employeId,
+            type: typesEvaluation[Math.floor(Math.random() * typesEvaluation.length)],
+            date: date,
+            note: parseFloat(noteGlobale),
+            notesDetaillees: notesDetaillees,
+            commentaire: 'Évaluation de test - Performance satisfaisante',
+            objectifs: 'Objectifs pour la période suivante',
+            evaluateurId: 'admin',
+            createdAt: new Date()
+          };
+          
+          await addDoc(collection(db, 'evaluations'), evaluation);
+          evaluations.push(evaluation);
+        }
+      }
+      
+      return evaluations;
+    }
+
+    window.initAllData = async function() {
+      if (!currentUser) {
+        showResult('⚠️ Vous devez être connecté pour utiliser ce script.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('initBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Initialisation en cours...';
+      
+      try {
+        updateProgress(10, 'Chargement des employés...');
+        await loadEmployes();
+        
+        console.log(`${employeIds.length} employés trouvés`);
+        
+        const conges = await createConges();
+        const presences = await createPresences();
+        const salaires = await createSalaires();
+        const evaluations = await createEvaluations();
+        
+        updateProgress(100, 'Terminé !');
+        
+        showResult(`
+          <strong>✅ Initialisation réussie !</strong><br><br>
+          <strong>Données créées :</strong><br>
+          • ${conges.length} demandes de congés<br>
+          • ${presences.length} enregistrements de présence<br>
+          • ${salaires.length} enregistrements de salaires<br>
+          • ${evaluations.length} évaluations<br><br>
+          <strong>Vous pouvez maintenant :</strong><br>
+          1. Accéder au module RH dans votre application<br>
+          2. Voir les statistiques dans le tableau de bord RH<br>
+          3. Gérer les congés, présences, salaires et évaluations
+        `, 'success');
+        
+        btn.style.display = 'none';
+        
+      } catch (error) {
+        console.error('Erreur:', error);
+        showResult(`❌ Erreur : ${error.message}`, 'error');
+        btn.disabled = false;
+        btn.textContent = '🚀 Initialiser toutes les données RH';
+      }
+    };
+  </script>
+</body>
+</html>
+

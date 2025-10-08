@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donner Accès Complet à un Utilisateur</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 600;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e8ed;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: all 0.3s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .users-list {
+      margin-top: 30px;
+      border-top: 2px solid #e1e8ed;
+      padding-top: 20px;
+    }
+    .user-card {
+      padding: 15px;
+      margin: 10px 0;
+      border: 1px solid #e1e8ed;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+    .user-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-color: #667eea;
+    }
+    .user-info {
+      flex: 1;
+    }
+    .user-email {
+      font-weight: 600;
+      color: #333;
+    }
+    .user-role {
+      font-size: 14px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .role-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    .role-dg {
+      background: #d4edda;
+      color: #155724;
+    }
+    .role-achat {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+    .role-service {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .quick-btn {
+      padding: 8px 15px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .quick-btn:hover {
+      background: #5568d3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Gestion des Accès Utilisateurs</h1>
+    
+    <!-- Section de connexion -->
+    <div id="loginSection" style="display: block;">
+      <div class="info">
+        <strong>🔒 Connexion requise</strong><br>
+        Vous devez être connecté en tant que <strong>Directeur Général (DG)</strong> pour accéder à cette page.
+      </div>
+      
+      <div class="form-group">
+        <label for="loginEmail">Email :</label>
+        <input type="email" id="loginEmail" placeholder="votre-email@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Mot de passe :</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required>
+      </div>
+
+      <button onclick="login()" id="loginBtn">
+        Se connecter
+      </button>
+      
+      <div id="loginResult" class="result"></div>
+    </div>
+
+    <!-- Contenu principal (caché jusqu'à connexion) -->
+    <div id="mainContent" style="display: none;">
+      <div class="info">
+        <div id="userInfo" style="margin-bottom: 10px; font-weight: 600; color: #155724;"></div>
+        <strong>ℹ️ Rôles disponibles :</strong><br>
+        • <strong>DG (Directeur Général)</strong> : Accès complet à toutes les fonctionnalités<br>
+        • <strong>Achat</strong> : Commandes + Fournisseurs<br>
+        • <strong>Service</strong> : Commandes + Maintenance
+      </div>
+
+    <div class="form-group">
+      <label for="userEmail">Email de l'utilisateur :</label>
+      <input type="email" id="userEmail" placeholder="exemple@email.com" required>
+    </div>
+
+    <div class="form-group">
+      <label for="newRole">Nouveau rôle :</label>
+      <select id="newRole" required>
+        <option value="dg">Directeur Général (Accès Complet)</option>
+        <option value="achat">Service Achat</option>
+        <option value="service">Service</option>
+      </select>
+    </div>
+
+    <button onclick="updateUserRole()" id="updateBtn">
+      Mettre à jour le rôle
+    </button>
+
+    <div id="result" class="result"></div>
+
+    <div class="users-list">
+      <h2>📋 Liste des utilisateurs</h2>
+      <button onclick="loadUsers()" class="quick-btn" style="width: auto; margin-bottom: 15px;">
+        🔄 Charger les utilisateurs
+      </button>
+      <div id="usersList"></div>
+    </div>
+    </div><!-- Fin mainContent -->
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-auth.js';
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/9.9.0/firebase-firestore.js';
+
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDE-TBWNZ_Y4WdPHaezRXIf1vizPEralVY",
+      authDomain: "stock-bcbd3.firebaseapp.com",
+      projectId: "stock-bcbd3",
+      storageBucket: "stock-bcbd3.appspot.com",
+      messagingSenderId: "901950451449",
+      appId: "1:901950451449:web:stock-bcbd3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Vérifier l'authentification au démarrage
+    let currentUser = null;
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        // Vérifier si l'utilisateur est DG
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const userData = userDoc.data();
+        
+        if (userData && userData.role === 'dg') {
+          document.getElementById('loginSection').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+          document.getElementById('userInfo').textContent = `Connecté en tant que: ${user.email} (DG)`;
+          loadUsers();
+        } else {
+          showResult('⚠️ Vous devez être Directeur Général pour accéder à cette page.', 'error');
+          document.getElementById('loginSection').style.display = 'block';
+          document.getElementById('mainContent').style.display = 'none';
+        }
+      } else {
+        document.getElementById('loginSection').style.display = 'block';
+        document.getElementById('mainContent').style.display = 'none';
+      }
+    });
+
+    // Fonction de connexion
+    window.login = async function() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+      const resultDiv = document.getElementById('loginResult');
+
+      if (!email || !password) {
+        resultDiv.className = 'result error';
+        resultDiv.textContent = '⚠️ Veuillez remplir tous les champs';
+        resultDiv.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Connexion en cours...';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // Le onAuthStateChanged gérera l'affichage
+        resultDiv.style.display = 'none';
+      } catch (error) {
+        console.error('Erreur de connexion:', error);
+        let errorMessage = '❌ Erreur de connexion';
+        
+        if (error.code === 'auth/user-not-found') {
+          errorMessage = '❌ Utilisateur non trouvé';
+        } else if (error.code === 'auth/wrong-password') {
+          errorMessage = '❌ Mot de passe incorrect';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = '❌ Email invalide';
+        } else if (error.code === 'auth/too-many-requests') {
+          errorMessage = '❌ Trop de tentatives. Réessayez plus tard.';
+        }
+        
+        resultDiv.className = 'result error';
+        resultDiv.textContent = errorMessage;
+        resultDiv.style.display = 'block';
+        
+        btn.disabled = false;
+        btn.textContent = 'Se connecter';
+      }
+    };
+
+    // Fonction pour afficher les résultats
+    function showResult(message, type) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.className = `result ${type}`;
+      resultDiv.textContent = message;
+      resultDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        resultDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    // Fonction pour mettre à jour le rôle
+    window.updateUserRole = async function() {
+      const email = document.getElementById('userEmail').value.trim();
+      const newRole = document.getElementById('newRole').value;
+      const btn = document.getElementById('updateBtn');
+
+      if (!email) {
+        showResult('⚠️ Veuillez entrer un email', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Mise à jour en cours...';
+
+      try {
+        // Chercher l'utilisateur par email
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('email', '==', email));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          showResult('❌ Utilisateur non trouvé. Vérifiez l\'email.', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Mettre à jour le rôle';
+          return;
+        }
+
+        // Mettre à jour le rôle
+        const userDoc = querySnapshot.docs[0];
+        await updateDoc(doc(db, 'users', userDoc.id), {
+          role: newRole,
+          updatedAt: new Date()
+        });
+
+        const roleNames = {
+          'dg': 'Directeur Général (Accès Complet)',
+          'achat': 'Service Achat',
+          'service': 'Service'
+        };
+
+        showResult(`✅ Rôle de ${email} mis à jour vers "${roleNames[newRole]}" avec succès!`, 'success');
+        
+        // Recharger la liste des utilisateurs
+        setTimeout(() => {
+          loadUsers();
+        }, 1000);
+
+      } catch (error) {
+        console.error('Erreur:', error);
+        showResult(`❌ Erreur: ${error.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Mettre à jour le rôle';
+      }
+    };
+
+    // Fonction pour charger la liste des utilisateurs
+    window.loadUsers = async function() {
+      const usersList = document.getElementById('usersList');
+      usersList.innerHTML = '<p style="text-align: center; color: #666;">Chargement...</p>';
+
+      try {
+        const usersRef = collection(db, 'users');
+        const querySnapshot = await getDocs(usersRef);
+
+        if (querySnapshot.empty) {
+          usersList.innerHTML = '<p style="text-align: center; color: #666;">Aucun utilisateur trouvé</p>';
+          return;
+        }
+
+        const roleNames = {
+          'dg': 'Directeur Général',
+          'achat': 'Service Achat',
+          'service': 'Service'
+        };
+
+        const roleClasses = {
+          'dg': 'role-dg',
+          'achat': 'role-achat',
+          'service': 'role-service'
+        };
+
+        let usersHTML = '';
+        querySnapshot.forEach((doc) => {
+          const user = doc.data();
+          const roleName = roleNames[user.role] || user.role || 'Non défini';
+          const roleClass = roleClasses[user.role] || '';
+          
+          usersHTML += `
+            <div class="user-card">
+              <div class="user-info">
+                <div class="user-email">${user.email || 'Email non défini'}</div>
+                <div class="user-role">
+                  <span class="role-badge ${roleClass}">${roleName}</span>
+                  ${user.nom ? `• ${user.nom}` : ''}
+                </div>
+              </div>
+              ${user.role !== 'dg' ? `
+                <button class="quick-btn" onclick="quickUpdateToDG('${user.email}')">
+                  ⬆️ Promouvoir DG
+                </button>
+              ` : ''}
+            </div>
+          `;
+        });
+
+        usersList.innerHTML = usersHTML;
+
+      } catch (error) {
+        console.error('Erreur:', error);
+        usersList.innerHTML = `<p style="text-align: center; color: #e74c3c;">❌ Erreur: ${error.message}</p>`;
+      }
+    };
+
+    // Fonction rapide pour promouvoir en DG
+    window.quickUpdateToDG = function(email) {
+      document.getElementById('userEmail').value = email;
+      document.getElementById('newRole').value = 'dg';
+      updateUserRole();
+    };
+
+    // Support de la touche Entrée pour la connexion
+    document.getElementById('loginEmail')?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+    document.getElementById('loginPassword')?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+  </script>
+</body>
+</html>
+
