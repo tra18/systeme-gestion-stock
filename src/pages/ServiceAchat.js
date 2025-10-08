@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, DollarSign, Save } from 'lucide-react';
+import { Search, DollarSign, Save, Calendar } from 'lucide-react';
 import { collection, query, where, getDocs, doc, updateDoc, orderBy } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,6 +16,7 @@ const ServiceAchat = () => {
   const [fournisseur, setFournisseur] = useState('');
   const [commentaire, setCommentaire] = useState('');
   const [fournisseurs, setFournisseurs] = useState([]);
+  const [showTodayOnly, setShowTodayOnly] = useState(false);
 
   useEffect(() => {
     loadCommandes();
@@ -93,11 +94,32 @@ const ServiceAchat = () => {
     }
   };
 
-  const filteredCommandes = commandes.filter(commande =>
-    commande.service?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    commande.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    commande.createdByName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Fonction pour vérifier si une commande est créée aujourd'hui
+  const isToday = (date) => {
+    if (!date) return false;
+    const today = new Date();
+    const commandeDate = date.toDate ? date.toDate() : new Date(date);
+    return (
+      commandeDate.getDate() === today.getDate() &&
+      commandeDate.getMonth() === today.getMonth() &&
+      commandeDate.getFullYear() === today.getFullYear()
+    );
+  };
+
+  const filteredCommandes = commandes.filter(commande => {
+    // Filtre de recherche
+    const matchSearch = commande.service?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      commande.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      commande.createdByName?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Filtre "Commandes du jour"
+    const matchToday = !showTodayOnly || isToday(commande.createdAt);
+    
+    return matchSearch && matchToday;
+  });
+
+  // Compter les commandes du jour
+  const todayCommandesCount = commandes.filter(cmd => isToday(cmd.createdAt)).length;
 
   const getUrgenceColor = (urgence) => {
     switch (urgence) {
@@ -143,18 +165,56 @@ const ServiceAchat = () => {
         </div>
       </div>
 
-      {/* Recherche */}
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="text"
-            placeholder="Rechercher par service, description ou demandeur..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+      {/* Recherche et Filtres */}
+      <div className="mb-6 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Rechercher par service, description ou demandeur..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          
+          {/* Bouton Commandes du jour */}
+          <button
+            onClick={() => setShowTodayOnly(!showTodayOnly)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-all ${
+              showTodayOnly
+                ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            <Calendar size={20} />
+            <span className="font-medium">Commandes du jour</span>
+            {todayCommandesCount > 0 && (
+              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                showTodayOnly ? 'bg-white text-blue-600' : 'bg-blue-600 text-white'
+              }`}>
+                {todayCommandesCount}
+              </span>
+            )}
+          </button>
         </div>
+        
+        {/* Message d'information si filtre actif */}
+        {showTodayOnly && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center space-x-2">
+            <Calendar className="text-blue-600" size={20} />
+            <p className="text-sm text-blue-700">
+              Affichage des commandes créées aujourd'hui ({todayCommandesCount} commande{todayCommandesCount > 1 ? 's' : ''})
+            </p>
+            <button
+              onClick={() => setShowTodayOnly(false)}
+              className="ml-auto text-blue-600 hover:text-blue-800 font-medium text-sm"
+            >
+              Afficher toutes
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Tableau des commandes */}

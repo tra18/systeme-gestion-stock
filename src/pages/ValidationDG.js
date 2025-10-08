@@ -187,6 +187,9 @@ const ValidationDG = () => {
                     Description
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    📦 Articles
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Prix
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -209,8 +212,54 @@ const ValidationDG = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {commande.service}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                      {commande.description}
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      <div className="max-w-xs">
+                        <p className="line-clamp-2">{commande.description}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      <div className="max-w-sm">
+                        {commande.articles && commande.articles.length > 0 ? (
+                          <div className="space-y-1">
+                            <div className="flex items-center space-x-1 mb-2">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-purple-600 text-white">
+                                {commande.articles.length} article{commande.articles.length > 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            <div className="space-y-1.5">
+                              {commande.articles.slice(0, 4).map((article, index) => (
+                                <div key={index} className="flex items-start space-x-2 bg-purple-50 p-2 rounded border border-purple-100">
+                                  <span className="flex-shrink-0 w-5 h-5 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                    {index + 1}
+                                  </span>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-medium text-gray-900 truncate">
+                                      {article.nom || article.designation}
+                                    </p>
+                                    {article.quantite && (
+                                      <p className="text-xs text-gray-600">
+                                        Qté: <span className="font-medium">{article.quantite}</span>
+                                        {article.unite && ` ${article.unite}`}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              {commande.articles.length > 4 && (
+                                <div className="text-center py-1 px-2 bg-purple-100 rounded">
+                                  <span className="text-xs text-purple-700 font-bold">
+                                    + {commande.articles.length - 4} autre{commande.articles.length - 4 > 1 ? 's' : ''}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center py-2 px-3 bg-gray-100 rounded">
+                            <p className="text-xs text-gray-500 italic">Aucun article</p>
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
                       {formatPrix(commande.prix)}
@@ -258,20 +307,71 @@ const ValidationDG = () => {
 
               <div className="space-y-6">
                 {/* Détails de la commande */}
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                   <h4 className="font-medium text-gray-900 mb-3">Détails de la commande</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p><strong>Service:</strong> {selectedCommande.service}</p>
-                      <p><strong>Description:</strong> {selectedCommande.description}</p>
-                      <p><strong>Quantité:</strong> {selectedCommande.quantite} {selectedCommande.unite}</p>
+                      <p className="mb-2"><strong>Service:</strong> {selectedCommande.service}</p>
+                      <p className="mb-2"><strong>Quantité:</strong> {selectedCommande.quantite} {selectedCommande.unite}</p>
+                      <p className="mb-2"><strong>Demandeur:</strong> {selectedCommande.createdByName}</p>
                     </div>
                     <div>
-                      <p><strong>Prix:</strong> <span className="text-green-600 font-medium">{formatPrix(selectedCommande.prix)}</span></p>
-                      <p><strong>Fournisseur:</strong> {selectedCommande.fournisseur}</p>
-                      <p><strong>Demandeur:</strong> {selectedCommande.createdByName}</p>
+                      <p className="mb-2"><strong>Prix:</strong> <span className="text-green-600 font-medium">{formatPrix(selectedCommande.prix)}</span></p>
+                      <p className="mb-2"><strong>Fournisseur:</strong> {selectedCommande.fournisseur}</p>
+                      <p className="mb-2"><strong>Date:</strong> {selectedCommande.createdAt?.toDate?.()?.toLocaleDateString('fr-FR') || 'N/A'}</p>
                     </div>
                   </div>
+                  
+                  {/* Description complète */}
+                  <div className="mt-4 pt-4 border-t border-gray-300">
+                    <p className="font-medium text-gray-900 mb-2">📝 Description détaillée :</p>
+                    <div className="bg-white p-3 rounded border border-gray-200">
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedCommande.description || 'Aucune description fournie'}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Articles si disponibles */}
+                  {selectedCommande.articles && selectedCommande.articles.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-300">
+                      <p className="font-medium text-gray-900 mb-3">📦 Articles demandés ({selectedCommande.articles.length}) :</p>
+                      <div className="space-y-2">
+                        {selectedCommande.articles.map((article, index) => (
+                          <div key={index} className="bg-white p-3 rounded border border-gray-200 flex items-start space-x-3">
+                            <span className="flex-shrink-0 w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold">
+                              {index + 1}
+                            </span>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-gray-900">{article.nom || article.designation}</p>
+                              {article.description && (
+                                <p className="text-xs text-gray-600 mt-1">{article.description}</p>
+                              )}
+                              <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                {article.quantite && (
+                                  <span>Qté: <strong>{article.quantite}</strong></span>
+                                )}
+                                {article.unite && (
+                                  <span>Unité: <strong>{article.unite}</strong></span>
+                                )}
+                                {article.reference && (
+                                  <span>Réf: <strong>{article.reference}</strong></span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Commentaire de l'achat si disponible */}
+                  {selectedCommande.commentaire && (
+                    <div className="mt-4 pt-4 border-t border-gray-300">
+                      <p className="font-medium text-gray-900 mb-2">💬 Commentaire du service achat :</p>
+                      <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
+                        <p className="text-sm text-gray-700 italic">{selectedCommande.commentaire}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Commentaire */}
