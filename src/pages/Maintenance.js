@@ -70,6 +70,227 @@ const Maintenance = () => {
     return matchesSearch && matchesStatus && matchesVehicule;
   });
 
+  // Composant Modal pour créer/modifier une maintenance
+  const MaintenanceModal = ({ onClose, onSave, maintenance = null }) => {
+    const [formData, setFormData] = useState({
+      vehiculeId: maintenance?.vehiculeId || '',
+      type: maintenance?.type || 'Entretien périodique',
+      description: maintenance?.description || '',
+      prestataireId: maintenance?.prestataireId || '',
+      dateEntretien: maintenance?.dateEntretien?.toDate?.()?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
+      coutEstime: maintenance?.coutEstime || '',
+      statut: maintenance?.statut || 'planifiee',
+      notes: maintenance?.notes || ''
+    });
+
+    const typesMaintenance = [
+      'Entretien périodique',
+      'Vidange',
+      'Révision complète',
+      'Réparation',
+      'Changement de pneus',
+      'Contrôle technique',
+      'Autre'
+    ];
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      
+      try {
+        const maintenanceData = {
+          ...formData,
+          dateEntretien: new Date(formData.dateEntretien),
+          coutEstime: parseFloat(formData.coutEstime) || 0,
+          createdAt: maintenance ? maintenance.createdAt : new Date(),
+          updatedAt: new Date(),
+          createdBy: userProfile?.uid || 'system',
+          createdByName: userProfile?.nom || 'Système'
+        };
+
+        if (maintenance) {
+          await updateDoc(doc(db, 'maintenance', maintenance.id), maintenanceData);
+          toast.success('Maintenance modifiée avec succès');
+        } else {
+          await addDoc(collection(db, 'maintenance'), maintenanceData);
+          toast.success('Maintenance créée avec succès');
+        }
+
+        onSave();
+        onClose();
+      } catch (error) {
+        console.error('Erreur:', error);
+        toast.error('Erreur lors de l\'enregistrement');
+      }
+    };
+
+    return (
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div className="relative top-10 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white">
+          <div className="mt-3">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">
+                {maintenance ? 'Modifier' : 'Nouvelle'} Maintenance
+              </h3>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Véhicule *
+                  </label>
+                  <select
+                    required
+                    value={formData.vehiculeId}
+                    onChange={(e) => setFormData({...formData, vehiculeId: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Sélectionner un véhicule</option>
+                    {vehicules.filter(v => v.statut !== 'supprime').map(v => (
+                      <option key={v.id} value={v.id}>
+                        {v.marque} {v.modele} - {v.immatriculation}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type de maintenance *
+                  </label>
+                  <select
+                    required
+                    value={formData.type}
+                    onChange={(e) => setFormData({...formData, type: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {typesMaintenance.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description *
+                </label>
+                <textarea
+                  required
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Détails de la maintenance..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Prestataire *
+                  </label>
+                  <select
+                    required
+                    value={formData.prestataireId}
+                    onChange={(e) => setFormData({...formData, prestataireId: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Sélectionner un prestataire</option>
+                    {prestataires.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.nom}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date d'entretien *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.dateEntretien}
+                    onChange={(e) => setFormData({...formData, dateEntretien: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Coût estimé (GNF)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.coutEstime}
+                    onChange={(e) => setFormData({...formData, coutEstime: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Statut
+                  </label>
+                  <select
+                    value={formData.statut}
+                    onChange={(e) => setFormData({...formData, statut: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="planifiee">Planifiée</option>
+                    <option value="en_cours">En cours</option>
+                    <option value="terminee">Terminée</option>
+                    <option value="annulee">Annulée</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Notes additionnelles
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Notes optionnelles..."
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                >
+                  {maintenance ? 'Modifier' : 'Créer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Composant Modal pour gérer les véhicules
   const VehiculeModal = ({ vehicules, onClose, onSave }) => {
     const [formData, setFormData] = useState({
@@ -497,6 +718,18 @@ const Maintenance = () => {
           </div>
         )}
       </div>
+
+      {/* Modal de création/modification de maintenance */}
+      {showCreateModal && (
+        <MaintenanceModal
+          onClose={() => {
+            setShowCreateModal(false);
+            setSelectedMaintenance(null);
+          }}
+          onSave={loadData}
+          maintenance={selectedMaintenance}
+        />
+      )}
 
       {/* Modal de gestion des véhicules */}
       {showVehiculeModal && (
