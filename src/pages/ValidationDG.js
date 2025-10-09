@@ -49,7 +49,7 @@ const ValidationDG = () => {
 
   const handleApprove = async () => {
     if (!signature) {
-      toast.error('Veuillez signer avant d\'approuver');
+      toast.error('⚠️ Veuillez d\'abord signer dans la zone de signature avant d\'approuver');
       return;
     }
 
@@ -77,7 +77,7 @@ const ValidationDG = () => {
 
   const handleReject = async () => {
     if (!signature) {
-      toast.error('Veuillez signer avant de rejeter');
+      toast.error('⚠️ Veuillez d\'abord signer dans la zone de signature avant de rejeter');
       return;
     }
 
@@ -402,13 +402,22 @@ const ValidationDG = () => {
                   <SignaturePad
                     onSave={(signatureData) => {
                       setSignature(signatureData);
-                      toast.success('Signature sauvegardée');
+                      if (signatureData) {
+                        toast.success('Signature enregistrée ✓');
+                      }
                     }}
                     onCancel={() => {
                       // Ne rien faire, garder la signature actuelle
                     }}
                     initialSignature={signature}
+                    autoSave={true}
                   />
+                  {signature && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                      <p className="text-sm text-green-700 font-medium">✓ Signature prête pour validation</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
