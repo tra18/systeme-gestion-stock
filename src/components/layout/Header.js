@@ -4,7 +4,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import NotificationSystem from '../notifications/NotificationSystem';
+import NotificationCenter from '../notifications/NotificationCenter';
 import ThemeToggle from '../theme/ThemeToggle';
 import '../../styles/animations.css';
 
@@ -90,21 +90,11 @@ const Header = ({ onMenuClick }) => {
               />
             </div>
             
-            {/* Système de notifications avancé */}
-            <NotificationSystem />
+            {/* Centre de notifications en temps réel */}
+            <NotificationCenter />
             
             {/* Bouton de basculement de thème */}
             <ThemeToggle />
-            
-            {/* Ancien système d'alertes (fallback) */}
-            <button className="relative p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-full">
-              <Bell className={`h-5 w-5 sm:h-6 sm:w-6 ${hasAlerts ? 'alert-blink alert-pulse-red' : ''}`} />
-              {hasAlerts && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white alert-bounce">
-                  {alertCount > 9 ? '9+' : alertCount}
-                </span>
-              )}
-            </button>
           </div>
         </div>
       </div>

@@ -20,6 +20,8 @@ import Employes from './pages/Employes';
 import Alertes from './pages/Alertes';
 import Parametres from './pages/Parametres';
 import RessourcesHumaines from './pages/RessourcesHumaines';
+import Rapports from './pages/Rapports';
+import Budgets from './pages/Budgets';
 
 // Nouveaux composants avancés
 import AdvancedDashboard from './components/dashboard/AdvancedDashboardSimple';
@@ -192,6 +194,22 @@ const AppContent = () => {
               element={
                 <ProtectedRoute allowedRoles={['dg']}>
                   <RessourcesHumaines />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="rapports" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <Rapports />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="budgets" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <Budgets />
                 </ProtectedRoute>
               } 
             />

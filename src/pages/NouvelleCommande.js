@@ -4,6 +4,7 @@ import { collection, addDoc, getDocs, query, orderBy } from 'firebase/firestore'
 import { db } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import BudgetChecker from '../components/budgets/BudgetChecker';
 
 const NouvelleCommande = () => {
   const { userProfile } = useAuth();
@@ -15,7 +16,8 @@ const NouvelleCommande = () => {
   const [commandeData, setCommandeData] = useState({
     service: '',
     urgence: 'normale',
-    commentaire: ''
+    commentaire: '',
+    prixEstime: '' // Pour la vérification budgétaire
   });
   
   // Liste des articles dans la commande
@@ -184,7 +186,8 @@ const NouvelleCommande = () => {
       setCommandeData({
         service: '',
         urgence: 'normale',
-        commentaire: ''
+        commentaire: '',
+        prixEstime: ''
       });
       setArticles([{
         id: 1,
@@ -288,6 +291,28 @@ const NouvelleCommande = () => {
               placeholder="Ajoutez des informations complémentaires pour cette commande groupée..."
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Prix estimé total (GNF) <span className="text-gray-500 text-xs">(optionnel - pour vérification budgétaire)</span>
+            </label>
+            <input
+              type="number"
+              name="prixEstime"
+              value={commandeData.prixEstime}
+              onChange={handleCommandeChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="0"
+            />
+          </div>
+
+          {/* Vérification budgétaire */}
+          {commandeData.service && commandeData.prixEstime && parseFloat(commandeData.prixEstime) > 0 && (
+            <BudgetChecker 
+              service={commandeData.service}
+              montantCommande={commandeData.prixEstime}
+            />
+          )}
 
           {/* Liste des articles */}
           <div className="border-t border-gray-200 pt-6">
