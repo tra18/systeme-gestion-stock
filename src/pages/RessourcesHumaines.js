@@ -8,7 +8,11 @@ import {
 import { db } from '../firebase/config';
 import { 
   collection, 
-  getDocs
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc
 } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import CongesManager from '../components/rh/CongesManager';
@@ -467,13 +471,25 @@ const EmployesTab = ({ employes, onRefresh, openModal }) => (
               </td>
               <td className="px-4 py-3">
                 <div className="flex space-x-2">
-                  <button className="text-blue-600 hover:text-blue-700">
+                  <button 
+                    onClick={() => openModal('view-employe', employe)}
+                    className="text-blue-600 hover:text-blue-700"
+                    title="Voir les détails"
+                  >
                     <Eye size={18} />
                   </button>
-                  <button className="text-yellow-600 hover:text-yellow-700">
+                  <button 
+                    onClick={() => openModal('edit-employe', employe)}
+                    className="text-yellow-600 hover:text-yellow-700"
+                    title="Modifier l'employé"
+                  >
                     <Edit2 size={18} />
                   </button>
-                  <button className="text-red-600 hover:text-red-700">
+                  <button 
+                    onClick={() => openModal('delete-employe', employe)}
+                    className="text-red-600 hover:text-red-700"
+                    title="Supprimer l'employé"
+                  >
                     <Trash2 size={18} />
                   </button>
                 </div>
@@ -502,29 +518,294 @@ const EvaluationsTab = ({ evaluations, employes, onRefresh }) => (
   <EvaluationsManager evaluations={evaluations} employes={employes} onRefresh={onRefresh} />
 );
 
-// Modal placeholder
-const Modal = ({ type, item, employes, onClose, onSave }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl p-6 max-w-md w-full">
-      <h3 className="text-xl font-bold mb-4">Modal - {type}</h3>
-      <p className="text-gray-600 mb-4">Fonctionnalité en développement</p>
-      <div className="flex space-x-3">
-        <button
-          onClick={onClose}
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-        >
-          Fermer
-        </button>
-        <button
-          onClick={onSave}
-          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Enregistrer
-        </button>
+// Modal pour employés
+const Modal = ({ type, item, employes, onClose, onSave }) => {
+  const [formData, setFormData] = useState(item || {});
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      if (type === 'employe' || type === 'edit-employe') {
+        // Créer ou modifier un employé
+        const employeData = {
+          nom: formData.nom,
+          prenom: formData.prenom || '',
+          poste: formData.poste,
+          departement: formData.departement,
+          salaire: parseFloat(formData.salaire) || 0,
+          email: formData.email || '',
+          telephone: formData.telephone || '',
+          statut: formData.statut || 'actif',
+          dateEmbauche: formData.dateEmbauche || new Date().toISOString().split('T')[0],
+          updatedAt: new Date()
+        };
+
+        if (type === 'edit-employe' && item?.id) {
+          // Mise à jour
+          await updateDoc(doc(db, 'employes', item.id), employeData);
+          toast.success('✅ Employé modifié avec succès');
+        } else {
+          // Création
+          employeData.createdAt = new Date();
+          await addDoc(collection(db, 'employes'), employeData);
+          toast.success('✅ Employé ajouté avec succès');
+        }
+      } else if (type === 'delete-employe' && item?.id) {
+        // Suppression
+        await deleteDoc(doc(db, 'employes', item.id));
+        toast.success('✅ Employé supprimé avec succès');
+      }
+      
+      onSave();
+    } catch (error) {
+      console.error('Erreur modal employé:', error);
+      toast.error('❌ Erreur lors de l\'opération');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Modal de suppression
+  if (type === 'delete-employe') {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl p-6 max-w-md w-full">
+          <h3 className="text-xl font-bold mb-4 text-red-600">⚠️ Confirmer la suppression</h3>
+          <p className="text-gray-600 mb-4">
+            Êtes-vous sûr de vouloir supprimer l'employé <strong>{item?.nom}</strong> ?
+            Cette action est irréversible.
+          </p>
+          <div className="flex space-x-3">
+            <button
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Annuler
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+            >
+              {loading ? 'Suppression...' : 'Supprimer'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Modal de visualisation
+  if (type === 'view-employe') {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <h3 className="text-xl font-bold mb-4">👤 Détails de l'employé</h3>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <p className="text-sm text-gray-600">Nom complet</p>
+              <p className="font-medium">{item?.nom} {item?.prenom}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Poste</p>
+              <p className="font-medium">{item?.poste}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Département</p>
+              <p className="font-medium">{item?.departement}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Salaire</p>
+              <p className="font-medium">{item?.salaire} GNF</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Email</p>
+              <p className="font-medium">{item?.email || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Téléphone</p>
+              <p className="font-medium">{item?.telephone || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Statut</p>
+              <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                item?.statut === 'actif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+              }`}>
+                {item?.statut}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Date d'embauche</p>
+              <p className="font-medium">{item?.dateEmbauche || 'N/A'}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-full px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Modal de création/édition
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <h3 className="text-xl font-bold mb-4">
+          {type === 'edit-employe' ? '✏️ Modifier l\'employé' : '➕ Ajouter un employé'}
+        </h3>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nom *
+              </label>
+              <input
+                type="text"
+                name="nom"
+                value={formData.nom || ''}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Prénom
+              </label>
+              <input
+                type="text"
+                name="prenom"
+                value={formData.prenom || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Poste *
+              </label>
+              <input
+                type="text"
+                name="poste"
+                value={formData.poste || ''}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Département *
+              </label>
+              <input
+                type="text"
+                name="departement"
+                value={formData.departement || ''}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Salaire (GNF) *
+              </label>
+              <input
+                type="number"
+                name="salaire"
+                value={formData.salaire || ''}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Téléphone
+              </label>
+              <input
+                type="tel"
+                name="telephone"
+                value={formData.telephone || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Statut
+              </label>
+              <select
+                name="statut"
+                value={formData.statut || 'actif'}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="actif">Actif</option>
+                <option value="inactif">Inactif</option>
+                <option value="conge">En congé</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date d'embauche
+              </label>
+              <input
+                type="date"
+                name="dateEmbauche"
+                value={formData.dateEmbauche || ''}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? 'Enregistrement...' : 'Enregistrer'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default RessourcesHumaines;
 

@@ -72,45 +72,52 @@ const SignaturePad = ({ onSave, onCancel, initialSignature = null, autoSave = fa
         />
       </div>
       
-      {!autoSave && (
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex space-x-2">
+      <div className="mt-4">
+        {!autoSave ? (
+          <div className="flex justify-between items-center">
+            <div className="flex space-x-2">
+              <button
+                onClick={handleClear}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                Effacer
+              </button>
+            </div>
+            
+            <div className="flex space-x-2">
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isEmpty}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                💾 Sauvegarder la signature
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-between items-center">
             <button
               onClick={handleClear}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-300 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500"
             >
-              Effacer
-            </button>
-          </div>
-          
-          <div className="flex space-x-2">
-            <button
-              onClick={handleCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              Annuler
+              🗑️ Effacer et recommencer
             </button>
             <button
               onClick={handleSave}
               disabled={isEmpty}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sauvegarder la signature
+              ✓ Valider la signature
             </button>
           </div>
-        </div>
-      )}
-      
-      {autoSave && (
-        <div className="mt-4 flex justify-start">
-          <button
-            onClick={handleClear}
-            className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-300 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            🗑️ Effacer et recommencer
-          </button>
-        </div>
-      )}
+        )}
+      </div>
       
       {initialSignature && (
         <div className="mt-4">
