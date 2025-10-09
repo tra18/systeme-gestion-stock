@@ -20,7 +20,8 @@ import {
   BarChart3,
   Wifi,
   Briefcase,
-  FileText
+  FileText,
+  Shield
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -48,6 +49,7 @@ const Sidebar = ({ onClose }) => {
     { name: 'Prestataires', href: '/prestataires', icon: Wrench, roles: ['achat', 'dg'] },
     { name: 'Alertes', href: '/alertes', icon: Bell, roles: ['service', 'achat', 'dg'] },
     { name: 'Paramètres', href: '/parametres', icon: Settings, roles: ['dg'] },
+    { name: 'Gestion Permissions', href: '/gestion-permissions', icon: Shield, roles: ['dg'] },
   ];
 
   // Nouvelles pages avancées (uniquement pour le DG)

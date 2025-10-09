@@ -22,13 +22,14 @@ import Parametres from './pages/Parametres';
 import RessourcesHumaines from './pages/RessourcesHumaines';
 import Rapports from './pages/Rapports';
 import Budgets from './pages/Budgets';
+import GestionPermissions from './pages/GestionPermissions';
 
 // Nouveaux composants avancés
 import AdvancedDashboard from './components/dashboard/AdvancedDashboardSimple';
 import OfflineManager from './components/offline/OfflineManager';
 
-// Composant de protection des routes
-const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+// Composant de protection des routes avec permissions personnalisées
+const ProtectedRoute = ({ children, allowedRoles = [], pageId = null }) => {
   const { currentUser, userProfile, loading } = useAuth();
 
   if (loading) {
@@ -43,6 +44,23 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
+  // Vérifier d'abord les permissions personnalisées si elles existent
+  if (pageId && userProfile?.permissions) {
+    // Si l'utilisateur a des permissions personnalisées définies
+    const hasPermission = userProfile.permissions[pageId];
+    
+    // Si la permission est explicitement définie (true ou false)
+    if (hasPermission === false) {
+      return <Navigate to="/dashboard" replace />;
+    }
+    
+    // Si la permission est true, autoriser l'accès
+    if (hasPermission === true) {
+      return children;
+    }
+  }
+
+  // Si pas de permissions personnalisées, utiliser le système de rôles par défaut
   if (allowedRoles.length > 0 && !allowedRoles.includes(userProfile?.role)) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -221,8 +239,16 @@ const AppContent = () => {
             <Route 
               path="parametres" 
               element={
-                <ProtectedRoute allowedRoles={['dg']}>
+                <ProtectedRoute allowedRoles={['dg']} pageId="parametres">
                   <Parametres />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="gestion-permissions" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']} pageId="gestion-permissions">
+                  <GestionPermissions />
                 </ProtectedRoute>
               } 
             />
