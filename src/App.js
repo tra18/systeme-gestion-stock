@@ -25,7 +25,6 @@ import Budgets from './pages/Budgets';
 
 // Nouveaux composants avancés
 import AdvancedDashboard from './components/dashboard/AdvancedDashboardSimple';
-import StockPrediction from './components/ai/StockPredictionSimple';
 import WorkflowManager from './components/workflow/WorkflowManager';
 import OfflineManager from './components/offline/OfflineManager';
 
@@ -235,14 +234,6 @@ const AppContent = () => {
               element={
                 <ProtectedRoute allowedRoles={['dg']}>
                   <AdvancedDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="predictions-ia" 
-              element={
-                <ProtectedRoute allowedRoles={['dg']}>
-                  <StockPrediction />
                 </ProtectedRoute>
               } 
             />

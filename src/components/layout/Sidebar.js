@@ -18,10 +18,8 @@ import {
   Hash,
   X,
   BarChart3,
-  Brain,
   Workflow,
   Wifi,
-  TestTube,
   Briefcase,
   FileText
 } from 'lucide-react';
@@ -56,7 +54,6 @@ const Sidebar = ({ onClose }) => {
   // Nouvelles pages avancées (uniquement pour le DG)
   const advancedNavigation = [
     { name: 'Dashboard Avancé', href: '/dashboard-avance', icon: BarChart3, roles: ['dg'] },
-    { name: 'Prédictions IA', href: '/predictions-ia', icon: Brain, roles: ['dg'] },
     { name: 'Workflows', href: '/workflows', icon: Workflow, roles: ['dg'] },
     { name: 'Mode Hors Ligne', href: '/hors-ligne', icon: Wifi, roles: ['dg'] },
   ];

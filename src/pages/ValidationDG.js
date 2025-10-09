@@ -219,6 +219,7 @@ const ValidationDG = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       <div className="max-w-sm">
+                        {/* Si commande avec plusieurs articles (nouveau format) */}
                         {commande.articles && commande.articles.length > 0 ? (
                           <div className="space-y-1">
                             <div className="flex items-center space-x-1 mb-2">
@@ -233,8 +234,8 @@ const ValidationDG = () => {
                                     {index + 1}
                                   </span>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-medium text-gray-900 truncate">
-                                      {article.nom || article.designation}
+                                    <p className="text-xs font-medium text-gray-900">
+                                      {article.article || article.nom || article.designation || 'N/A'}
                                     </p>
                                     {article.quantite && (
                                       <p className="text-xs text-gray-600">
@@ -253,6 +254,14 @@ const ValidationDG = () => {
                                 </div>
                               )}
                             </div>
+                          </div>
+                        ) : commande.article ? (
+                          /* Si commande avec un seul article (ancien format) */
+                          <div className="bg-purple-50 p-2 rounded border border-purple-100">
+                            <p className="text-sm font-bold text-gray-900">{commande.article}</p>
+                            <p className="text-xs text-gray-600 mt-1">
+                              Qté: {commande.quantite} {commande.unite}
+                            </p>
                           </div>
                         ) : (
                           <div className="text-center py-2 px-3 bg-gray-100 rounded">
