@@ -306,9 +306,15 @@ const EvaluationsManager = ({ evaluations, employes, onRefresh }) => {
                     required
                   >
                     <option value="">Sélectionner un employé</option>
-                    {employes.filter(e => e.statut === 'actif').map(emp => (
-                      <option key={emp.id} value={emp.id}>{emp.nom} - {emp.poste}</option>
-                    ))}
+                    {employes.length > 0 ? (
+                      employes.map(emp => (
+                        <option key={emp.id} value={emp.id}>
+                          {emp.nom} {emp.poste ? `- ${emp.poste}` : ''} {emp.statut !== 'actif' ? `(${emp.statut})` : ''}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>Aucun employé disponible</option>
+                    )}
                   </select>
                 </div>
 
