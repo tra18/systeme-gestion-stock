@@ -1,0 +1,94 @@
+name: 💬 Discussion Générale
+description: Discussion générale sur le projet VITACH GUINÉE
+title: "[DISCUSSION] "
+labels: ["discussion", "general"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        💬 **Discussion Générale - VITACH GUINÉE**
+        
+        Utilisez cette section pour discuter de tout ce qui concerne le projet VITACH GUINÉE.
+        
+  - type: textarea
+    id: discussion-topic
+    attributes:
+      label: 🎯 Sujet de la Discussion
+      description: Décrivez le sujet de votre discussion
+      placeholder: "Ex: Comment améliorer l'interface utilisateur ?"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: discussion-details
+    attributes:
+      label: 📝 Détails
+      description: Fournissez plus de détails sur votre discussion
+      placeholder: "Développez votre point de vue, posez des questions, partagez des idées..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: discussion-category
+    attributes:
+      label: 🏷️ Catégorie
+      description: Sélectionnez la catégorie de votre discussion
+      options:
+        - "💡 Idées et Suggestions"
+        - "❓ Questions et Aide"
+        - "🔧 Problèmes Techniques"
+        - "📚 Documentation"
+        - "🎨 Interface Utilisateur"
+        - "⚡ Performance"
+        - "🔒 Sécurité"
+        - "📊 Fonctionnalités"
+        - "🤝 Collaboration"
+        - "📢 Annonces"
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: discussion-tags
+    attributes:
+      label: 🏷️ Tags
+      description: Sélectionnez les tags pertinents
+      options:
+        - label: "Frontend"
+        - label: "Backend"
+        - label: "Base de données"
+        - label: "API"
+        - label: "Authentification"
+        - label: "Achats"
+        - label: "Stock"
+        - label: "Véhicules"
+        - label: "Fournisseurs"
+        - label: "Services"
+        - label: "Rapports"
+        - label: "Export"
+        - label: "Performance"
+        - label: "Sécurité"
+        - label: "Documentation"
+        - label: "Tests"
+        - label: "Déploiement"
+        
+  - type: textarea
+    id: discussion-context
+    attributes:
+      label: 🔍 Contexte
+      description: Ajoutez tout contexte supplémentaire utile
+      placeholder: "Version utilisée, environnement, captures d'écran, etc."
+      
+  - type: checkboxes
+    id: discussion-acknowledgments
+    attributes:
+      label: ✅ Confirmations
+      description: Confirmez que vous avez lu et compris
+      options:
+        - label: "J'ai lu la documentation du projet"
+          required: true
+        - label: "J'ai vérifié les issues existantes"
+          required: true
+        - label: "J'ai respecté le code de conduite"
+          required: true
+
+

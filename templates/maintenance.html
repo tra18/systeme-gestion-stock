@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Entretiens - Système de Gestion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-container, .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h2, .table-container h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        th {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-scheduled {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-completed {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-overdue {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-repaired {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error {
+            background: #fee;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+        }
+
+        .success {
+            background: #efe;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="margin-bottom: 20px;">
+                <a href="/" class="btn btn-primary" style="background: linear-gradient(45deg, #2c3e50, #34495e); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <i class="fas fa-home"></i> 🏠 Retour à l'Accueil
+                </a>
+            </div>
+            <h1><i class="fas fa-wrench"></i> Gestion des Entretiens & Pannes</h1>
+            <p>Suivi complet des entretiens, pannes et coûts de maintenance</p>
+            
+            <div class="nav-buttons">
+                <a href="/vehicles" class="btn">
+                    <i class="fas fa-car"></i> Véhicules
+                </a>
+                <button onclick="logout()" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                </button>
+            </div>
+        </div>
+        
+        <div class="error" id="error-alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="error-message"></span>
+        </div>
+        
+        <div class="success" id="success-alert">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-message"></span>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Chargement...</p>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <h3><i class="fas fa-wrench"></i> Entretiens</h3>
+                <div class="number" id="total-maintenance">-</div>
+                <div class="label">Total</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-exclamation-triangle"></i> Pannes</h3>
+                <div class="number" id="total-breakdowns">-</div>
+                <div class="label">Total</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-dollar-sign"></i> Coût Total</h3>
+                <div class="number" id="total-cost">-</div>
+                <div class="label">GNF</div>
+            </div>
+            <div class="stat-card">
+                <h3><i class="fas fa-clock"></i> Rappels</h3>
+                <div class="number" id="upcoming-reminders">-</div>
+                <div class="label">À venir</div>
+            </div>
+        </div>
+
+        <!-- Onglets -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('maintenance')">
+                <i class="fas fa-wrench"></i> Entretiens
+            </button>
+            <button class="tab" onclick="switchTab('breakdowns')">
+                <i class="fas fa-exclamation-triangle"></i> Pannes
+            </button>
+            <button class="tab" onclick="switchTab('dashboard')">
+                <i class="fas fa-chart-line"></i> Tableau de Bord
+            </button>
+        </div>
+
+        <!-- Contenu des onglets -->
+        <div id="maintenance-tab" class="tab-content active">
+            <div class="form-container">
+                <h2><i class="fas fa-plus"></i> Nouvel Entretien</h2>
+                <form id="maintenance-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="vehicle_id">Véhicule *</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="vehicle_id" name="vehicle_id" required style="flex: 1;">
+                                    <option value="">Sélectionner un véhicule</option>
+                                </select>
+                                <button type="button" onclick="loadVehicles()" class="btn btn-info" style="padding: 8px 12px; font-size: 12px;" title="Actualiser la liste">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button type="button" onclick="openVehicleModal()" class="btn btn-success" style="padding: 8px 12px; font-size: 12px;" title="Créer un nouveau véhicule">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="maintenance_type">Type d'entretien *</label>
+                            <select id="maintenance_type" name="maintenance_type" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="Révision">Révision</option>
+                                <option value="Réparation">Réparation</option>
+                                <option value="Changement d'huile">Changement d'huile</option>
+                                <option value="Changement de pneus">Changement de pneus</option>
+                                <option value="Freinage">Freinage</option>
+                                <option value="Climatisation">Climatisation</option>
+                                <option value="Électricité">Électricité</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="service_date">Date d'entretien *</label>
+                            <input type="date" id="service_date" name="service_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="next_service_due">Prochain entretien</label>
+                            <input type="date" id="next_service_due" name="next_service_due">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cost">Coût (GNF) *</label>
+                            <input type="number" id="cost" name="cost" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mileage_at_service">Kilométrage</label>
+                            <input type="number" id="mileage_at_service" name="mileage_at_service" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="service_provider">Prestataire</label>
+                            <input type="text" id="service_provider" name="service_provider">
+                        </div>
+                        <div class="form-group">
+                            <label for="is_scheduled">Entretien programmé</label>
+                            <select id="is_scheduled" name="is_scheduled">
+                                <option value="false">Non</option>
+                                <option value="true">Oui</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Enregistrer l'Entretien
+                    </button>
+                    <button type="button" onclick="clearMaintenanceForm()" class="btn btn-warning">
+                        <i class="fas fa-eraser"></i> Effacer
+                    </button>
+                </form>
+            </div>
+            
+            <div class="table-container">
+                <h2><i class="fas fa-list"></i> Historique des Entretiens</h2>
+                <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <select id="vehicle-filter" onchange="filterByVehicle()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">Tous les véhicules</option>
+                    </select>
+                    <button onclick="loadMaintenanceRecords()" class="btn">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                    <button onclick="exportMaintenance()" class="btn btn-warning">
+                        <i class="fas fa-download"></i> Exporter
+                    </button>
+                </div>
+                <table id="maintenance-table">
+                    <thead>
+                        <tr>
+                            <th>Véhicule</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Coût</th>
+                            <th>Kilométrage</th>
+                            <th>Prestataire</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="maintenance-tbody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin"></i> Chargement des données...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="breakdowns-tab" class="tab-content">
+            <div class="form-container">
+                <h2><i class="fas fa-plus"></i> Nouvelle Panne</h2>
+                <form id="breakdown-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="breakdown_vehicle_id">Véhicule *</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="breakdown_vehicle_id" name="vehicle_id" required style="flex: 1;">
+                                    <option value="">Sélectionner un véhicule</option>
+                                </select>
+                                <button type="button" onclick="loadVehicles()" class="btn btn-info" style="padding: 8px 12px; font-size: 12px;" title="Actualiser la liste">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                <button type="button" onclick="openVehicleModal()" class="btn btn-success" style="padding: 8px 12px; font-size: 12px;" title="Créer un nouveau véhicule">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="breakdown_type">Type de panne *</label>
+                            <select id="breakdown_type" name="breakdown_type" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="Moteur">Moteur</option>
+                                <option value="Freinage">Freinage</option>
+                                <option value="Transmission">Transmission</option>
+                                <option value="Électricité">Électricité</option>
+                                <option value="Climatisation">Climatisation</option>
+                                <option value="Pneus">Pneus</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="breakdown_date">Date de panne *</label>
+                            <input type="date" id="breakdown_date" name="breakdown_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="repair_date">Date de réparation</label>
+                            <input type="date" id="repair_date" name="repair_date">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="breakdown_cost">Coût de réparation (GNF)</label>
+                            <input type="number" id="breakdown_cost" name="cost" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="mileage_at_breakdown">Kilométrage</label>
+                            <input type="number" id="mileage_at_breakdown" name="mileage_at_breakdown" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location">Lieu de la panne</label>
+                            <input type="text" id="location" name="location">
+                        </div>
+                        <div class="form-group">
+                            <label for="repair_provider">Réparateur</label>
+                            <input type="text" id="repair_provider" name="repair_provider">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="breakdown_description">Description de la panne *</label>
+                        <textarea id="breakdown_description" name="description" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="repair_notes">Notes de réparation</label>
+                        <textarea id="repair_notes" name="repair_notes" rows="3"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Enregistrer la Panne
+                    </button>
+                    <button type="button" onclick="clearBreakdownForm()" class="btn btn-warning">
+                        <i class="fas fa-eraser"></i> Effacer
+                    </button>
+                </form>
+            </div>
+            
+            <div class="table-container">
+                <h2><i class="fas fa-list"></i> Historique des Pannes</h2>
+                <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <select id="vehicle-filter-breakdowns" onchange="filterBreakdownsByVehicle()" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">Tous les véhicules</option>
+                    </select>
+                    <button onclick="loadBreakdowns()" class="btn">
+                        <i class="fas fa-sync-alt"></i> Actualiser
+                    </button>
+                    <button onclick="exportBreakdowns()" class="btn btn-warning">
+                        <i class="fas fa-download"></i> Exporter
+                    </button>
+                </div>
+                <table id="breakdowns-table">
+                    <thead>
+                        <tr>
+                            <th>Véhicule</th>
+                            <th>Type</th>
+                            <th>Date Panne</th>
+                            <th>Date Réparation</th>
+                            <th>Coût</th>
+                            <th>Lieu</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="breakdowns-tbody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin"></i> Chargement des données...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="dashboard-tab" class="tab-content">
+            <div class="table-container">
+                <h2><i class="fas fa-chart-line"></i> Tableau de Bord des Entretiens</h2>
+                <div style="margin-bottom: 20px;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start_date">Date de début</label>
+                            <input type="date" id="start_date" name="start_date">
+                        </div>
+                        <div class="form-group">
+                            <label for="end_date">Date de fin</label>
+                            <input type="date" id="end_date" name="end_date">
+                        </div>
+                        <div class="form-group">
+                            <button onclick="loadDashboard()" class="btn btn-success">
+                                <i class="fas fa-search"></i> Filtrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="dashboard-content">
+                    <p style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <i class="fas fa-chart-line"></i> Sélectionnez une période pour voir les statistiques
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let vehicles = [];
+        let allMaintenanceData = []; // Stocker toutes les données d'entretiens
+        let allBreakdownsData = []; // Stocker toutes les données de pannes
+        let currentTab = 'maintenance';
+
+        // Charger les données au démarrage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadVehicles();
+            loadStats();
+            loadMaintenanceRecords();
+            loadBreakdowns();
+            
+            // Définir la date d'aujourd'hui par défaut
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('service_date').value = today;
+            document.getElementById('breakdown_date').value = today;
+            
+            // Gérer les paramètres URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const vehicleId = urlParams.get('vehicle_id');
+            const tab = urlParams.get('tab');
+            
+            if (vehicleId) {
+                // Filtrer par véhicule
+                setTimeout(() => {
+                    const vehicleFilter = document.getElementById('vehicle-filter');
+                    const vehicleFilterBreakdowns = document.getElementById('vehicle-filter-breakdowns');
+                    
+                    if (vehicleFilter) {
+                        vehicleFilter.value = vehicleId;
+                        filterByVehicle();
+                    }
+                    
+                    if (vehicleFilterBreakdowns) {
+                        vehicleFilterBreakdowns.value = vehicleId;
+                        filterBreakdownsByVehicle();
+                    }
+                }, 1500); // Augmenter le délai pour s'assurer que les véhicules sont chargés
+            }
+            
+            if (tab) {
+                // Activer l'onglet spécifié
+                if (tab === 'breakdowns') {
+                    document.getElementById('breakdowns-tab').click();
+                } else if (tab === 'maintenance') {
+                    document.getElementById('maintenance-tab').click();
+                }
+            }
+        });
+
+        // Fonction de filtrage par véhicule pour les entretiens
+        function filterByVehicle() {
+            const vehicleId = document.getElementById('vehicle-filter').value;
+            if (vehicleId) {
+                const filtered = allMaintenanceData.filter(record => record.vehicle_id == vehicleId);
+                displayMaintenanceRecords(filtered);
+            } else {
+                displayMaintenanceRecords(allMaintenanceData);
+            }
+        }
+        
+        // Fonction de filtrage par véhicule pour les pannes
+        function filterBreakdownsByVehicle() {
+            const vehicleId = document.getElementById('vehicle-filter-breakdowns').value;
+            if (vehicleId) {
+                const filtered = allBreakdownsData.filter(breakdown => breakdown.vehicle_id == vehicleId);
+                displayBreakdowns(filtered);
+            } else {
+                displayBreakdowns(allBreakdownsData);
+            }
+        }
+        
+        // Gestion des onglets
+        function switchTab(tabName) {
+            // Masquer tous les onglets
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Afficher l'onglet sélectionné
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            currentTab = tabName;
+        }
+
+        // Charger les véhicules
+        async function loadVehicles() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/vehicles/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                vehicles = await response.json();
+                
+                // Remplir les sélecteurs de véhicules
+                const vehicleSelects = ['vehicle_id', 'breakdown_vehicle_id', 'vehicle-filter', 'vehicle-filter-breakdowns'];
+                vehicleSelects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    if (select) {
+                        const defaultText = selectId.includes('filter') ? 'Tous les véhicules' : 'Sélectionner un véhicule';
+                        select.innerHTML = `<option value="">${defaultText}</option>`;
+                        vehicles.forEach(vehicle => {
+                            const option = document.createElement('option');
+                            option.value = vehicle.id;
+                            option.textContent = `${vehicle.brand} ${vehicle.model} (${vehicle.plate_number})`;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+            } catch (error) {
+                showError('Erreur lors du chargement des véhicules: ' + error.message);
+            }
+        }
+
+        // Charger les statistiques
+        async function loadStats() {
+            try {
+                const token = localStorage.getItem('access_token');
+                
+                // Statistiques des entretiens
+                const maintenanceResponse = await fetch('/api/maintenance/stats/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const maintenanceStats = await maintenanceResponse.json();
+                
+                // Statistiques des pannes
+                const breakdownResponse = await fetch('/api/breakdowns/stats/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const breakdownStats = await breakdownResponse.json();
+                
+                // Rappels
+                const remindersResponse = await fetch('/api/maintenance/reminders/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const reminders = await remindersResponse.json();
+                
+                // Mettre à jour l'affichage
+                document.getElementById('total-maintenance').textContent = maintenanceStats.total_records || 0;
+                document.getElementById('total-breakdowns').textContent = breakdownStats.total_breakdowns || 0;
+                document.getElementById('total-cost').textContent = ((maintenanceStats.total_cost || 0) + (breakdownStats.total_cost || 0)).toLocaleString() + ' GNF';
+                document.getElementById('upcoming-reminders').textContent = reminders.count || 0;
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques:', error);
+            }
+        }
+
+        // Gestion du formulaire d'entretien
+        document.getElementById('maintenance-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                showLoading(true);
+                hideAlerts();
+                
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/maintenance/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    showSuccess('Entretien enregistré avec succès !');
+                    clearMaintenanceForm();
+                    loadMaintenanceRecords();
+                    loadStats();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                showError('Erreur de connexion: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Gestion du formulaire de panne
+        document.getElementById('breakdown-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                showLoading(true);
+                hideAlerts();
+                
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/breakdowns/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    showSuccess('Panne enregistrée avec succès !');
+                    clearBreakdownForm();
+                    loadBreakdowns();
+                    loadStats();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                showError('Erreur de connexion: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Charger les entretiens
+        async function loadMaintenanceRecords() {
+            try {
+                showLoading(true);
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/maintenance/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const records = await response.json();
+                allMaintenanceData = records; // Stocker les données
+                
+                displayMaintenanceRecords(records);
+            } catch (error) {
+                showError('Erreur lors du chargement des entretiens: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function displayMaintenanceRecords(records) {
+            const tbody = document.getElementById('maintenance-tbody');
+            if (records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Aucun entretien enregistré</td></tr>';
+            } else {
+                tbody.innerHTML = records.map(record => {
+                        const vehicle = vehicles.find(v => v.id === record.vehicle_id);
+                        const vehicleName = vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Véhicule inconnu';
+                        
+                        let statusClass = 'status-completed';
+                        let statusText = 'Terminé';
+                        
+                        if (record.is_scheduled) {
+                            statusClass = 'status-scheduled';
+                            statusText = 'Programmé';
+                        }
+                        
+                        if (record.next_service_due && new Date(record.next_service_due) < new Date()) {
+                            statusClass = 'status-overdue';
+                            statusText = 'En retard';
+                        }
+                        
+                        return `
+                            <tr>
+                                <td>${vehicleName}</td>
+                                <td>${record.maintenance_type}</td>
+                                <td>${new Date(record.service_date).toLocaleDateString('fr-FR')}</td>
+                                <td>${record.cost.toLocaleString()} GNF</td>
+                                <td>${record.mileage_at_service ? record.mileage_at_service.toLocaleString() + ' km' : '-'}</td>
+                                <td>${record.service_provider || '-'}</td>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button onclick="editMaintenance(${record.id})" class="btn" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteMaintenance(${record.id})" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                showError('Erreur lors du chargement des entretiens: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Charger les pannes
+        async function loadBreakdowns() {
+            try {
+                showLoading(true);
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/breakdowns/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const breakdowns = await response.json();
+                allBreakdownsData = breakdowns; // Stocker les données
+                
+                displayBreakdowns(breakdowns);
+            } catch (error) {
+                showError('Erreur lors du chargement des pannes: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function displayBreakdowns(breakdowns) {
+            const tbody = document.getElementById('breakdowns-tbody');
+            if (breakdowns.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Aucune panne enregistrée</td></tr>';
+            } else {
+                tbody.innerHTML = breakdowns.map(breakdown => {
+                        const vehicle = vehicles.find(v => v.id === breakdown.vehicle_id);
+                        const vehicleName = vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Véhicule inconnu';
+                        
+                        const statusClass = breakdown.is_repaired ? 'status-repaired' : 'status-pending';
+                        const statusText = breakdown.is_repaired ? 'Réparé' : 'En attente';
+                        
+                        return `
+                            <tr>
+                                <td>${vehicleName}</td>
+                                <td>${breakdown.breakdown_type}</td>
+                                <td>${new Date(breakdown.breakdown_date).toLocaleDateString('fr-FR')}</td>
+                                <td>${breakdown.repair_date ? new Date(breakdown.repair_date).toLocaleDateString('fr-FR') : '-'}</td>
+                                <td>${breakdown.cost.toLocaleString()} GNF</td>
+                                <td>${breakdown.location || '-'}</td>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button onclick="editBreakdown(${breakdown.id})" class="btn" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteBreakdown(${breakdown.id})" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                showError('Erreur lors du chargement des pannes: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Charger le tableau de bord
+        async function loadDashboard() {
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+            
+            if (!startDate || !endDate) {
+                showError('Veuillez sélectionner une période');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                const token = localStorage.getItem('access_token');
+                
+                // Charger les statistiques pour la période
+                const maintenanceResponse = await fetch(`/api/maintenance/stats/?start_date=${startDate}&end_date=${endDate}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const maintenanceStats = await maintenanceResponse.json();
+                
+                const breakdownResponse = await fetch(`/api/breakdowns/stats/?start_date=${startDate}&end_date=${endDate}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const breakdownStats = await breakdownResponse.json();
+                
+                // Afficher les résultats
+                const dashboardContent = document.getElementById('dashboard-content');
+                dashboardContent.innerHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Entretiens</h3>
+                            <div class="number">${maintenanceStats.total_records || 0}</div>
+                            <div class="label">Total: ${(maintenanceStats.total_cost || 0).toLocaleString()} GNF</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Pannes</h3>
+                            <div class="number">${breakdownStats.total_breakdowns || 0}</div>
+                            <div class="label">Total: ${(breakdownStats.total_cost || 0).toLocaleString()} GNF</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Coût Total</h3>
+                            <div class="number">${((maintenanceStats.total_cost || 0) + (breakdownStats.total_cost || 0)).toLocaleString()}</div>
+                            <div class="label">GNF</div>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                showError('Erreur lors du chargement du tableau de bord: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Fonctions utilitaires
+        function clearMaintenanceForm() {
+            document.getElementById('maintenance-form').reset();
+            document.getElementById('service_date').value = new Date().toISOString().split('T')[0];
+        }
+        
+        function clearBreakdownForm() {
+            document.getElementById('breakdown-form').reset();
+            document.getElementById('breakdown_date').value = new Date().toISOString().split('T')[0];
+        }
+        
+        function showError(message) {
+            const alert = document.getElementById('error-alert');
+            const messageEl = document.getElementById('error-message');
+            messageEl.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+        
+        function showSuccess(message) {
+            const alert = document.getElementById('success-alert');
+            const messageEl = document.getElementById('success-message');
+            messageEl.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function hideAlerts() {
+            document.getElementById('error-alert').style.display = 'none';
+            document.getElementById('success-alert').style.display = 'none';
+        }
+        
+        function editMaintenance(id) {
+            showError('Fonction d\'édition en cours de développement');
+        }
+        
+        function deleteMaintenance(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet entretien ?')) {
+                showError('Fonction de suppression en cours de développement');
+            }
+        }
+        
+        function editBreakdown(id) {
+            showError('Fonction d\'édition en cours de développement');
+        }
+        
+        function deleteBreakdown(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette panne ?')) {
+                showError('Fonction de suppression en cours de développement');
+            }
+        }
+        
+        function exportMaintenance() {
+            try {
+                // Créer un CSV des entretiens
+                const maintenance = allMaintenanceData || [];
+                if (maintenance.length === 0) {
+                    showError('Aucune donnée à exporter');
+                    return;
+                }
+                
+                let csv = 'Véhicule,Type,Date,Coût,Kilométrage,Prestataire,Description\n';
+                maintenance.forEach(record => {
+                    const vehicle = vehicles.find(v => v.id === record.vehicle_id);
+                    const vehicleName = vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Véhicule inconnu';
+                    csv += `"${vehicleName}","${record.maintenance_type}","${new Date(record.service_date).toLocaleDateString('fr-FR')}",${record.cost},${record.mileage_at_service || ''},"${record.service_provider || ''}","${record.description || ''}"\n`;
+                });
+                
+                // Télécharger le fichier
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `entretiens_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showSuccess('Export des entretiens réussi !');
+            } catch (error) {
+                showError('Erreur lors de l\'export: ' + error.message);
+            }
+        }
+        
+        function exportBreakdowns() {
+            try {
+                // Créer un CSV des pannes
+                const breakdowns = allBreakdownsData || [];
+                if (breakdowns.length === 0) {
+                    showError('Aucune donnée à exporter');
+                    return;
+                }
+                
+                let csv = 'Véhicule,Type,Date Panne,Date Réparation,Coût,Lieu,Réparateur,Statut\n';
+                breakdowns.forEach(breakdown => {
+                    const vehicle = vehicles.find(v => v.id === breakdown.vehicle_id);
+                    const vehicleName = vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Véhicule inconnu';
+                    csv += `"${vehicleName}","${breakdown.breakdown_type}","${new Date(breakdown.breakdown_date).toLocaleDateString('fr-FR')}","${breakdown.repair_date ? new Date(breakdown.repair_date).toLocaleDateString('fr-FR') : ''}",${breakdown.cost},"${breakdown.location || ''}","${breakdown.repair_provider || ''}","${breakdown.is_repaired ? 'Réparé' : 'En attente'}"\n`;
+                });
+                
+                // Télécharger le fichier
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `pannes_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showSuccess('Export des pannes réussi !');
+            } catch (error) {
+                showError('Erreur lors de l\'export: ' + error.message);
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('token_type');
+            window.location.href = '/login';
+        }
+
+        function openVehicleModal() {
+            const modal = createVehicleModal();
+            document.body.appendChild(modal);
+        }
+
+        function createVehicleModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 600px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                ">
+                    <h2><i class="fas fa-car"></i> Créer un Nouveau Véhicule</h2>
+                    
+                    <form id="vehicle-modal-form">
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="vehicle_brand">Marque *</label>
+                                <input type="text" id="vehicle_brand" name="brand" required 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicle_model">Modèle *</label>
+                                <input type="text" id="vehicle_model" name="model" required 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="vehicle_plate">Plaque d'immatriculation *</label>
+                                <input type="text" id="vehicle_plate" name="plate_number" required 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicle_year">Année</label>
+                                <input type="number" id="vehicle_year" name="year" min="1900" max="2030" 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="vehicle_mileage">Kilométrage actuel</label>
+                                <input type="number" id="vehicle_mileage" name="current_mileage" min="0" 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="vehicle_fuel">Type de carburant</label>
+                                <select id="vehicle_fuel" name="fuel_type" 
+                                        style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                                    <option value="">Sélectionner...</option>
+                                    <option value="Essence">Essence</option>
+                                    <option value="Diesel">Diesel</option>
+                                    <option value="Hybride">Hybride</option>
+                                    <option value="Électrique">Électrique</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="vehicle_status">Statut</label>
+                            <select id="vehicle_status" name="status" 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                                <option value="active">Actif</option>
+                                <option value="maintenance">En maintenance</option>
+                                <option value="inactive">Inactif</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button type="button" onclick="closeVehicleModal()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Créer le Véhicule
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Gérer la soumission du formulaire
+            modal.querySelector('#vehicle-modal-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await submitVehicleFromModal(modal);
+            });
+            
+            return modal;
+        }
+
+        async function submitVehicleFromModal(modal) {
+            const form = modal.querySelector('#vehicle-modal-form');
+            const formData = new FormData(form);
+            
+            const vehicleData = {
+                brand: formData.get('brand'),
+                model: formData.get('model'),
+                plate_number: formData.get('plate_number'),
+                year: formData.get('year') ? parseInt(formData.get('year')) : null,
+                current_mileage: formData.get('current_mileage') ? parseInt(formData.get('current_mileage')) : 0,
+                fuel_type: formData.get('fuel_type'),
+                status: formData.get('status') || 'active'
+            };
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/vehicles/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(vehicleData)
+                });
+
+                if (response.ok) {
+                    const newVehicle = await response.json();
+                    showSuccess('Véhicule créé avec succès !');
+                    closeVehicleModal();
+                    loadVehicles(); // Recharger la liste des véhicules
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        function closeVehicleModal() {
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+    </script>
+</body>
+</html>

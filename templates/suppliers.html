@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Fournisseurs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+        
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .alert {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .success {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="margin-bottom: 20px;">
+                <a href="/" class="btn btn-primary" style="background: linear-gradient(45deg, #2c3e50, #34495e); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <i class="fas fa-home"></i> 🏠 Retour à l'Accueil
+                </a>
+            </div>
+            <h1><i class="fas fa-truck-loading"></i> Gestion des Fournisseurs</h1>
+            <p>Gérez vos fournisseurs et leurs informations</p>
+        </div>
+        
+        <div class="alert" id="error-alert">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="error-message"></span>
+        </div>
+        
+        <div class="success" id="success-alert">
+            <i class="fas fa-check-circle"></i>
+            <span id="success-message"></span>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Chargement...</p>
+        </div>
+        
+        <div class="form-container">
+            <h2><i class="fas fa-plus"></i> Nouveau Fournisseur</h2>
+            <form id="supplier-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Nom du fournisseur *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_person">Personne de contact</label>
+                        <input type="text" id="contact_person" name="contact_person">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Téléphone</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Adresse</label>
+                    <textarea id="address" name="address" rows="2"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="country">Pays *</label>
+                        <select id="country" name="country" required onchange="updateCities()">
+                            <option value="">Sélectionner un pays</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">Ville *</label>
+                        <select id="city" name="city" required>
+                            <option value="">Sélectionner d'abord un pays</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tax_number">Numéro fiscal</label>
+                        <input type="text" id="tax_number" name="tax_number">
+                    </div>
+                    <div class="form-group">
+                        <label for="payment_terms">Conditions de paiement</label>
+                        <input type="text" id="payment_terms" name="payment_terms" placeholder="Ex: 30 jours">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Enregistrer le Fournisseur
+                </button>
+                <button type="button" onclick="clearForm()" class="btn btn-warning">
+                    <i class="fas fa-eraser"></i> Effacer
+                </button>
+            </form>
+        </div>
+        
+        <div class="table-container">
+            <h2><i class="fas fa-list"></i> Liste des Fournisseurs</h2>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Rechercher par nom, contact ou email...">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <button onclick="loadSuppliers()" class="btn">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+                <button onclick="exportSuppliers()" class="btn btn-warning">
+                    <i class="fas fa-download"></i> Exporter
+                </button>
+            </div>
+            <table id="suppliers-table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Contact</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Ville</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="suppliers-tbody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Chargement des données...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="/static/countries-cities.js"></script>
+    <script>
+        let suppliers = [];
+        let allSuppliersData = []; // Stocker toutes les données
+        let currentEditId = null;
+        
+        // Charger les fournisseurs au démarrage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSuppliers();
+            initializeCountries();
+            
+            // Recherche en temps réel
+            document.getElementById('search-input').addEventListener('input', function() {
+                filterSuppliers(this.value);
+            });
+        });
+        
+        // Initialiser la liste des pays
+        function initializeCountries() {
+            const countrySelect = document.getElementById('country');
+            const countries = getAllCountries();
+            
+            countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        }
+        
+        // Mettre à jour les villes selon le pays sélectionné
+        function updateCities() {
+            const countrySelect = document.getElementById('country');
+            const citySelect = document.getElementById('city');
+            const selectedCountry = countrySelect.value;
+            
+            // Vider la liste des villes
+            citySelect.innerHTML = '<option value="">Sélectionner une ville</option>';
+            
+            if (selectedCountry) {
+                const cities = getCitiesByCountry(selectedCountry);
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            } else {
+                citySelect.innerHTML = '<option value="">Sélectionner d\'abord un pays</option>';
+            }
+        }
+        
+        // Gestion du formulaire
+        document.getElementById('supplier-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                showLoading(true);
+                hideAlerts();
+                
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                const url = currentEditId ? `/api/suppliers/${currentEditId}` : '/api/suppliers/';
+                const method = currentEditId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    showSuccess(currentEditId ? 'Fournisseur modifié avec succès !' : 'Fournisseur enregistré avec succès !');
+                    clearForm();
+                    loadSuppliers();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Impossible d\'enregistrer le fournisseur'));
+                }
+            } catch (error) {
+                showError('Erreur de connexion: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        });
+        
+        // Charger la liste des fournisseurs
+        async function loadSuppliers() {
+            try {
+                showLoading(true);
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                const response = await fetch('/api/suppliers/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    suppliers = await response.json();
+                    allSuppliersData = suppliers; // Stocker les données
+                    displaySuppliers(suppliers);
+                } else if (response.status === 401) {
+                    window.location.href = '/login';
+                } else {
+                    showError('Erreur lors du chargement des fournisseurs');
+                }
+            } catch (error) {
+                showError('Erreur: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // Afficher les fournisseurs
+        function displaySuppliers(suppliersList) {
+            const tbody = document.getElementById('suppliers-tbody');
+            if (suppliersList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Aucun fournisseur enregistré</td></tr>';
+            } else {
+                tbody.innerHTML = suppliersList.map(supplier => `
+                    <tr>
+                        <td>${supplier.name}</td>
+                        <td>${supplier.contact_person || '-'}</td>
+                        <td>${supplier.email || '-'}</td>
+                        <td>${supplier.phone || '-'}</td>
+                        <td>${supplier.city || '-'}</td>
+                        <td>
+                            <span style="color: ${supplier.is_active ? '#27ae60' : '#e74c3c'};">
+                                ${supplier.is_active ? 'Actif' : 'Inactif'}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="editSupplier(${supplier.id})" class="btn" style="padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteSupplier(${supplier.id})" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+        
+        // Filtrer les fournisseurs
+        function filterSuppliers(searchTerm) {
+            const filtered = suppliers.filter(supplier => 
+                supplier.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (supplier.contact_person && supplier.contact_person.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (supplier.email && supplier.email.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+            displaySuppliers(filtered);
+        }
+        
+        // Éditer un fournisseur
+        async function editSupplier(id) {
+            const supplier = suppliers.find(s => s.id === id);
+            if (!supplier) return;
+            
+            currentEditId = id;
+            
+            // Remplir le formulaire
+            document.getElementById('name').value = supplier.name;
+            document.getElementById('contact_person').value = supplier.contact_person || '';
+            document.getElementById('email').value = supplier.email || '';
+            document.getElementById('phone').value = supplier.phone || '';
+            document.getElementById('address').value = supplier.address || '';
+            document.getElementById('tax_number').value = supplier.tax_number || '';
+            document.getElementById('payment_terms').value = supplier.payment_terms || '';
+            document.getElementById('notes').value = supplier.notes || '';
+            
+            // Gérer pays et ville
+            const countrySelect = document.getElementById('country');
+            const citySelect = document.getElementById('city');
+            countrySelect.value = supplier.country || '';
+            
+            // Mettre à jour les villes et sélectionner la ville
+            updateCities();
+            setTimeout(() => {
+                citySelect.value = supplier.city || '';
+            }, 100);
+            
+            // Changer le titre du formulaire
+            document.querySelector('.form-container h2').innerHTML = '<i class="fas fa-edit"></i> Modifier le Fournisseur';
+            
+            // Scroll vers le formulaire
+            document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Supprimer un fournisseur
+        async function deleteSupplier(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce fournisseur ?')) {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    const response = await fetch(`/api/suppliers/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        showSuccess('Fournisseur supprimé avec succès');
+                        loadSuppliers();
+                    } else {
+                        const error = await response.json();
+                        showError('Erreur: ' + (error.detail || 'Impossible de supprimer le fournisseur'));
+                    }
+                } catch (error) {
+                    showError('Erreur: ' + error.message);
+                }
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('supplier-form').reset();
+            currentEditId = null;
+            document.querySelector('.form-container h2').innerHTML = '<i class="fas fa-plus"></i> Nouveau Fournisseur';
+            
+            // Réinitialiser les sélecteurs pays/ville
+            const citySelect = document.getElementById('city');
+            citySelect.innerHTML = '<option value="">Sélectionner d\'abord un pays</option>';
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-alert').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('error-alert').style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            document.getElementById('success-message').textContent = message;
+            document.getElementById('success-alert').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('success-alert').style.display = 'none';
+            }, 3000);
+        }
+        
+        function hideAlerts() {
+            document.getElementById('error-alert').style.display = 'none';
+            document.getElementById('success-alert').style.display = 'none';
+        }
+        
+        function exportSuppliers() {
+            try {
+                // Créer un CSV des fournisseurs
+                const suppliers = allSuppliersData || [];
+                if (suppliers.length === 0) {
+                    showError('Aucune donnée à exporter');
+                    return;
+                }
+                
+                let csv = 'Nom,Contact,Email,Téléphone,Adresse,Ville,Pays,Numéro Fiscal,Conditions Paiement,Statut\n';
+                suppliers.forEach(supplier => {
+                    csv += `"${supplier.name}","${supplier.contact_person || ''}","${supplier.email || ''}","${supplier.phone || ''}","${supplier.address || ''}","${supplier.city || ''}","${supplier.country || ''}","${supplier.tax_number || ''}","${supplier.payment_terms || ''}","${supplier.is_active ? 'Actif' : 'Inactif'}"\n`;
+                });
+                
+                // Télécharger le fichier
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `fournisseurs_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showSuccess('Export des fournisseurs réussi !');
+            } catch (error) {
+                showError('Erreur lors de l\'export: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

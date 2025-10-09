@@ -1,0 +1,125 @@
+name: 🔧 Discussion Technique
+description: Discussion technique sur l'architecture, le code ou les problèmes techniques
+title: "[TECHNICAL] "
+labels: ["discussion", "technical"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        🔧 **Discussion Technique - VITACH GUINÉE**
+        
+        Utilisez cette section pour discuter de questions techniques, d'architecture, de code ou de problèmes techniques.
+        
+  - type: textarea
+    id: technical-topic
+    attributes:
+      label: 🎯 Sujet Technique
+      description: Décrivez le sujet technique de votre discussion
+      placeholder: "Ex: Comment optimiser les requêtes de base de données ?"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: technical-details
+    attributes:
+      label: 📝 Détails Techniques
+      description: Fournissez les détails techniques de votre discussion
+      placeholder: "Décrivez le problème, la solution proposée, le code concerné..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: technical-category
+    attributes:
+      label: 🏷️ Catégorie Technique
+      description: Sélectionnez la catégorie technique
+      options:
+        - "🏗️ Architecture"
+        - "💾 Base de données"
+        - "🔌 API"
+        - "🎨 Frontend"
+        - "⚙️ Backend"
+        - "🔐 Sécurité"
+        - "⚡ Performance"
+        - "🧪 Tests"
+        - "📦 Déploiement"
+        - "🔧 Configuration"
+        - "🐛 Debug"
+        - "♻️ Refactoring"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: technical-code
+    attributes:
+      label: 💻 Code Concerné
+      description: Ajoutez le code concerné (si applicable)
+      placeholder: "```python
+# Votre code ici
+```"
+      render: python
+      
+  - type: textarea
+    id: technical-environment
+    attributes:
+      label: 🖥️ Environnement
+      description: Décrivez votre environnement technique
+      placeholder: "OS, version Python, navigateur, etc."
+      
+  - type: textarea
+    id: technical-logs
+    attributes:
+      label: 📋 Logs d'Erreur
+      description: Ajoutez les logs d'erreur (si applicable)
+      placeholder: "Traceback, messages d'erreur, etc."
+      
+  - type: checkboxes
+    id: technical-tags
+    attributes:
+      label: 🏷️ Tags Techniques
+      description: Sélectionnez les tags techniques pertinents
+      options:
+        - label: "FastAPI"
+        - label: "SQLAlchemy"
+        - label: "SQLite"
+        - label: "JWT"
+        - label: "HTML/CSS"
+        - label: "JavaScript"
+        - label: "Uvicorn"
+        - label: "Pydantic"
+        - label: "Bcrypt"
+        - label: "ReportLab"
+        - label: "CORS"
+        - label: "Authentication"
+        - label: "Database"
+        - label: "API"
+        - label: "Frontend"
+        - label: "Backend"
+        - label: "Security"
+        - label: "Performance"
+        - label: "Testing"
+        - label: "Deployment"
+        
+  - type: textarea
+    id: technical-solution
+    attributes:
+      label: 💡 Solution Proposée
+      description: Décrivez votre solution proposée (si applicable)
+      placeholder: "Décrivez votre approche pour résoudre le problème..."
+      
+  - type: checkboxes
+    id: technical-acknowledgments
+    attributes:
+      label: ✅ Confirmations
+      description: Confirmez que vous avez vérifié
+      options:
+        - label: "J'ai vérifié la documentation technique"
+          required: true
+        - label: "J'ai testé ma solution localement"
+          required: true
+        - label: "J'ai vérifié les issues techniques existantes"
+          required: true
+        - label: "J'ai respecté les standards de code"
+          required: true
+
+

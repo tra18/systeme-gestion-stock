@@ -1,0 +1,158 @@
+name: ❓ Questions et Aide
+description: Poser des questions et demander de l'aide sur le projet
+title: "[Q&A] "
+labels: ["discussion", "help", "question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ❓ **Questions et Aide - VITACH GUINÉE**
+        
+        Utilisez cette section pour poser des questions et demander de l'aide sur le projet.
+        
+  - type: textarea
+    id: question-topic
+    attributes:
+      label: 🎯 Sujet de votre Question
+      description: Décrivez brièvement le sujet de votre question
+      placeholder: "Ex: Comment configurer l'authentification ?"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: question-details
+    attributes:
+      label: 📝 Détails de votre Question
+      description: Décrivez en détail votre question ou votre problème
+      placeholder: "Développez votre question, décrivez ce que vous essayez de faire, ce qui ne fonctionne pas..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: question-category
+    attributes:
+      label: 🏷️ Catégorie de Question
+      description: Sélectionnez la catégorie de votre question
+      options:
+        - "🚀 Installation et Configuration"
+        - "🔐 Authentification"
+        - "🛒 Gestion des Achats"
+        - "📦 Gestion du Stock"
+        - "🚗 Gestion des Véhicules"
+        - "👥 Gestion des Fournisseurs"
+        - "🏢 Gestion des Services"
+        - "📋 Demandes d'Achat"
+        - "📊 Rapports et Statistiques"
+        - "🎨 Interface Utilisateur"
+        - "💾 Base de Données"
+        - "🔌 API"
+        - "⚡ Performance"
+        - "🔒 Sécurité"
+        - "📚 Documentation"
+        - "🧪 Tests"
+        - "📦 Déploiement"
+        - "🔧 Développement"
+        - "❓ Autre"
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: question-type
+    attributes:
+      label: 🎯 Type de Question
+      description: Quel type de question posez-vous ?
+      options:
+        - "❓ Question générale"
+        - "🔧 Problème technique"
+        - "📚 Question sur la documentation"
+        - "💡 Demande de conseil"
+        - "🆘 Demande d'aide urgente"
+        - "💬 Discussion"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: question-context
+    attributes:
+      label: 🔍 Contexte
+      description: Ajoutez le contexte de votre question
+      placeholder: "Version utilisée, environnement, étapes déjà tentées, etc."
+      
+  - type: textarea
+    id: question-code
+    attributes:
+      label: 💻 Code Concerné
+      description: Ajoutez le code concerné (si applicable)
+      placeholder: "```python
+# Votre code ici
+```"
+      render: python
+      
+  - type: textarea
+    id: question-error
+    attributes:
+      label: 🚨 Messages d'Erreur
+      description: Ajoutez les messages d'erreur (si applicable)
+      placeholder: "Traceback, messages d'erreur, logs, etc."
+      
+  - type: textarea
+    id: question-attempts
+    attributes:
+      label: 🔄 Tentatives Déjà Effectuées
+      description: Qu'avez-vous déjà essayé pour résoudre votre problème ?
+      placeholder: "Décrivez les solutions que vous avez déjà tentées..."
+      
+  - type: textarea
+    id: question-environment
+    attributes:
+      label: 🖥️ Environnement
+      description: Décrivez votre environnement
+      placeholder: "OS, version Python, navigateur, version du projet, etc."
+      
+  - type: checkboxes
+    id: question-tags
+    attributes:
+      label: 🏷️ Tags de Question
+      description: Sélectionnez les tags pertinents
+      options:
+        - label: "Installation"
+        - label: "Configuration"
+        - label: "Authentification"
+        - label: "Base de données"
+        - label: "API"
+        - label: "Frontend"
+        - label: "Backend"
+        - label: "Interface utilisateur"
+        - label: "Performance"
+        - label: "Sécurité"
+        - label: "Documentation"
+        - label: "Tests"
+        - label: "Déploiement"
+        - label: "Développement"
+        - label: "Bug"
+        - label: "Fonctionnalité"
+        - label: "Urgent"
+        - label: "Débutant"
+        - label: "Avancé"
+        
+  - type: textarea
+    id: question-expected
+    attributes:
+      label: ✅ Résultat Attendu
+      description: Quel résultat attendez-vous ?
+      placeholder: "Décrivez ce que vous voulez obtenir..."
+      
+  - type: checkboxes
+    id: question-acknowledgments
+    attributes:
+      label: ✅ Confirmations
+      description: Confirmez que vous avez vérifié
+      options:
+        - label: "J'ai lu la documentation"
+          required: true
+        - label: "J'ai vérifié les issues existantes"
+          required: true
+        - label: "J'ai vérifié les discussions existantes"
+          required: true
+        - label: "J'ai fourni suffisamment de détails"
+          required: true

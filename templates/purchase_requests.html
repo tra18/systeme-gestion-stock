@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demandes d'Achat</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%), 
+                        url('/static/vitach-logo.svg') center/cover no-repeat fixed;
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/static/vitach-logo.svg') center/cover no-repeat;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .form-container, .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .status-approved_by_dg {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .status-approved_by_purchase {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .status-received {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .status-completed {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .status-rejected {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .urgency-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .urgency-low {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .urgency-normal {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .urgency-high {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .urgency-urgent {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .table-actions input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .workflow-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .workflow-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: #667eea;
+            z-index: 1;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+        }
+        
+        .step-active {
+            background: #27ae60;
+        }
+        
+        .step-completed {
+            background: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="margin-bottom: 20px;">
+                <a href="/" class="btn btn-primary" style="background: linear-gradient(45deg, #2c3e50, #34495e); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; color: white; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <i class="fas fa-home"></i> 🏠 Retour à l'Accueil
+                </a>
+            </div>
+            <h1><i class="fas fa-shopping-cart"></i> Demandes d'Achat</h1>
+            <p>Système de workflow avec validation hiérarchique</p>
+        </div>
+
+        <!-- Workflow Steps -->
+        <div class="workflow-steps">
+            <div class="workflow-step">
+                <div class="step-icon" id="step1">1</div>
+                <div>Service<br>Demande</div>
+            </div>
+            <div class="workflow-step">
+                <div class="step-icon" id="step2">2</div>
+                <div>DG<br>Validation</div>
+            </div>
+            <div class="workflow-step">
+                <div class="step-icon" id="step3">3</div>
+                <div>Service Achat<br>Commande</div>
+            </div>
+            <div class="workflow-step">
+                <div class="step-icon" id="step4">4</div>
+                <div>Terminé</div>
+            </div>
+        </div>
+
+        <!-- Formulaire de demande -->
+        <div class="form-container" id="request-form-container">
+            <h2><i class="fas fa-plus-circle"></i> Nouvelle Demande d'Achat</h2>
+            <form id="request-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="item_name">Nom de l'article *</label>
+                        <input type="text" id="item_name" name="item_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Catégorie *</label>
+                        <select id="category" name="category" required>
+                            <option value="">Sélectionner une catégorie</option>
+                            <option value="office_supplies">Fournitures de bureau</option>
+                            <option value="equipment">Équipement</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="fuel">Carburant</option>
+                            <option value="food">Alimentation</option>
+                            <option value="cleaning">Nettoyage</option>
+                            <option value="security">Sécurité</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">Quantité *</label>
+                        <input type="number" id="quantity" name="quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="unit">Unité</label>
+                        <select id="unit" name="unit">
+                            <option value="pièce">Pièce</option>
+                            <option value="kg">Kilogramme</option>
+                            <option value="litre">Litre</option>
+                            <option value="mètre">Mètre</option>
+                            <option value="paquet">Paquet</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="urgency">Urgence *</label>
+                        <select id="urgency" name="urgency" required>
+                            <option value="low">Faible</option>
+                            <option value="normal" selected>Normale</option>
+                            <option value="high">Élevée</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="department">Service demandeur *</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select id="department" name="department" required style="flex: 1;">
+                                <option value="">Sélectionnez un service...</option>
+                            </select>
+                            <button type="button" onclick="loadServices()" class="btn btn-info" style="padding: 8px 12px; font-size: 12px;" title="Actualiser la liste">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button type="button" onclick="openServiceModal()" class="btn btn-success" style="padding: 8px 12px; font-size: 12px;" title="Créer un nouveau service">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="justification">Justification de la demande *</label>
+                    <textarea id="justification" name="justification" rows="3" required placeholder="Expliquez pourquoi cette demande est nécessaire..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane"></i> Soumettre la Demande
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="clearForm()">
+                        <i class="fas fa-plus"></i> Nouvelle Demande
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Liste des demandes -->
+        <div class="table-container">
+            <h2><i class="fas fa-list"></i> Liste des Demandes</h2>
+            <div class="table-actions">
+                <input type="text" id="search-input" placeholder="Rechercher par nom d'article ou numéro...">
+                <select id="status-filter">
+                    <option value="">Tous les statuts</option>
+                    <option value="pending">En attente DG</option>
+                    <option value="approved_by_dg">Approuvé par DG</option>
+                    <option value="approved_by_purchase">Approuvé par Achat</option>
+                    <option value="completed">Terminé</option>
+                    <option value="rejected">Rejeté</option>
+                </select>
+                <button onclick="loadRequests()" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+                <button onclick="exportRequests()" class="btn btn-warning">
+                    <i class="fas fa-download"></i> Exporter
+                </button>
+            </div>
+            
+            <table id="requests-table">
+                <thead>
+                    <tr>
+                        <th>N° Demande</th>
+                        <th>Article</th>
+                        <th>Quantité</th>
+                        <th>Urgence</th>
+                        <th>Statut</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="requests-tbody">
+                    <!-- Les données seront chargées ici -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="loading" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        let allRequestsData = [];
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page des demandes d\'achat chargée');
+            // Charger d'abord l'utilisateur, puis les demandes
+            loadUserInfo().then(() => {
+                loadRequests();
+                loadServices();
+                attachFormEvents(); // Attacher les événements du formulaire
+                
+                // Recharger les services après 2 secondes si la liste est vide
+                setTimeout(() => {
+                    const select = document.getElementById('department');
+                    if (select && select.options.length <= 1) {
+                        console.log('Liste des services vide, rechargement...');
+                        loadServices();
+                    }
+                }, 2000);
+            });
+        });
+
+        async function loadUserInfo() {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/auth/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        currentUser = await response.json();
+                    } else if (response.status === 401) {
+                        // Token expiré ou invalide, rediriger vers la connexion
+                        localStorage.removeItem('access_token');
+                        window.location.href = '/login';
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Erreur lors du chargement des informations utilisateur:', error);
+                    // En cas d'erreur, rediriger vers la connexion
+                    localStorage.removeItem('access_token');
+                    window.location.href = '/login';
+                }
+            } else {
+                // Pas de token, rediriger vers la connexion
+                window.location.href = '/login';
+            }
+        }
+
+
+        async function loadServices() {
+            console.log('🔧 loadServices appelée');
+            try {
+                const response = await makeAuthenticatedRequest('/api/services/');
+                console.log('📡 Réponse services reçue:', response);
+                if (response && response.ok) {
+                    const services = await response.json();
+                    console.log('📋 Services chargés:', services);
+                    console.log(`📊 Nombre de services: ${services.length}`);
+                    populateServicesSelect(services);
+                } else if (response) {
+                    console.error('❌ Erreur lors du chargement des services:', response.status, response.statusText);
+                    showError(`Erreur de chargement des services: ${response.status} ${response.statusText}`);
+                } else {
+                    console.error('❌ Pas de réponse reçue pour les services');
+                    showError('Erreur: Pas de réponse du serveur pour les services');
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors du chargement des services:', error);
+                showError(`Erreur de connexion: ${error.message}`);
+            }
+        }
+
+        function populateServicesSelect(services) {
+            console.log('🔧 populateServicesSelect appelée avec:', services);
+            const select = document.getElementById('department');
+            if (!select) {
+                console.error('❌ Élément select avec ID "department" non trouvé');
+                showError('Erreur: Élément select non trouvé');
+                return;
+            }
+            
+            // Vider la liste
+            select.innerHTML = '<option value="">Sélectionnez un service...</option>';
+            console.log('🧹 Liste des services vidée');
+            
+            if (!services || services.length === 0) {
+                // Aucun service trouvé
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "Aucun service disponible - Cliquez sur + pour en créer un";
+                option.disabled = true;
+                select.appendChild(option);
+                console.log('⚠️ Aucun service trouvé, message d\'aide affiché');
+                showError('Aucun service trouvé dans la base de données');
+                return;
+            }
+            
+            let servicesAdded = 0;
+            services.forEach(service => {
+                if (service.is_active) {
+                    const option = document.createElement('option');
+                    option.value = service.name;
+                    option.textContent = `${service.name} (${service.code})`;
+                    select.appendChild(option);
+                    servicesAdded++;
+                    console.log(`✅ Service ajouté: ${service.name} (${service.code})`);
+                }
+            });
+            
+            console.log(`📊 Services ajoutés au select: ${servicesAdded}`);
+            
+            // Si aucun service actif, afficher un message
+            if (servicesAdded === 0) {
+                const option = document.createElement('option');
+                option.value = "";
+                option.textContent = "Aucun service actif - Cliquez sur + pour en créer un";
+                option.disabled = true;
+                select.appendChild(option);
+                console.log('⚠️ Aucun service actif trouvé');
+                showError('Aucun service actif trouvé');
+            } else {
+                console.log(`🎉 ${servicesAdded} service(s) ajouté(s) avec succès !`);
+                showSuccess(`${servicesAdded} service(s) chargé(s) avec succès !`);
+            }
+        }
+
+        async function loadRequests() {
+            showLoading();
+            try {
+                // Charger d'abord l'utilisateur actuel
+                await loadUserInfo();
+                
+                const response = await makeAuthenticatedRequest('/api/purchase-requests/');
+                if (response && response.ok) {
+                    allRequestsData = await response.json();
+                    displayRequests(allRequestsData);
+                } else if (response) {
+                    showError('Erreur lors du chargement des demandes');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayRequests(requests) {
+            const tbody = document.getElementById('requests-tbody');
+            tbody.innerHTML = '';
+
+            // Debug avant affichage
+            console.log('displayRequests - currentUser avant affichage:', currentUser);
+
+            requests.forEach(request => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${request.request_number}</strong></td>
+                    <td>${request.item_name}</td>
+                    <td>${request.quantity} ${request.unit}</td>
+                    <td><span class="urgency-badge urgency-${request.urgency}">${request.urgency}</span></td>
+                    <td><span class="status-badge status-${request.status}">${getStatusText(request.status)}</span></td>
+                    <td>${request.department}</td>
+                    <td>${new Date(request.requested_at).toLocaleDateString()}</td>
+                    <td>
+                        ${getActionButtons(request)}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'En attente DG',
+                'approved_by_dg': 'Approuvé DG',
+                'approved_by_purchase': 'Approuvé Achat',
+                'received': 'Reçu',
+                'completed': 'Terminé',
+                'rejected': 'Rejeté'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Fonctions de signature et modal DG
+        let signatureCanvas = null;
+        let signatureCtx = null;
+        let isDrawing = false;
+
+        function initializeSignature(requestId) {
+            const canvasId = `dg_signature_canvas_${requestId}`;
+            signatureCanvas = document.getElementById(canvasId);
+            if (signatureCanvas) {
+                signatureCtx = signatureCanvas.getContext('2d');
+                signatureCtx.strokeStyle = '#000000';
+                signatureCtx.lineWidth = 2;
+                signatureCtx.lineCap = 'round';
+                
+                // Événements de dessin
+                signatureCanvas.addEventListener('mousedown', startDrawing);
+                signatureCanvas.addEventListener('mousemove', draw);
+                signatureCanvas.addEventListener('mouseup', stopDrawing);
+                signatureCanvas.addEventListener('mouseout', stopDrawing);
+                
+                // Support tactile
+                signatureCanvas.addEventListener('touchstart', handleTouch);
+                signatureCanvas.addEventListener('touchmove', handleTouch);
+                signatureCanvas.addEventListener('touchend', stopDrawing);
+            }
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = signatureCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            signatureCtx.beginPath();
+            signatureCtx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = signatureCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            signatureCtx.lineTo(x, y);
+            signatureCtx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                           e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            signatureCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function clearSignatureForRequest(requestId) {
+            const canvasId = `dg_signature_canvas_${requestId}`;
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function saveSignatureForRequest(requestId) {
+            const canvasId = `dg_signature_canvas_${requestId}`;
+            const canvas = document.getElementById(canvasId);
+            const signatureField = document.getElementById(`dg_signature_field_${requestId}`);
+            
+            if (canvas && signatureField) {
+                const signatureData = canvas.toDataURL('image/png');
+                signatureField.value = signatureData;
+                console.log('Signature sauvegardée pour la demande:', requestId);
+            }
+        }
+
+        function closeDGApprovalModal() {
+            const modals = document.querySelectorAll('div[style*="position: fixed"]');
+            modals.forEach(modal => modal.remove());
+        }
+
+        // Fonctions pour la gestion des services
+        function openServiceModal() {
+            console.log('🔧 openServiceModal appelée');
+            try {
+                const modal = createServiceModal();
+                if (modal) {
+                    document.body.appendChild(modal);
+                    console.log('✅ Modal de service ajoutée au DOM');
+                    showSuccess('Modal de création de service ouverte');
+                } else {
+                    console.error('❌ Erreur: modal de service non créée');
+                    showError('Erreur: Impossible de créer la modal');
+                }
+            } catch (error) {
+                console.error('❌ Erreur dans openServiceModal:', error);
+                showError(`Erreur: ${error.message}`);
+            }
+        }
+
+        function createServiceModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 600px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                ">
+                    <h2><i class="fas fa-building"></i> Créer un Nouveau Service</h2>
+                    
+                    <form id="service-modal-form">
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="service_name">Nom du Service *</label>
+                                <input type="text" id="service_name" name="name" required 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="department_head">Chef de Service</label>
+                                <input type="text" id="department_head" name="department_head" 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="service_email">Email</label>
+                                <input type="email" id="service_email" name="email" 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                            <div class="form-group">
+                                <label for="service_phone">Téléphone</label>
+                                <input type="tel" id="service_phone" name="phone" 
+                                       style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="service_location">Localisation</label>
+                            <input type="text" id="service_location" name="location" 
+                                   style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="service_description">Description</label>
+                            <textarea id="service_description" name="description" rows="3" 
+                                      style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;"></textarea>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button type="button" onclick="closeServiceModal()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Créer le Service
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Gérer la soumission du formulaire
+            modal.querySelector('#service-modal-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await submitServiceFromModal(modal);
+            });
+            
+            return modal;
+        }
+
+        function closeServiceModal() {
+            const modals = document.querySelectorAll('div[style*="position: fixed"]');
+            modals.forEach(modal => modal.remove());
+        }
+
+        function createDGApprovalModal(requestId) {
+            console.log('Création de la modal DG pour la demande:', requestId);
+            const modal = document.createElement('div');
+            modal.id = `dg-approval-modal-${requestId}`;
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 500px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                ">
+                    <h2><i class="fas fa-signature" style="color: #28a745;"></i> Approbation DG</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <p><strong>⚠️ Attention :</strong> Cette action approuvera définitivement la demande d'achat.</p>
+                    </div>
+                    
+                    <form id="dg-approval-form-${requestId}">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="dg_approval_reason_${requestId}">Raison de l'approbation (optionnel)</label>
+                            <textarea id="dg_approval_reason_${requestId}" name="reason" rows="3" 
+                                      placeholder="Ajoutez une raison pour cette approbation..."
+                                      style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;"></textarea>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="dg_signature_field_${requestId}">Signature du DG *</label>
+                            <div style="border: 2px solid #e1e8ed; border-radius: 8px; padding: 10px; background: white;">
+                                <canvas id="dg_signature_canvas_${requestId}" width="400" height="150" 
+                                        style="border: 1px solid #ddd; border-radius: 4px; cursor: crosshair; width: 100%; max-width: 400px;"></canvas>
+                                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                    <button type="button" onclick="clearSignatureForRequest(${requestId})" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-eraser"></i> Effacer
+                                    </button>
+                                    <button type="button" onclick="saveSignatureForRequest(${requestId})" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-save"></i> Sauvegarder
+                                    </button>
+                                </div>
+                                <input type="hidden" id="dg_signature_field_${requestId}" name="signature" required>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button type="button" onclick="closeDGApprovalModal()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Approuver la Demande
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Initialiser la signature après un court délai
+            setTimeout(() => {
+                initializeSignature(requestId);
+            }, 100);
+            
+            // Gérer la soumission du formulaire
+            modal.querySelector(`#dg-approval-form-${requestId}`).addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await submitDGApprovalFromModal(modal, requestId);
+            });
+            
+            return modal;
+        }
+
+        async function submitDGApprovalFromModal(modal, requestId) {
+            const form = modal.querySelector(`#dg-approval-form-${requestId}`);
+            const formData = new FormData(form);
+            
+            const reason = formData.get('reason');
+            const signature = formData.get('signature');
+
+            if (!signature) {
+                showError('Veuillez signer avant d\'approuver');
+                return;
+            }
+
+            showLoading();
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/purchase-requests/${requestId}/approve-dg`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        action: 'approve',
+                        reason: reason,
+                        signature: signature
+                    })
+                });
+
+                if (response.ok) {
+                    showSuccess('Demande approuvée avec succès !');
+                    closeDGApprovalModal();
+                    loadRequests();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur lors de l\'approbation: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'approbation:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Fonctions d'approbation définies avant getActionButtons
+        async function approveRequest(requestId) {
+            console.log('Approbation de la demande:', requestId);
+            
+            // Vérifier s'il y a déjà une modal ouverte
+            const existingModal = document.querySelector('div[style*="position: fixed"]');
+            if (existingModal) {
+                console.log('Modal déjà ouverte, fermeture de l\'ancienne');
+                existingModal.remove();
+            }
+            
+            try {
+                const modal = createDGApprovalModal(requestId);
+                if (modal) {
+                    document.body.appendChild(modal);
+                    console.log('Modal ajoutée au DOM');
+                } else {
+                    console.error('Erreur: modal non créée');
+                    showError('Erreur lors de la création de la modal');
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'approbation:', error);
+                showError('Erreur: ' + error.message);
+            }
+        }
+
+        function getActionButtons(request) {
+            let buttons = '';
+            
+            // Debug des permissions
+            console.log('getActionButtons - currentUser:', currentUser);
+            console.log('getActionButtons - request.status:', request.status);
+            console.log('getActionButtons - currentUser.role:', currentUser?.role);
+            
+            // Bouton de visualisation pour tous
+            buttons += `<button onclick="viewRequest(${request.id})" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">
+                <i class="fas fa-eye"></i>
+            </button>`;
+            
+            // Boutons selon le statut et les permissions
+            if (request.status === 'pending' && (currentUser?.role === 'admin' || currentUser?.role === 'manager')) {
+                console.log('Ajout du bouton d\'approbation pour la demande:', request.id);
+                buttons += `<button onclick="approveRequest(${request.id})" class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">
+                    <i class="fas fa-check"></i>
+                </button>`;
+                buttons += `<button onclick="rejectRequest(${request.id})" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;">
+                    <i class="fas fa-times"></i>
+                </button>`;
+            }
+            
+            if (request.status === 'approved_by_dg' && currentUser?.can_access_purchases) {
+                buttons += `<button onclick="approvePurchase(${request.id})" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">
+                    <i class="fas fa-shopping-cart"></i>
+                </button>`;
+            }
+            
+            if (request.status === 'approved_by_purchase') {
+                buttons += `<button onclick="receiveRequest(${request.id})" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">
+                    <i class="fas fa-handshake"></i>
+                </button>`;
+            }
+            
+            if (request.status === 'received') {
+                buttons += `<button onclick="completeRequest(${request.id})" class="btn btn-success" style="padding: 5px 10px; font-size: 12px;">
+                    <i class="fas fa-check-circle"></i>
+                </button>`;
+                buttons += `<button onclick="downloadReceiptPDF(${request.id})" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">
+                    <i class="fas fa-file-pdf"></i>
+                </button>`;
+            }
+            
+            return buttons;
+        }
+
+        async function submitRequest() {
+            const form = document.getElementById('request-form');
+            const formData = new FormData(form);
+            
+            // Validation côté client
+            const itemName = formData.get('item_name');
+            const category = formData.get('category');
+            const quantity = formData.get('quantity');
+            const justification = formData.get('justification');
+            const department = formData.get('department');
+            
+            if (!itemName || itemName.trim() === '') {
+                showError('Le nom de l\'article est requis');
+                return;
+            }
+            
+            if (!category || category === '') {
+                showError('La catégorie est requise');
+                return;
+            }
+            
+            if (!quantity || isNaN(parseInt(quantity)) || parseInt(quantity) <= 0) {
+                showError('La quantité doit être un nombre positif');
+                return;
+            }
+            
+            if (!justification || justification.trim() === '') {
+                showError('La justification est requise');
+                return;
+            }
+            
+            if (!department || department === '') {
+                showError('Le service demandeur est requis');
+                return;
+            }
+            
+            const requestData = {
+                item_name: itemName.trim(),
+                description: formData.get('description') || '',
+                category: category,
+                quantity: parseInt(quantity),
+                unit: formData.get('unit') || 'pièce',
+                urgency: formData.get('urgency') || 'normal',
+                justification: justification.trim(),
+                department: department
+            };
+
+            showLoading();
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/purchase-requests/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (response.ok) {
+                    showSuccess('Demande d\'achat créée avec succès !');
+                    clearForm();
+                    loadRequests();
+                } else {
+                    const error = await response.json();
+                    let errorMessage = 'Erreur inconnue';
+                    
+                    if (response.status === 422) {
+                        // Erreur de validation
+                        if (error.detail && Array.isArray(error.detail)) {
+                            errorMessage = 'Erreurs de validation: ' + error.detail.map(e => e.msg).join(', ');
+                        } else if (error.detail) {
+                            errorMessage = 'Erreur de validation: ' + error.detail;
+                        }
+                    } else {
+                        errorMessage = error.detail || 'Erreur inconnue';
+                    }
+                    
+                    showError(errorMessage);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function rejectRequest(requestId) {
+            const reason = prompt('Raison du rejet (obligatoire):');
+            if (!reason) {
+                showError('La raison du rejet est obligatoire');
+                return;
+            }
+            await processApproval(requestId, 'reject', reason);
+        }
+
+        async function processApproval(requestId, action, reason) {
+            showLoading();
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/purchase-requests/${requestId}/approve-dg`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ action, reason })
+                });
+
+                if (response.ok) {
+                    showSuccess(`Demande ${action === 'approve' ? 'approuvée' : 'rejetée'} avec succès !`);
+                    loadRequests();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function approvePurchase(requestId) {
+            const modal = createApprovalModal(requestId);
+            document.body.appendChild(modal);
+        }
+
+        function createApprovalModal(requestId) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 500px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                ">
+                    <h2><i class="fas fa-check-circle" style="color: #28a745;"></i> Valider la Demande d'Achat</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <p><strong>⚠️ Attention :</strong> Cette action validera définitivement la demande d'achat.</p>
+                    </div>
+                    
+                    <form id="approval-modal-form">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="approval_supplier">Sélectionner un fournisseur *</label>
+                            <select id="approval_supplier" name="supplier_id" required 
+                                    style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                                <option value="">Chargement des fournisseurs...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="approval_notes">Notes (optionnel)</label>
+                            <textarea id="approval_notes" name="notes" rows="3" 
+                                      placeholder="Ajoutez des notes sur cette validation..."
+                                      style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;"></textarea>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="dg_signature">Signature du DG *</label>
+                            <div style="border: 2px solid #e1e8ed; border-radius: 8px; padding: 10px; background: white;">
+                                <canvas id="dg_signature_canvas" width="400" height="150" 
+                                        style="border: 1px solid #ddd; border-radius: 4px; cursor: crosshair; width: 100%; max-width: 400px;"></canvas>
+                                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                    <button type="button" onclick="clearSignature()" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-eraser"></i> Effacer
+                                    </button>
+                                    <button type="button" onclick="saveSignature()" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-save"></i> Sauvegarder
+                                    </button>
+                                </div>
+                                <input type="hidden" id="dg_signature" name="signature" required>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button type="button" onclick="closeApprovalModal()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Valider la Demande
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Charger les fournisseurs
+            loadSuppliersForApproval(modal);
+            
+            // Initialiser la signature après un court délai pour que le canvas soit rendu
+            setTimeout(() => {
+                initializeSignature();
+            }, 100);
+            
+            // Gérer la soumission du formulaire
+            modal.querySelector('#approval-modal-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await submitApprovalFromModal(modal, requestId);
+            });
+            
+            return modal;
+        }
+
+        async function loadSuppliersForApproval(modal) {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/suppliers/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const suppliers = await response.json();
+                    const select = modal.querySelector('#approval_supplier');
+                    select.innerHTML = '<option value="">Sélectionnez un fournisseur...</option>';
+                    
+                    suppliers.forEach(supplier => {
+                        if (supplier.is_active) {
+                            const option = document.createElement('option');
+                            option.value = supplier.id;
+                            option.textContent = `${supplier.name} (${supplier.contact_person})`;
+                            select.appendChild(option);
+                        }
+                    });
+                } else {
+                    modal.querySelector('#approval_supplier').innerHTML = '<option value="">Erreur de chargement</option>';
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des fournisseurs:', error);
+                modal.querySelector('#approval_supplier').innerHTML = '<option value="">Erreur de chargement</option>';
+            }
+        }
+
+        async function submitApprovalFromModal(modal, requestId) {
+            const form = modal.querySelector('#approval-modal-form');
+            const formData = new FormData(form);
+            
+            const supplierId = formData.get('supplier_id');
+            const notes = formData.get('notes');
+
+            if (!supplierId) {
+                showError('Veuillez sélectionner un fournisseur');
+                return;
+            }
+
+            showLoading();
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/purchase-requests/${requestId}/approve-purchase`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        supplier_id: parseInt(supplierId),
+                        notes: notes || null
+                    })
+                });
+
+                if (response.ok) {
+                    showSuccess('Commande créée avec succès !');
+                    closeApprovalModal();
+                    loadRequests();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function closeApprovalModal() {
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+
+        function initializeSignature(requestId) {
+            const canvasId = `dg_signature_canvas_${requestId}`;
+            signatureCanvas = document.getElementById(canvasId);
+            if (signatureCanvas) {
+                signatureCtx = signatureCanvas.getContext('2d');
+                signatureCtx.strokeStyle = '#000000';
+                signatureCtx.lineWidth = 2;
+                signatureCtx.lineCap = 'round';
+                
+                // Événements de dessin
+                signatureCanvas.addEventListener('mousedown', startDrawing);
+                signatureCanvas.addEventListener('mousemove', draw);
+                signatureCanvas.addEventListener('mouseup', stopDrawing);
+                signatureCanvas.addEventListener('mouseout', stopDrawing);
+                
+                // Support tactile
+                signatureCanvas.addEventListener('touchstart', handleTouch);
+                signatureCanvas.addEventListener('touchmove', handleTouch);
+                signatureCanvas.addEventListener('touchend', stopDrawing);
+            }
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = signatureCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            signatureCtx.beginPath();
+            signatureCtx.moveTo(x, y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const rect = signatureCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            signatureCtx.lineTo(x, y);
+            signatureCtx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                            e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            signatureCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function clearSignature() {
+            if (signatureCtx) {
+                signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+                document.getElementById('dg_signature_field').value = '';
+            }
+        }
+
+        function saveSignature() {
+            if (signatureCanvas) {
+                const signatureData = signatureCanvas.toDataURL('image/png');
+                document.getElementById('dg_signature_field').value = signatureData;
+                showSuccess('Signature sauvegardée !');
+            }
+        }
+
+        function clearSignatureForRequest(requestId) {
+            const canvasId = `dg_signature_canvas_${requestId}`;
+            const fieldId = `dg_signature_field_${requestId}`;
+            const canvas = document.getElementById(canvasId);
+            const field = document.getElementById(fieldId);
+            
+            if (canvas && field) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                field.value = '';
+            }
+        }
+
+        function saveSignatureForRequest(requestId) {
+            const canvasId = `dg_signature_canvas_${requestId}`;
+            const fieldId = `dg_signature_field_${requestId}`;
+            const canvas = document.getElementById(canvasId);
+            const field = document.getElementById(fieldId);
+            
+            if (canvas && field) {
+                const signatureData = canvas.toDataURL('image/png');
+                field.value = signatureData;
+                showSuccess('Signature sauvegardée !');
+            }
+        }
+
+            console.log('Création de la modal DG pour la demande:', requestId);
+            const modal = document.createElement('div');
+            modal.id = `dg-approval-modal-${requestId}`;
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 500px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                ">
+                    <h2><i class="fas fa-signature" style="color: #28a745;"></i> Approbation DG</h2>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <p><strong>⚠️ Attention :</strong> Cette action approuvera définitivement la demande d'achat.</p>
+                    </div>
+                    
+                    <form id="dg-approval-form-${requestId}">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="dg_approval_reason_${requestId}">Raison de l'approbation (optionnel)</label>
+                            <textarea id="dg_approval_reason_${requestId}" name="reason" rows="3" 
+                                      placeholder="Ajoutez une raison pour cette approbation..."
+                                      style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;"></textarea>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="dg_signature_field_${requestId}">Signature du DG *</label>
+                            <div style="border: 2px solid #e1e8ed; border-radius: 8px; padding: 10px; background: white;">
+                                <canvas id="dg_signature_canvas_${requestId}" width="400" height="150" 
+                                        style="border: 1px solid #ddd; border-radius: 4px; cursor: crosshair; width: 100%; max-width: 400px;"></canvas>
+                                <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                    <button type="button" onclick="clearSignatureForRequest(${requestId})" class="btn btn-warning" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-eraser"></i> Effacer
+                                    </button>
+                                    <button type="button" onclick="saveSignatureForRequest(${requestId})" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-save"></i> Sauvegarder
+                                    </button>
+                                </div>
+                                <input type="hidden" id="dg_signature_field_${requestId}" name="signature" required>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button type="button" onclick="closeDGApprovalModal()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Approuver la Demande
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Initialiser la signature après un court délai
+            setTimeout(() => {
+                initializeSignature(requestId);
+            }, 100);
+            
+            // Gérer la soumission du formulaire
+            modal.querySelector(`#dg-approval-form-${requestId}`).addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await submitDGApprovalFromModal(modal, requestId);
+            });
+            
+            return modal;
+        }
+
+        async function submitDGApprovalFromModal(modal, requestId) {
+            const form = modal.querySelector(`#dg-approval-form-${requestId}`);
+            const formData = new FormData(form);
+            
+            const reason = formData.get('reason');
+            const signature = formData.get('signature');
+
+            if (!signature) {
+                showError('Veuillez signer avant d\'approuver');
+                return;
+            }
+
+            showLoading();
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/purchase-requests/${requestId}/approve-dg`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        action: 'approve',
+                        reason: reason || null,
+                        signature: signature
+                    })
+                });
+
+                if (response.ok) {
+                    showSuccess('Demande approuvée avec succès !');
+                    closeDGApprovalModal();
+                    loadRequests();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function closeDGApprovalModal() {
+            const modal = document.querySelector('div[id^="dg-approval-modal-"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        async function loadSuppliers() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/suppliers/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                return response.ok ? await response.json() : [];
+            } catch (error) {
+                console.error('Erreur lors du chargement des fournisseurs:', error);
+                return [];
+            }
+        }
+
+        async function completeRequest(requestId) {
+            if (!confirm('Marquer cette commande comme terminée ?')) return;
+
+            showLoading();
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/purchase-requests/${requestId}/complete`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    showSuccess('Commande marquée comme terminée !');
+                    loadRequests();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function receiveRequest(requestId) {
+            // Créer une modal pour la réception avec signature
+            const modal = createReceiptModal(requestId);
+            document.body.appendChild(modal);
+        }
+
+        function createReceiptModal(requestId) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 600px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                ">
+                    <h2><i class="fas fa-handshake"></i> Réception de Commande</h2>
+                    
+                    <form id="receipt-form">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="received_by">Nom et Prénom du réceptionnaire *</label>
+                            <input type="text" id="received_by" name="received_by" required 
+                                   style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label for="receipt_notes">Notes de réception</label>
+                            <textarea id="receipt_notes" name="receipt_notes" rows="3" 
+                                      style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 8px;"></textarea>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Signature électronique *</label>
+                            <div style="border: 2px solid #e1e8ed; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <canvas id="signature-canvas" width="500" height="200" 
+                                        style="border: 1px solid #ddd; cursor: crosshair; background: white;"></canvas>
+                                <div style="margin-top: 10px;">
+                                    <button type="button" onclick="clearSignature()" class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;">
+                                        <i class="fas fa-eraser"></i> Effacer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button type="button" onclick="closeReceiptModal()" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Confirmer Réception
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            // Initialiser le canvas de signature
+            setTimeout(() => {
+                initSignatureCanvas();
+            }, 100);
+            
+            // Gérer la soumission du formulaire
+            modal.querySelector('#receipt-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await submitReceipt(requestId, modal);
+            });
+            
+            return modal;
+        }
+
+        function initSignatureCanvas() {
+            const canvas = document.getElementById('signature-canvas');
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                ctx.beginPath();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDrawing) {
+                    const rect = canvas.getBoundingClientRect();
+                    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                    ctx.stroke();
+                }
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                isDrawing = false;
+            });
+            
+            // Support tactile
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                ctx.beginPath();
+                ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (isDrawing) {
+                    const rect = canvas.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                    ctx.stroke();
+                }
+            });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isDrawing = false;
+            });
+        }
+
+        function clearSignature() {
+            const canvas = document.getElementById('signature-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        async function submitReceipt(requestId, modal) {
+            const form = modal.querySelector('#receipt-form');
+            const formData = new FormData(form);
+            
+            // Vérifier que la signature n'est pas vide
+            const canvas = document.getElementById('signature-canvas');
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const hasSignature = imageData.data.some(channel => channel !== 0);
+            
+            if (!hasSignature) {
+                showError('Veuillez signer le document');
+                return;
+            }
+            
+            // Convertir la signature en base64
+            const signature = canvas.toDataURL('image/png');
+            
+            const receiptData = {
+                received_by: formData.get('received_by'),
+                receipt_notes: formData.get('receipt_notes'),
+                signature: signature
+            };
+
+            showLoading();
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`/api/purchase-requests/${requestId}/receive`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(receiptData)
+                });
+
+                if (response.ok) {
+                    showSuccess('Réception confirmée avec signature !');
+                    closeReceiptModal();
+                    loadRequests();
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function closeReceiptModal() {
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function viewRequest(requestId) {
+            const request = allRequestsData.find(r => r.id === requestId);
+            if (request) {
+                const modal = createDetailsModal(request);
+                document.body.appendChild(modal);
+            }
+        }
+
+        function createDetailsModal(request) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            const statusColor = getStatusColor(request.status);
+            const statusIcon = getStatusIcon(request.status);
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 600px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0; color: #2c3e50;">
+                            <i class="fas fa-file-alt" style="color: #3498db;"></i> 
+                            Détails de la Demande
+                        </h2>
+                        <button onclick="closeDetailsModal()" style="
+                            background: none; border: none; font-size: 24px; color: #999; cursor: pointer;
+                            padding: 5px; border-radius: 50%; width: 35px; height: 35px;
+                            display: flex; align-items: center; justify-content: center;
+                        " onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='none'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="margin: 0; color: #2c3e50;">${request.request_number}</h3>
+                            <span style="
+                                background: ${statusColor}; color: white; padding: 8px 15px; 
+                                border-radius: 20px; font-size: 14px; font-weight: bold;
+                            ">
+                                <i class="${statusIcon}"></i> ${getStatusText(request.status)}
+                            </span>
+                        </div>
+                        <p style="margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-calendar"></i> ${new Date(request.requested_at).toLocaleString('fr-FR')}
+                        </p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db;">
+                            <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                                <i class="fas fa-box" style="color: #3498db;"></i> Article
+                            </h4>
+                            <p style="margin: 0; font-size: 18px; font-weight: bold; color: #2c3e50;">${request.item_name}</p>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
+                                Quantité: <strong>${request.quantity} ${request.unit}</strong>
+                            </p>
+                        </div>
+                        
+                        <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c;">
+                            <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                                <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> Urgence
+                            </h4>
+                            <p style="margin: 0; font-size: 16px; color: #2c3e50; text-transform: capitalize;">${request.urgency}</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #27ae60;">
+                            <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                                <i class="fas fa-building" style="color: #27ae60;"></i> Service
+                            </h4>
+                            <p style="margin: 0; font-size: 16px; color: #2c3e50;">${request.department}</p>
+                        </div>
+                        
+                        <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #f39c12;">
+                            <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                                <i class="fas fa-user" style="color: #f39c12;"></i> Demandeur
+                            </h4>
+                            <p style="margin: 0; font-size: 16px; color: #2c3e50;">${request.requested_by}</p>
+                        </div>
+                    </div>
+                    
+                    ${request.description ? `
+                    <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #9b59b6; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                            <i class="fas fa-info-circle" style="color: #9b59b6;"></i> Description
+                        </h4>
+                        <p style="margin: 0; color: #2c3e50; line-height: 1.5;">${request.description}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${request.justification ? `
+                    <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #34495e; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                            <i class="fas fa-clipboard-check" style="color: #34495e;"></i> Justification
+                        </h4>
+                        <p style="margin: 0; color: #2c3e50; line-height: 1.5;">${request.justification}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${request.rejection_reason ? `
+                    <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                            <i class="fas fa-times-circle" style="color: #e74c3c;"></i> Raison du Rejet
+                        </h4>
+                        <p style="margin: 0; color: #2c3e50; line-height: 1.5;">${request.rejection_reason}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${request.order_number ? `
+                    <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #16a085; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 16px;">
+                            <i class="fas fa-shopping-cart" style="color: #16a085;"></i> Numéro de Commande
+                        </h4>
+                        <p style="margin: 0; font-size: 18px; font-weight: bold; color: #2c3e50;">${request.order_number}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                        <button onclick="closeDetailsModal()" class="btn btn-primary" style="padding: 10px 20px;">
+                            <i class="fas fa-check"></i> OK
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return modal;
+        }
+
+        function getStatusColor(status) {
+            const colorMap = {
+                'pending': '#f39c12',
+                'approved_by_dg': '#3498db',
+                'approved_by_purchase': '#27ae60',
+                'rejected': '#e74c3c',
+                'received': '#9b59b6',
+                'completed': '#16a085'
+            };
+            return colorMap[status] || '#95a5a6';
+        }
+
+        function getStatusIcon(status) {
+            const iconMap = {
+                'pending': 'fas fa-clock',
+                'approved_by_dg': 'fas fa-check-circle',
+                'approved_by_purchase': 'fas fa-shopping-cart',
+                'rejected': 'fas fa-times-circle',
+                'received': 'fas fa-box',
+                'completed': 'fas fa-check-double'
+            };
+            return iconMap[status] || 'fas fa-question-circle';
+        }
+
+        function closeDetailsModal() {
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('request-form').reset();
+        }
+
+        function exportRequests() {
+            if (allRequestsData.length === 0) {
+                showError('Aucune donnée à exporter');
+                return;
+            }
+
+            const csvContent = generateCSV(allRequestsData);
+            downloadCSV(csvContent, 'demandes_achat.csv');
+        }
+
+        function generateCSV(requests) {
+            const headers = ['N° Demande', 'Article', 'Quantité', 'Unité', 'Urgence', 'Statut', 'Service', 'Demandeur', 'Date Demande', 'N° Commande'];
+            const rows = requests.map(request => [
+                request.request_number,
+                request.item_name,
+                request.quantity,
+                request.unit,
+                request.urgency,
+                getStatusText(request.status),
+                request.department,
+                request.requested_by,
+                new Date(request.requested_at).toLocaleDateString(),
+                request.order_number || ''
+            ]);
+
+            return [headers, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Filtrage en temps réel
+        document.getElementById('search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filteredData = allRequestsData.filter(request => 
+                request.item_name.toLowerCase().includes(searchTerm) ||
+                request.request_number.toLowerCase().includes(searchTerm) ||
+                request.department.toLowerCase().includes(searchTerm)
+            );
+            displayRequests(filteredData);
+        });
+
+        document.getElementById('status-filter').addEventListener('change', function() {
+            const statusFilter = this.value;
+            const filteredData = statusFilter ? 
+                allRequestsData.filter(request => request.status === statusFilter) : 
+                allRequestsData;
+            displayRequests(filteredData);
+        });
+
+        // Gestion du formulaire
+        function attachFormEvents() {
+            const form = document.getElementById('request-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitRequest();
+                });
+                console.log('Événement de soumission attaché au formulaire');
+            } else {
+                console.error('Formulaire request-form non trouvé');
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            showAlert(message, 'success');
+        }
+
+        function showError(message) {
+            showAlert(message, 'error');
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.form-container'));
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        function handleAuthError(response) {
+            if (response.status === 401) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/login';
+                return true;
+            }
+            return false;
+        }
+
+        async function makeAuthenticatedRequest(url, options = {}) {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/login';
+                return null;
+            }
+
+            const defaultOptions = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const mergedOptions = { ...defaultOptions, ...options };
+            if (mergedOptions.headers) {
+                mergedOptions.headers = { ...defaultOptions.headers, ...mergedOptions.headers };
+            }
+
+            try {
+                const response = await fetch(url, mergedOptions);
+                if (handleAuthError(response)) {
+                    return null;
+                }
+                return response;
+            } catch (error) {
+                console.error('Erreur de requête:', error);
+                throw error;
+            }
+        }
+
+        async         function downloadReceiptPDF(requestId) {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const response = await fetch(`/api/pdf/receipt/${requestId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `bon_reception_${requestId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    showError('Erreur lors du téléchargement du PDF');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+
+        async function submitServiceFromModal(modal) {
+            const form = modal.querySelector('#service-modal-form');
+            const formData = new FormData(form);
+            
+            const serviceData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                department_head: formData.get('department_head'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                location: formData.get('location')
+            };
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch('/api/services/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(serviceData)
+                });
+
+                if (response.ok) {
+                    const newService = await response.json();
+                    showSuccess('Service créé avec succès !');
+                    closeServiceModal();
+                    loadServices(); // Recharger la liste des services
+                } else {
+                    const error = await response.json();
+                    showError('Erreur: ' + (error.detail || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        function closeServiceModal() {
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+        }
+    </script>
+</body>
+</html>

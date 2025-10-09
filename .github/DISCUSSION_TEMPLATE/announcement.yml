@@ -1,0 +1,150 @@
+name: 📢 Annonce
+description: Faire une annonce importante sur le projet
+title: "[ANNOUNCEMENT] "
+labels: ["discussion", "announcement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        📢 **Annonce - VITACH GUINÉE**
+        
+        Utilisez cette section pour faire des annonces importantes sur le projet.
+        
+  - type: textarea
+    id: announcement-title
+    attributes:
+      label: 🎯 Titre de l'Annonce
+      description: Donnez un titre à votre annonce
+      placeholder: "Ex: Nouvelle version 2.0 disponible !"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: announcement-content
+    attributes:
+      label: 📝 Contenu de l'Annonce
+      description: Décrivez le contenu de votre annonce
+      placeholder: "Décrivez en détail ce que vous annoncez..."
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: announcement-type
+    attributes:
+      label: 🏷️ Type d'Annonce
+      description: Sélectionnez le type d'annonce
+      options:
+        - "🎉 Nouvelle Version"
+        - "🆕 Nouvelle Fonctionnalité"
+        - "🐛 Correction de Bug"
+        - "📚 Mise à Jour Documentation"
+        - "🔒 Mise à Jour Sécurité"
+        - "⚡ Amélioration Performance"
+        - "🎨 Mise à Jour Interface"
+        - "📅 Événement"
+        - "👥 Changement Équipe"
+        - "🏢 Changement Organisation"
+        - "📢 Information Générale"
+        - "⚠️ Avertissement Important"
+        - "🔄 Maintenance"
+        - "📦 Déploiement"
+        - "❓ Autre"
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: announcement-priority
+    attributes:
+      label: 🎯 Priorité
+      description: Quelle est la priorité de cette annonce ?
+      options:
+        - "🔴 Critique"
+        - "🟠 Haute"
+        - "🟡 Moyenne"
+        - "🟢 Faible"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: announcement-impact
+    attributes:
+      label: 👥 Impact Utilisateur
+      description: Qui est impacté par cette annonce ?
+      placeholder: "Décrivez quels utilisateurs sont concernés et comment..."
+      
+  - type: textarea
+    id: announcement-timeline
+    attributes:
+      label: 📅 Délai
+      description: Quand cette annonce prend-elle effet ?
+      placeholder: "Ex: Immédiatement, dans 24h, à partir du 1er janvier..."
+      
+  - type: textarea
+    id: announcement-actions
+    attributes:
+      label: 🔄 Actions Requises
+      description: Quelles actions les utilisateurs doivent-ils prendre ?
+      placeholder: "Décrivez les étapes que les utilisateurs doivent suivre..."
+      
+  - type: textarea
+    id: announcement-details
+    attributes:
+      label: 📋 Détails Supplémentaires
+      description: Ajoutez des détails supplémentaires
+      placeholder: "Liens, références, captures d'écran, etc."
+      
+  - type: checkboxes
+    id: announcement-tags
+    attributes:
+      label: 🏷️ Tags d'Annonce
+      description: Sélectionnez les tags pertinents
+      options:
+        - label: "Version"
+        - label: "Fonctionnalité"
+        - label: "Bug"
+        - label: "Sécurité"
+        - label: "Performance"
+        - label: "Interface"
+        - label: "Documentation"
+        - label: "Événement"
+        - label: "Équipe"
+        - label: "Organisation"
+        - label: "Maintenance"
+        - label: "Déploiement"
+        - label: "Urgent"
+        - label: "Important"
+        - label: "Information"
+        - label: "Avertissement"
+        - label: "Mise à jour"
+        - label: "Changement"
+        
+  - type: textarea
+    id: announcement-links
+    attributes:
+      label: 🔗 Liens Utiles
+      description: Ajoutez des liens utiles
+      placeholder: "Liens vers la documentation, les issues, les discussions, etc."
+      
+  - type: textarea
+    id: announcement-contact
+    attributes:
+      label: 📞 Contact
+      description: Comment les utilisateurs peuvent-ils vous contacter ?
+      placeholder: "Email, GitHub, issues, discussions, etc."
+      
+  - type: checkboxes
+    id: announcement-acknowledgments
+    attributes:
+      label: ✅ Confirmations
+      description: Confirmez que vous avez vérifié
+      options:
+        - label: "J'ai vérifié l'exactitude des informations"
+          required: true
+        - label: "J'ai considéré l'impact sur les utilisateurs"
+          required: true
+        - label: "J'ai fourni toutes les informations nécessaires"
+          required: true
+        - label: "J'ai respecté les guidelines de communication"
+          required: true
+
+
