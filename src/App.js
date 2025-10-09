@@ -28,7 +28,6 @@ import AdvancedDashboard from './components/dashboard/AdvancedDashboardSimple';
 import StockPrediction from './components/ai/StockPredictionSimple';
 import WorkflowManager from './components/workflow/WorkflowManager';
 import OfflineManager from './components/offline/OfflineManager';
-import TestRunner from './components/testing/TestRunnerSimple';
 
 // Composant de protection des routes
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -260,14 +259,6 @@ const AppContent = () => {
               element={
                 <ProtectedRoute allowedRoles={['dg']}>
                   <OfflineManager />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="tests" 
-              element={
-                <ProtectedRoute allowedRoles={['dg']}>
-                  <TestRunner />
                 </ProtectedRoute>
               } 
             />

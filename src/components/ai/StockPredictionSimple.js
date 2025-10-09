@@ -222,136 +222,250 @@ const StockPredictionSimple = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
       {/* En-tête */}
-      <div className="flex items-center gap-3">
-        <Brain className="h-8 w-8 text-purple-600" />
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Prédictions IA</h2>
-          <p className="text-gray-600">Recommandations intelligentes pour l'optimisation du stock</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div className="flex items-center gap-3">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+            <Brain className="h-10 w-10 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">🤖 Prédictions IA</h1>
+            <p className="text-gray-600">Intelligence artificielle pour optimiser votre gestion de stock</p>
+          </div>
         </div>
+        <button
+          onClick={generatePredictions}
+          className="flex items-center space-x-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition shadow-lg"
+        >
+          <Brain size={20} />
+          <span className="font-medium">Actualiser l'analyse</span>
+        </button>
       </div>
 
       {/* Statistiques d'analyse */}
       {analysisData && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card">
-            <div className="flex items-center">
-              <Package className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Articles Analysés</p>
-                <p className="text-2xl font-semibold text-gray-900">{analysisData.totalItems}</p>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-blue-100 text-sm font-medium">Articles analysés</p>
+              <Package size={24} />
             </div>
+            <p className="text-4xl font-bold">{analysisData.totalItems}</p>
+            <p className="text-blue-100 text-xs mt-2">Inventaire complet</p>
           </div>
 
-          <div className="card">
-            <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Taux de Consommation Moyen</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {Object.values(analysisData.consumptionRates).length > 0 ? 
-                    (Object.values(analysisData.consumptionRates).reduce((sum, rate) => sum + rate.dailyRate, 0) / Object.values(analysisData.consumptionRates).length).toFixed(2) : 
-                    '0'
-                  }/jour
-                </p>
-              </div>
+          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-green-100 text-sm font-medium">Consommation/jour</p>
+              <TrendingUp size={24} />
             </div>
+            <p className="text-4xl font-bold">
+              {Object.values(analysisData.consumptionRates).length > 0 ? 
+                (Object.values(analysisData.consumptionRates).reduce((sum, rate) => sum + rate.dailyRate, 0) / Object.values(analysisData.consumptionRates).length).toFixed(1) : 
+                '0'
+              }
+            </p>
+            <p className="text-green-100 text-xs mt-2">Moyenne quotidienne</p>
           </div>
 
-          <div className="card">
-            <div className="flex items-center">
-              <BarChart3 className="h-8 w-8 text-purple-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Commandes Analysées</p>
-                <p className="text-2xl font-semibold text-gray-900">{analysisData.totalCommandes}</p>
-              </div>
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-purple-100 text-sm font-medium">Commandes</p>
+              <BarChart3 size={24} />
             </div>
+            <p className="text-4xl font-bold">{analysisData.totalCommandes}</p>
+            <p className="text-purple-100 text-xs mt-2">Total historique</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-orange-100 text-sm font-medium">Prédictions</p>
+              <AlertTriangle size={24} />
+            </div>
+            <p className="text-4xl font-bold">{predictions.length}</p>
+            <p className="text-orange-100 text-xs mt-2">Recommandations actives</p>
           </div>
         </div>
       )}
 
+      {/* Filtres par priorité */}
+      <div className="bg-white rounded-xl shadow-lg p-4">
+        <div className="flex flex-wrap gap-2">
+          <button className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition">
+            🔴 Haute priorité ({predictions.filter(p => p.priority === 'high').length})
+          </button>
+          <button className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg text-sm font-medium hover:bg-yellow-200 transition">
+            🟡 Moyenne ({predictions.filter(p => p.priority === 'medium').length})
+          </button>
+          <button className="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition">
+            🟢 Basse ({predictions.filter(p => p.priority === 'low').length})
+          </button>
+        </div>
+      </div>
+
       {/* Liste des prédictions */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Recommandations IA ({predictions.length})
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold text-gray-900">
+            💡 Recommandations IA ({predictions.length})
+          </h3>
+          {predictions.length > 0 && (
+            <button
+              onClick={() => {
+                const data = predictions.map(p => ({
+                  Article: p.article,
+                  Priorité: p.priority,
+                  Message: p.message,
+                  Recommandation: p.recommendation,
+                  Confiance: `${(p.confidence * 100).toFixed(0)}%`,
+                  Impact: p.impact
+                }));
+                
+                // Export simple en JSON pour test
+                const json = JSON.stringify(data, null, 2);
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `predictions-ia-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                toast.success('Prédictions exportées !');
+              }}
+              className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition text-sm"
+            >
+              <Package size={16} />
+              <span>Exporter JSON</span>
+            </button>
+          )}
+        </div>
 
         {predictions.length === 0 ? (
-          <div className="card text-center py-12">
-            <Brain className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">Aucune recommandation disponible</p>
+          <div className="bg-white rounded-xl shadow-lg text-center py-16">
+            <Brain className="h-20 w-20 mx-auto text-gray-300 mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Aucune recommandation</h3>
+            <p className="text-gray-600">
+              L'IA n'a détecté aucun problème. Votre gestion de stock est optimale ! 🎉
+            </p>
             <p className="text-sm text-gray-400 mt-2">
-              Les données sont en cours d'analyse...
+              Créez des commandes pour obtenir des prédictions basées sur l'historique
             </p>
           </div>
         ) : (
-          predictions.map((prediction) => (
-            <div
-              key={prediction.id}
-              className={`card border-l-4 ${
-                prediction.priority === 'high' ? 'border-red-500' :
-                prediction.priority === 'medium' ? 'border-yellow-500' :
-                'border-green-500'
-              }`}
-            >
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
-                  {getTypeIcon(prediction.type)}
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-lg font-medium text-gray-900">
-                      {prediction.article}
-                    </h4>
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(prediction.priority)}`}>
-                        {prediction.priority === 'high' ? 'Haute' :
-                         prediction.priority === 'medium' ? 'Moyenne' : 'Basse'} priorité
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        Confiance: {getConfidenceLevel(prediction.confidence)}
-                      </span>
+          <div className="grid grid-cols-1 gap-4">
+            {predictions.map((prediction) => (
+              <div
+                key={prediction.id}
+                className={`bg-white rounded-xl shadow-lg overflow-hidden border-l-4 hover:shadow-xl transition-all ${
+                  prediction.priority === 'high' ? 'border-red-500' :
+                  prediction.priority === 'medium' ? 'border-yellow-500' :
+                  'border-green-500'
+                }`}
+              >
+                <div className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
+                      prediction.priority === 'high' ? 'bg-red-100' :
+                      prediction.priority === 'medium' ? 'bg-yellow-100' :
+                      'bg-green-100'
+                    }`}>
+                      {getTypeIcon(prediction.type)}
                     </div>
-                  </div>
-                  
-                  <p className="text-gray-700 mb-3">{prediction.message}</p>
-                  
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-sm font-medium text-gray-900 mb-1">Recommandation IA:</p>
-                    <p className="text-sm text-gray-700">{prediction.recommendation}</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                    <span>Impact: {prediction.impact}</span>
-                    <span>Confiance: {(prediction.confidence * 100).toFixed(0)}%</span>
-                    <span>Type: {prediction.type}</span>
+                    
+                    <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                        <h4 className="text-lg font-bold text-gray-900">
+                          📦 {prediction.article}
+                        </h4>
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2 ${
+                            prediction.priority === 'high' ? 'bg-red-50 text-red-700 border-red-300' :
+                            prediction.priority === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-300' :
+                            'bg-green-50 text-green-700 border-green-300'
+                          }`}>
+                            {prediction.priority === 'high' ? '🔴 URGENT' :
+                             prediction.priority === 'medium' ? '🟡 ATTENTION' : '🟢 INFO'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gray-50 rounded-lg p-4 mb-3 border border-gray-200">
+                        <p className="text-sm font-medium text-gray-700 mb-1">⚠️ Analyse :</p>
+                        <p className="text-sm text-gray-900 font-medium">{prediction.message}</p>
+                      </div>
+                      
+                      <div className={`rounded-lg p-4 border-2 ${
+                        prediction.priority === 'high' ? 'bg-red-50 border-red-200' :
+                        prediction.priority === 'medium' ? 'bg-yellow-50 border-yellow-200' :
+                        'bg-green-50 border-green-200'
+                      }`}>
+                        <p className="text-sm font-bold text-gray-900 mb-2 flex items-center space-x-2">
+                          <Brain size={16} />
+                          <span>Recommandation IA :</span>
+                        </p>
+                        <p className="text-sm text-gray-800">{prediction.recommendation}</p>
+                      </div>
+                      
+                      <div className="flex items-center gap-6 mt-4 text-xs">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500">Impact :</span>
+                          <span className={`px-2 py-1 rounded font-medium ${
+                            prediction.impact === 'high' ? 'bg-red-100 text-red-800' :
+                            prediction.impact === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                          }`}>
+                            {prediction.impact === 'high' ? 'Élevé' : prediction.impact === 'medium' ? 'Moyen' : 'Faible'}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500">Confiance :</span>
+                          <div className="flex items-center space-x-1">
+                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className={`h-2 rounded-full ${
+                                  prediction.confidence >= 0.9 ? 'bg-green-500' :
+                                  prediction.confidence >= 0.8 ? 'bg-blue-500' :
+                                  prediction.confidence >= 0.7 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
+                                style={{ width: `${prediction.confidence * 100}%` }}
+                              />
+                            </div>
+                            <span className="font-bold text-gray-900">{(prediction.confidence * 100).toFixed(0)}%</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500">Type :</span>
+                          <span className="font-medium text-gray-800 capitalize">{prediction.type}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex justify-end gap-4">
-        <button
-          onClick={generatePredictions}
-          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-        >
-          Actualiser les Prédictions
-        </button>
-        <button
-          onClick={() => {
-            toast.success('Export des prédictions (à implémenter)');
-          }}
-          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-        >
-          Exporter les Recommandations
-        </button>
+      {/* Info IA */}
+      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
+        <div className="flex items-start space-x-4">
+          <Brain className="text-purple-600 flex-shrink-0" size={32} />
+          <div>
+            <h4 className="font-bold text-purple-900 mb-2">🤖 Comment fonctionne l'IA ?</h4>
+            <ul className="space-y-2 text-sm text-purple-800">
+              <li>✓ Analyse l'historique des commandes et du stock</li>
+              <li>✓ Calcule les taux de consommation quotidiens</li>
+              <li>✓ Prédit les ruptures de stock futures</li>
+              <li>✓ Identifie les stocks excédentaires</li>
+              <li>✓ Génère des recommandations d'optimisation</li>
+              <li>✓ Fournit un niveau de confiance pour chaque prédiction</li>
+            </ul>
+            <p className="text-xs text-purple-700 mt-3 italic">
+              💡 Les prédictions s'améliorent avec le temps. Plus vous utilisez le système, plus l'IA devient précise !
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

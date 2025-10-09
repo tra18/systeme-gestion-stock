@@ -59,7 +59,6 @@ const Sidebar = ({ onClose }) => {
     { name: 'Prédictions IA', href: '/predictions-ia', icon: Brain, roles: ['dg'] },
     { name: 'Workflows', href: '/workflows', icon: Workflow, roles: ['dg'] },
     { name: 'Mode Hors Ligne', href: '/hors-ligne', icon: Wifi, roles: ['dg'] },
-    { name: 'Tests', href: '/tests', icon: TestTube, roles: ['dg'] },
   ];
 
   const filteredNavigation = navigation.filter(item => 
