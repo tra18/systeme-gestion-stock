@@ -58,14 +58,14 @@ const SignaturePad = ({ onSave, onCancel, initialSignature = null, autoSave = fa
         </p>
       </div>
       
-      <div className="border-2 border-gray-300 rounded-lg p-2 sm:p-4 bg-white">
+      <div className="border-2 border-gray-300 rounded-lg p-2 sm:p-4 bg-white flex justify-center items-center">
         <SignatureCanvas
           ref={sigPad}
           canvasProps={{
-            className: 'signature-canvas w-full',
+            className: 'signature-canvas',
             width: Math.min(500, window.innerWidth - 100),
             height: 150,
-            style: { border: '1px solid #e5e7eb', borderRadius: '8px', maxWidth: '100%' }
+            style: { border: '1px solid #e5e7eb', borderRadius: '8px', display: 'block', margin: '0 auto' }
           }}
           onBegin={handleBegin}
           onEnd={handleEnd}

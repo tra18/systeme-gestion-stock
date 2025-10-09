@@ -398,22 +398,24 @@ const ValidationDG = () => {
                 </div>
 
                 {/* Signature */}
-                <div>
-                  <SignaturePad
-                    onSave={(signatureData) => {
-                      setSignature(signatureData);
-                      if (signatureData) {
-                        toast.success('Signature enregistrée ✓');
-                      }
-                    }}
-                    onCancel={() => {
-                      // Ne rien faire, garder la signature actuelle
-                    }}
-                    initialSignature={signature}
-                    autoSave={true}
-                  />
+                <div className="flex flex-col items-center">
+                  <div className="w-full max-w-2xl">
+                    <SignaturePad
+                      onSave={(signatureData) => {
+                        setSignature(signatureData);
+                        if (signatureData) {
+                          toast.success('Signature enregistrée ✓');
+                        }
+                      }}
+                      onCancel={() => {
+                        // Ne rien faire, garder la signature actuelle
+                      }}
+                      initialSignature={signature}
+                      autoSave={true}
+                    />
+                  </div>
                   {signature && (
-                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2">
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2 max-w-md">
                       <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                       <p className="text-sm text-green-700 font-medium">✓ Signature prête pour validation</p>
                     </div>
