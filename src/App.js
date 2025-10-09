@@ -25,7 +25,6 @@ import Budgets from './pages/Budgets';
 
 // Nouveaux composants avancés
 import AdvancedDashboard from './components/dashboard/AdvancedDashboardSimple';
-import WorkflowManager from './components/workflow/WorkflowManager';
 import OfflineManager from './components/offline/OfflineManager';
 
 // Composant de protection des routes
@@ -234,14 +233,6 @@ const AppContent = () => {
               element={
                 <ProtectedRoute allowedRoles={['dg']}>
                   <AdvancedDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="workflows" 
-              element={
-                <ProtectedRoute allowedRoles={['dg']}>
-                  <WorkflowManager />
                 </ProtectedRoute>
               } 
             />

@@ -18,7 +18,6 @@ import {
   Hash,
   X,
   BarChart3,
-  Workflow,
   Wifi,
   Briefcase,
   FileText
@@ -54,7 +53,6 @@ const Sidebar = ({ onClose }) => {
   // Nouvelles pages avancées (uniquement pour le DG)
   const advancedNavigation = [
     { name: 'Dashboard Avancé', href: '/dashboard-avance', icon: BarChart3, roles: ['dg'] },
-    { name: 'Workflows', href: '/workflows', icon: Workflow, roles: ['dg'] },
     { name: 'Mode Hors Ligne', href: '/hors-ligne', icon: Wifi, roles: ['dg'] },
   ];
 
