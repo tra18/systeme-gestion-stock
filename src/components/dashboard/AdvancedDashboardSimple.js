@@ -13,7 +13,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import toast from 'react-hot-toast';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import {
@@ -100,7 +100,7 @@ const AdvancedDashboardSimple = () => {
         ['Alertes Stock', dashboardData.stock.filter(item => (item.quantite || 0) <= (item.seuilMinimum || 0)).length]
       ];
       
-      doc.autoTable({
+      autoTable(doc, {
         startY: 45,
         head: [['Catégorie', 'Valeur']],
         body: metricsData,
@@ -135,7 +135,7 @@ const AdvancedDashboardSimple = () => {
         return [labels[statut] || statut, count];
       });
       
-      doc.autoTable({
+      autoTable(doc, {
         startY: yPos + 5,
         head: [['Statut', 'Nombre']],
         body: statutData,
@@ -156,7 +156,7 @@ const AdvancedDashboardSimple = () => {
           item.seuilMinimum || 0
         ]);
         
-        doc.autoTable({
+        autoTable(doc, {
           startY: yPos2 + 5,
           head: [['Article', 'Quantité', 'Seuil Min']],
           body: stockFaibleData,
@@ -431,11 +431,11 @@ const AdvancedDashboardSimple = () => {
               <Bar data={getStockParCategorieData()} options={chartOptions} />
             ) : (
               <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg">
-                <div className="text-center">
-                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+            <div className="text-center">
+              <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-500">Aucune donnée de stock</p>
                 </div>
-              </div>
+            </div>
             )}
           </div>
         </div>
@@ -451,11 +451,11 @@ const AdvancedDashboardSimple = () => {
               <Pie data={getCommandesParStatutData()} options={chartOptions} />
             ) : (
               <div className="h-full flex items-center justify-center bg-gray-50 rounded-lg">
-                <div className="text-center">
-                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+            <div className="text-center">
+              <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                   <p className="text-gray-500">Aucune commande</p>
                 </div>
-              </div>
+            </div>
             )}
           </div>
         </div>
