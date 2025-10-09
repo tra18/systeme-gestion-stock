@@ -82,36 +82,111 @@ const AdvancedDashboardSimple = () => {
   const exportToPDF = () => {
     try {
       const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
       
-      // Titre
-      doc.setFontSize(20);
-      doc.text('Tableau de Bord Avancé', 14, 20);
+      // Fonction pour ajouter un en-tête professionnel
+      const addHeader = () => {
+        // Bandeau supérieur avec gradient (simulé avec rectangle)
+        doc.setFillColor(59, 130, 246); // Bleu
+        doc.rect(0, 0, pageWidth, 35, 'F');
+        
+        // Titre principal en blanc
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(24);
+        doc.setFont(undefined, 'bold');
+        doc.text('RAPPORT DE GESTION', pageWidth / 2, 15, { align: 'center' });
+        
+        // Sous-titre
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'normal');
+        doc.text('Tableau de Bord Analytique', pageWidth / 2, 25, { align: 'center' });
+        
+        // Date et heure
+        const now = new Date();
+        doc.setFontSize(9);
+        doc.setTextColor(240, 240, 240);
+        doc.text(`Généré le ${now.toLocaleDateString('fr-FR')} à ${now.toLocaleTimeString('fr-FR')}`, pageWidth - 14, 32, { align: 'right' });
+        
+        // Ligne décorative
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.5);
+        doc.line(14, 37, pageWidth - 14, 37);
+      };
+      
+      // Fonction pour ajouter un pied de page
+      const addFooter = (pageNum) => {
+        doc.setTextColor(128, 128, 128);
+        doc.setFontSize(8);
+        doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.text('© Système de Gestion de Stock - Confidentiel', 14, pageHeight - 10);
+        doc.text(`${new Date().getFullYear()}`, pageWidth - 14, pageHeight - 10, { align: 'right' });
+        
+        // Ligne décorative en bas
+        doc.setDrawColor(220, 220, 220);
+        doc.line(14, pageHeight - 15, pageWidth - 14, pageHeight - 15);
+      };
+      
+      // Page 1 - En-tête et métriques
+      addHeader();
+      
+      // Résumé exécutif avec encadré
+      doc.setTextColor(50, 50, 50);
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('📊 RÉSUMÉ EXÉCUTIF', 14, 50);
+      
       doc.setFontSize(10);
-      doc.text(`Date: ${new Date().toLocaleDateString('fr-FR')}`, 14, 28);
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(80, 80, 80);
+      doc.text('Aperçu des indicateurs clés de performance de votre organisation', 14, 58);
       
-      // Métriques principales
-      doc.setFontSize(14);
-      doc.text('Métriques Principales', 14, 40);
-      
+      // Métriques principales avec design professionnel
       const metricsData = [
-        ['Articles en Stock', dashboardData.stock.length],
-        ['Commandes Total', dashboardData.commandes.length],
-        ['Employés', dashboardData.employes.length],
-        ['Alertes Stock', dashboardData.stock.filter(item => (item.quantite || 0) <= (item.seuilMinimum || 0)).length]
+        ['📦 Articles en Stock', dashboardData.stock.length.toString(), 'Unités disponibles'],
+        ['🛒 Commandes Total', dashboardData.commandes.length.toString(), 'Commandes enregistrées'],
+        ['👥 Employés', dashboardData.employes.length.toString(), 'Personnel actif'],
+        ['⚠️ Alertes Stock', dashboardData.stock.filter(item => (item.quantite || 0) <= (item.seuilMinimum || 0)).length.toString(), 'Articles sous seuil']
       ];
       
       autoTable(doc, {
-        startY: 45,
-        head: [['Catégorie', 'Valeur']],
+        startY: 65,
+        head: [['Indicateur', 'Valeur', 'Description']],
         body: metricsData,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246] }
+        theme: 'striped',
+        headStyles: { 
+          fillColor: [59, 130, 246],
+          textColor: [255, 255, 255],
+          fontSize: 11,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        bodyStyles: {
+          fontSize: 10,
+          textColor: [50, 50, 50]
+        },
+        alternateRowStyles: {
+          fillColor: [245, 247, 250]
+        },
+        columnStyles: {
+          0: { cellWidth: 70, fontStyle: 'bold' },
+          1: { cellWidth: 30, halign: 'center', textColor: [59, 130, 246], fontStyle: 'bold', fontSize: 12 },
+          2: { cellWidth: 80, textColor: [100, 100, 100], fontSize: 9 }
+        },
+        margin: { left: 14, right: 14 }
       });
       
-      // Commandes par statut
-      const yPos = doc.lastAutoTable.finalY + 15;
-      doc.setFontSize(14);
-      doc.text('Commandes par Statut', 14, yPos);
+      // Section Commandes par statut
+      const yPos = doc.lastAutoTable.finalY + 20;
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.setTextColor(50, 50, 50);
+      doc.text('📈 ANALYSE DES COMMANDES', 14, yPos);
+      
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(80, 80, 80);
+      doc.text('Répartition des commandes selon leur état de traitement', 14, yPos + 8);
       
       const statutCounts = {
         'en_attente_prix': 0,
@@ -125,51 +200,150 @@ const AdvancedDashboardSimple = () => {
         statutCounts[statut] = (statutCounts[statut] || 0) + 1;
       });
       
+      const total = dashboardData.commandes.length;
       const statutData = Object.entries(statutCounts).map(([statut, count]) => {
         const labels = {
-          'en_attente_prix': 'En attente prix',
-          'en_attente_approbation': 'En attente approbation',
-          'approuve': 'Approuvé',
-          'rejete': 'Rejeté'
+          'en_attente_prix': '⏳ En attente prix',
+          'en_attente_approbation': '⏰ En attente approbation',
+          'approuve': '✅ Approuvé',
+          'rejete': '❌ Rejeté'
         };
-        return [labels[statut] || statut, count];
+        const percentage = total > 0 ? ((count / total) * 100).toFixed(1) + '%' : '0%';
+        return [labels[statut] || statut, count.toString(), percentage];
       });
       
       autoTable(doc, {
-        startY: yPos + 5,
-        head: [['Statut', 'Nombre']],
+        startY: yPos + 15,
+        head: [['Statut', 'Nombre', 'Pourcentage']],
         body: statutData,
-        theme: 'striped',
-        headStyles: { fillColor: [34, 197, 94] }
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [34, 197, 94],
+          textColor: [255, 255, 255],
+          fontSize: 11,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        bodyStyles: {
+          fontSize: 10
+        },
+        columnStyles: {
+          0: { cellWidth: 90 },
+          1: { cellWidth: 40, halign: 'center', fontStyle: 'bold', textColor: [34, 197, 94] },
+          2: { cellWidth: 50, halign: 'center', textColor: [100, 100, 100] }
+        },
+        margin: { left: 14, right: 14 }
       });
       
-      // Articles en stock faible
+      // Section Alertes stock faible
       const stockFaible = dashboardData.stock.filter(item => (item.quantite || 0) <= (item.seuilMinimum || 0));
+      
       if (stockFaible.length > 0) {
-        const yPos2 = doc.lastAutoTable.finalY + 15;
-        doc.setFontSize(14);
-        doc.text('Alertes Stock Faible', 14, yPos2);
+        const yPos2 = doc.lastAutoTable.finalY + 20;
         
-        const stockFaibleData = stockFaible.slice(0, 10).map(item => [
-          item.nom || 'N/A',
-          item.quantite || 0,
-          item.seuilMinimum || 0
-        ]);
+        // Nouvelle page si nécessaire
+        if (yPos2 > pageHeight - 80) {
+          doc.addPage();
+          addHeader();
+          doc.setFontSize(16);
+          doc.setFont(undefined, 'bold');
+          doc.setTextColor(50, 50, 50);
+          doc.text('⚠️ ALERTES STOCK CRITIQUE', 14, 50);
+        } else {
+          doc.setFontSize(16);
+          doc.setFont(undefined, 'bold');
+          doc.setTextColor(50, 50, 50);
+          doc.text('⚠️ ALERTES STOCK CRITIQUE', 14, yPos2);
+        }
+        
+        const startY = yPos2 > pageHeight - 80 ? 58 : yPos2 + 8;
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.setTextColor(200, 50, 50);
+        doc.text(`${stockFaible.length} article(s) nécessite(nt) une attention immédiate`, 14, startY);
+        
+        const stockFaibleData = stockFaible.slice(0, 15).map(item => {
+          const diff = (item.seuilMinimum || 0) - (item.quantite || 0);
+          const urgence = diff > 10 ? '🔴 Urgent' : diff > 5 ? '🟠 Important' : '🟡 À surveiller';
+          return [
+            item.nom || 'N/A',
+            (item.quantite || 0).toString(),
+            (item.seuilMinimum || 0).toString(),
+            urgence
+          ];
+        });
         
         autoTable(doc, {
-          startY: yPos2 + 5,
-          head: [['Article', 'Quantité', 'Seuil Min']],
+          startY: startY + 7,
+          head: [['Article', 'Stock Actuel', 'Seuil Min', 'Urgence']],
           body: stockFaibleData,
           theme: 'grid',
-          headStyles: { fillColor: [239, 68, 68] }
+          headStyles: { 
+            fillColor: [239, 68, 68],
+            textColor: [255, 255, 255],
+            fontSize: 11,
+            fontStyle: 'bold',
+            halign: 'center'
+          },
+          bodyStyles: {
+            fontSize: 9
+          },
+          columnStyles: {
+            0: { cellWidth: 80 },
+            1: { cellWidth: 35, halign: 'center', textColor: [239, 68, 68], fontStyle: 'bold' },
+            2: { cellWidth: 35, halign: 'center', textColor: [100, 100, 100] },
+            3: { cellWidth: 40, halign: 'center', fontSize: 8 }
+          },
+          margin: { left: 14, right: 14 }
         });
       }
       
-      doc.save(`tableau-de-bord-${new Date().toISOString().split('T')[0]}.pdf`);
-      toast.success('✅ PDF exporté avec succès');
+      // Recommandations
+      const finalY = doc.lastAutoTable.finalY + 20;
+      if (finalY > pageHeight - 60) {
+        doc.addPage();
+        addHeader();
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(50, 50, 50);
+        doc.text('💡 RECOMMANDATIONS', 14, 50);
+      } else {
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.setTextColor(50, 50, 50);
+        doc.text('💡 RECOMMANDATIONS', 14, finalY);
+      }
+      
+      const recY = finalY > pageHeight - 60 ? 58 : finalY + 8;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.setTextColor(80, 80, 80);
+      
+      const recommendations = [
+        `• Surveiller les ${stockFaible.length} articles en stock faible`,
+        `• ${statutCounts.en_attente_prix} commande(s) en attente de prix`,
+        `• ${statutCounts.en_attente_approbation} commande(s) en attente d'approbation`,
+        '• Vérifier régulièrement les indicateurs de performance'
+      ];
+      
+      recommendations.forEach((rec, index) => {
+        doc.text(rec, 20, recY + (index * 7));
+      });
+      
+      // Ajouter les pieds de page sur toutes les pages
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        addFooter(i);
+      }
+      
+      // Sauvegarder avec nom professionnel
+      const fileName = `Rapport-Gestion-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      toast.success('✅ Rapport PDF généré avec succès');
     } catch (error) {
       console.error('Erreur export PDF:', error);
-      toast.error('❌ Erreur lors de l\'export PDF');
+      toast.error('❌ Erreur lors de la génération du rapport');
     }
   };
 
