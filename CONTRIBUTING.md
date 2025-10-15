@@ -1,317 +1,335 @@
 # 🤝 Guide de Contribution - VITACH GUINÉE
 
-Merci de votre intérêt à contribuer au projet VITACH GUINÉE ! Ce guide vous aidera à comprendre comment contribuer efficacement.
+Merci de votre intérêt à contribuer au système VITACH GUINÉE ! Ce guide vous aidera à comprendre comment contribuer efficacement au projet.
 
 ## 📋 Table des Matières
 
-- [Code de Conduite](#code-de-conduite)
-- [Comment Contribuer](#comment-contribuer)
-- [Processus de Développement](#processus-de-développement)
-- [Standards de Code](#standards-de-code)
-- [Tests](#tests)
-- [Documentation](#documentation)
+- [🚀 Démarrage rapide](#-démarrage-rapide)
+- [🔧 Configuration de l'environnement](#-configuration-de-lenvironnement)
+- [📝 Standards de code](#-standards-de-code)
+- [🔄 Workflow de contribution](#-workflow-de-contribution)
+- [🧪 Tests](#-tests)
+- [📚 Documentation](#-documentation)
+- [🐛 Signaler des bugs](#-signaler-des-bugs)
+- [✨ Proposer des fonctionnalités](#-proposer-des-fonctionnalités)
 
-## 📜 Code de Conduite
-
-### Nos Engagements
-
-Nous nous engageons à créer un environnement accueillant et inclusif pour tous les contributeurs, indépendamment de :
-
-- L'âge, la taille, le handicap, l'ethnicité
-- L'identité et l'expression de genre
-- Le niveau d'expérience, l'éducation
-- L'apparence, la nationalité
-- L'orientation sexuelle, l'identité sociale
-
-### Comportements Acceptables
-
-- Utiliser un langage accueillant et inclusif
-- Respecter les points de vue et expériences différents
-- Accepter gracieusement les critiques constructives
-- Se concentrer sur ce qui est le mieux pour la communauté
-- Faire preuve d'empathie envers les autres membres
-
-### Comportements Inacceptables
-
-- L'utilisation de langage ou d'images sexualisés
-- Le trolling, les commentaires insultants ou désobligeants
-- Le harcèlement public ou privé
-- La publication d'informations privées sans permission
-- Toute conduite inappropriée dans un contexte professionnel
-
-## 🚀 Comment Contribuer
+## 🚀 Démarrage rapide
 
 ### 1. Fork et Clone
-
 ```bash
-# Fork le repository sur GitHub
-# Puis clonez votre fork
-git clone https://github.com/VOTRE-USERNAME/vitach-guinee.git
-cd vitach-guinee
+# Fork le projet sur GitHub, puis clonez votre fork
+git clone https://github.com/VOTRE-USERNAME/systeme-gestion-stock.git
+cd systeme-gestion-stock
+
+# Ajoutez le dépôt original comme remote
+git remote add upstream https://github.com/tra18/systeme-gestion-stock.git
 ```
 
-### 2. Créer une Branche
-
+### 2. Installation
 ```bash
-# Créer une nouvelle branche pour votre fonctionnalité
+# Installez les dépendances
+npm install
+
+# Configurez Firebase (voir section configuration)
+cp src/firebase/config.example.js src/firebase/config.js
+```
+
+### 3. Développement
+```bash
+# Lancez le serveur de développement
+npm start
+
+# Dans un autre terminal, lancez les tests
+npm test
+```
+
+## 🔧 Configuration de l'environnement
+
+### Firebase
+1. Créez un projet Firebase
+2. Activez Authentication, Firestore, et Storage
+3. Copiez les clés de configuration dans `src/firebase/config.js`
+
+### Variables d'environnement
+Créez un fichier `.env.local` :
+```env
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
+
+## 📝 Standards de code
+
+### Structure des fichiers
+```
+src/
+├── components/          # Composants réutilisables
+│   ├── [module]/       # Groupés par module
+│   └── layout/         # Layout et navigation
+├── pages/              # Pages principales
+├── contexts/           # Contextes React
+├── utils/              # Utilitaires
+└── firebase/           # Configuration Firebase
+```
+
+### Conventions de nommage
+- **Composants** : `PascalCase` (ex: `UserProfile.js`)
+- **Fichiers** : `camelCase` (ex: `userProfile.js`)
+- **Variables** : `camelCase` (ex: `userName`)
+- **Constantes** : `UPPER_SNAKE_CASE` (ex: `API_BASE_URL`)
+
+### Format de code
+```javascript
+// ✅ Bon exemple
+const UserProfile = ({ user, onUpdate }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleUpdate = async () => {
+    setIsLoading(true);
+    try {
+      await onUpdate(user);
+    } catch (error) {
+      console.error('Erreur mise à jour:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="user-profile">
+      <h2>{user.name}</h2>
+      <button 
+        onClick={handleUpdate}
+        disabled={isLoading}
+        className="btn btn-primary"
+      >
+        {isLoading ? 'Mise à jour...' : 'Mettre à jour'}
+      </button>
+    </div>
+  );
+};
+```
+
+### Commentaires
+```javascript
+/**
+ * Composant de profil utilisateur
+ * @param {Object} user - Données utilisateur
+ * @param {Function} onUpdate - Callback de mise à jour
+ * @returns {JSX.Element} Composant React
+ */
+const UserProfile = ({ user, onUpdate }) => {
+  // État local pour le chargement
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Gestionnaire de mise à jour
+  const handleUpdate = async () => {
+    // Logique de mise à jour...
+  };
+};
+```
+
+## 🔄 Workflow de contribution
+
+### 1. Créer une branche
+```bash
+# Récupérez les dernières modifications
+git fetch upstream
+git checkout main
+git merge upstream/main
+
+# Créez une nouvelle branche
 git checkout -b feature/nom-de-votre-fonctionnalite
-# ou
-git checkout -b fix/nom-du-bug
 ```
 
-### 3. Installer les Dépendances
+### 2. Développer
+- Écrivez du code propre et testé
+- Suivez les conventions du projet
+- Documentez vos changements
 
+### 3. Commit
 ```bash
-# Installer les dépendances
-pip install -r requirements.txt
-```
-
-### 4. Développer
-
-- Suivez les standards de code
-- Ajoutez des tests pour vos modifications
-- Mettez à jour la documentation si nécessaire
-
-### 5. Tester
-
-```bash
-# Lancer les tests
-python -m pytest
-
-# Vérifier le style de code
-flake8 .
-
-# Vérifier la sécurité
-safety check
-```
-
-### 6. Commit et Push
-
-```bash
-# Ajouter vos modifications
+# Ajoutez vos modifications
 git add .
 
-# Commit avec un message descriptif
-git commit -m "feat: ajouter nouvelle fonctionnalité X"
+# Commitez avec un message descriptif
+git commit -m "feat: ajouter gestion des notifications push
 
+- Ajout du composant NotificationCenter
+- Intégration avec Firebase Messaging
+- Interface utilisateur responsive
+- Tests unitaires inclus"
+```
+
+### 4. Push et Pull Request
+```bash
 # Push vers votre fork
 git push origin feature/nom-de-votre-fonctionnalite
+
+# Créez une Pull Request sur GitHub
 ```
-
-### 7. Pull Request
-
-- Créer une Pull Request sur GitHub
-- Décrire clairement vos modifications
-- Référencer les issues liées
-- Attendre la review
-
-## 🔄 Processus de Développement
-
-### Branches
-
-- `main` : Branche principale, code stable
-- `develop` : Branche de développement
-- `feature/*` : Nouvelles fonctionnalités
-- `fix/*` : Corrections de bugs
-- `hotfix/*` : Corrections urgentes
-
-### Workflow
-
-1. **Issue** : Créer une issue pour décrire le problème/fonctionnalité
-2. **Branch** : Créer une branche depuis `develop`
-3. **Develop** : Développer et tester
-4. **PR** : Créer une Pull Request vers `develop`
-5. **Review** : Code review et tests
-6. **Merge** : Fusion dans `develop`
-7. **Release** : Fusion dans `main` pour release
-
-## 📝 Standards de Code
-
-### Python
-
-- Suivre PEP 8
-- Utiliser des noms de variables descriptifs
-- Ajouter des docstrings pour les fonctions
-- Maximum 120 caractères par ligne
-
-```python
-def calculate_total_price(quantity: int, unit_price: float) -> float:
-    """
-    Calcule le prix total d'un achat.
-    
-    Args:
-        quantity: Quantité d'articles
-        unit_price: Prix unitaire
-        
-    Returns:
-        Prix total calculé
-    """
-    return quantity * unit_price
-```
-
-### JavaScript
-
-- Utiliser des noms de variables descriptifs
-- Commenter le code complexe
-- Utiliser des fonctions async/await pour les appels API
-
-```javascript
-async function loadServices() {
-    try {
-        const response = await fetch('/api/services/');
-        const services = await response.json();
-        displayServices(services);
-    } catch (error) {
-        console.error('Erreur lors du chargement des services:', error);
-    }
-}
-```
-
-### HTML/CSS
-
-- Utiliser une indentation cohérente
-- Ajouter des commentaires pour les sections importantes
-- Utiliser des classes CSS descriptives
 
 ## 🧪 Tests
 
-### Types de Tests
+### Types de tests
+- **Unitaires** : Tests des fonctions individuelles
+- **Intégration** : Tests des composants ensemble
+- **E2E** : Tests de bout en bout
 
-- **Tests unitaires** : Fonctions individuelles
-- **Tests d'intégration** : Modules ensemble
-- **Tests fonctionnels** : Interface utilisateur
-
-### Exécuter les Tests
-
+### Lancer les tests
 ```bash
 # Tous les tests
-python -m pytest
+npm test
 
-# Tests spécifiques
-python -m pytest tests/test_purchases.py
+# Tests en mode watch
+npm test -- --watch
 
-# Avec couverture
-python -m pytest --cov=.
+# Tests avec coverage
+npm test -- --coverage
 ```
 
-### Écrire des Tests
+### Écrire des tests
+```javascript
+// UserProfile.test.js
+import { render, screen, fireEvent } from '@testing-library/react';
+import UserProfile from './UserProfile';
 
-```python
-import pytest
-from fastapi.testclient import TestClient
-from main import app
+describe('UserProfile', () => {
+  const mockUser = { name: 'John Doe', email: 'john@example.com' };
+  const mockOnUpdate = jest.fn();
 
-client = TestClient(app)
+  beforeEach(() => {
+    mockOnUpdate.mockClear();
+  });
 
-def test_create_purchase():
-    response = client.post(
-        "/api/purchases/",
-        json={
-            "item_name": "Test Item",
-            "quantity": 10,
-            "unit_price": 100.0,
-            "category": "equipment"
-        }
-    )
-    assert response.status_code == 200
-    assert response.json()["item_name"] == "Test Item"
+  it('affiche le nom de l\'utilisateur', () => {
+    render(<UserProfile user={mockUser} onUpdate={mockOnUpdate} />);
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+  });
+
+  it('appelle onUpdate au clic du bouton', async () => {
+    render(<UserProfile user={mockUser} onUpdate={mockOnUpdate} />);
+    
+    const button = screen.getByText('Mettre à jour');
+    fireEvent.click(button);
+    
+    expect(mockOnUpdate).toHaveBeenCalledWith(mockUser);
+  });
+});
 ```
 
 ## 📚 Documentation
 
-### Types de Documentation
+### Mise à jour de la documentation
+- **README.md** : Vue d'ensemble et installation
+- **CONTRIBUTING.md** : Guide de contribution (ce fichier)
+- **Comments** : Documentation du code
+- **Wiki** : Documentation détaillée
 
-- **README.md** : Vue d'ensemble du projet
-- **API Documentation** : Documentation des endpoints
-- **Code Comments** : Commentaires dans le code
-- **User Guide** : Guide utilisateur
-
-### Mettre à Jour la Documentation
-
-- Mettre à jour le README pour les nouvelles fonctionnalités
-- Ajouter des exemples d'utilisation
-- Documenter les changements d'API
-- Mettre à jour les guides utilisateur
-
-## 🐛 Signaler un Bug
-
-### Template d'Issue
-
-```markdown
-**Description du Bug**
-Description claire du problème.
-
-**Étapes pour Reproduire**
-1. Aller à '...'
-2. Cliquer sur '....'
-3. Voir l'erreur
-
-**Comportement Attendu**
-Description du comportement attendu.
-
-**Captures d'Écran**
-Si applicable, ajouter des captures d'écran.
-
-**Environnement**
-- OS: [ex: Windows, macOS, Linux]
-- Navigateur: [ex: Chrome, Firefox]
-- Version: [ex: 1.0.0]
-
-**Informations Supplémentaires**
-Toute autre information pertinente.
+### Format de documentation
+```javascript
+/**
+ * Calcule le total des salaires pour une période donnée
+ * @param {Array} employes - Liste des employés
+ * @param {Date} dateDebut - Date de début de la période
+ * @param {Date} dateFin - Date de fin de la période
+ * @returns {number} Total des salaires
+ * @throws {Error} Si les dates sont invalides
+ * 
+ * @example
+ * const total = calculerTotalSalaires(employes, new Date('2024-01-01'), new Date('2024-01-31'));
+ * console.log(`Total: ${total} GNF`);
+ */
+const calculerTotalSalaires = (employes, dateDebut, dateFin) => {
+  // Implémentation...
+};
 ```
 
-## ✨ Proposer une Fonctionnalité
+## 🐛 Signaler des bugs
 
-### Template de Feature Request
+### Avant de signaler
+1. Vérifiez les issues existantes
+2. Testez sur la dernière version
+3. Rassemblez les informations nécessaires
 
-```markdown
-**Fonctionnalité Demandée**
-Description claire de la fonctionnalité.
+### Template de bug report
+Utilisez le template fourni dans `.github/ISSUE_TEMPLATE/bug_report.md`
 
-**Problème Résolu**
-Quel problème cette fonctionnalité résout-elle ?
+### Informations importantes
+- **Environnement** : OS, navigateur, version
+- **Étapes de reproduction** : Détaillez chaque étape
+- **Comportement attendu vs actuel**
+- **Logs d'erreur** : Capturez les erreurs console
+- **Captures d'écran** : Si applicable
 
-**Solution Proposée**
-Description de la solution proposée.
+## ✨ Proposer des fonctionnalités
 
-**Alternatives Considérées**
-Autres solutions considérées.
+### Avant de proposer
+1. Vérifiez les feature requests existantes
+2. Considérez l'impact sur l'architecture
+3. Pensez aux cas d'usage
 
-**Contexte Supplémentaire**
-Toute autre information pertinente.
-```
+### Template de feature request
+Utilisez le template fourni dans `.github/ISSUE_TEMPLATE/feature_request.md`
+
+### Éléments importants
+- **Problème à résoudre** : Décrivez le besoin
+- **Solution proposée** : Votre idée
+- **Alternatives** : Autres solutions possibles
+- **Priorité** : Impact et urgence
+- **Module concerné** : Où intégrer la fonctionnalité
+
+## 🏷️ Labels et conventions
+
+### Labels d'issues
+- `bug` : Problème à corriger
+- `enhancement` : Nouvelle fonctionnalité
+- `question` : Question d'utilisation
+- `documentation` : Amélioration de la doc
+- `good first issue` : Bon pour débuter
+
+### Labels de PR
+- `ready for review` : Prêt pour review
+- `work in progress` : En cours de développement
+- `breaking change` : Changement majeur
+- `dependencies` : Mise à jour de dépendances
+
+## 🔍 Processus de review
+
+### Critères de review
+- ✅ Code fonctionnel et testé
+- ✅ Respect des conventions
+- ✅ Documentation à jour
+- ✅ Pas de régression
+- ✅ Performance acceptable
+
+### Répondre aux commentaires
+- Soyez constructif et professionnel
+- Demandez des clarifications si nécessaire
+- Testez les suggestions avant d'appliquer
 
 ## 📞 Support
 
-### Obtenir de l'Aide
-
-- **Issues GitHub** : Pour les bugs et fonctionnalités
-- **Discussions** : Pour les questions générales
-- **Email** : Pour les questions privées
+### Questions et aide
+- 💬 **GitHub Discussions** : Pour les questions générales
+- 🐛 **Issues** : Pour les bugs et fonctionnalités
+- 📧 **Email** : support@vitach-guinee.com
 
 ### Ressources
+- 📚 **Documentation** : [Wiki du projet](wiki/)
+- 🎥 **Tutoriels** : [Vidéos de formation](tutorials/)
+- 💡 **FAQ** : [Questions fréquentes](faq/)
 
-- [Documentation FastAPI](https://fastapi.tiangolo.com/)
-- [Documentation SQLAlchemy](https://docs.sqlalchemy.org/)
-- [Guide Python](https://docs.python.org/)
+## 🙏 Remerciements
 
-## 🏆 Reconnaissance
+Merci à tous les contributeurs qui participent à l'amélioration de VITACH GUINÉE !
 
-Les contributeurs seront reconnus dans :
-
-- Le fichier CONTRIBUTORS.md
-- Les release notes
-- La documentation du projet
-
-## 📄 Licence
-
-En contribuant, vous acceptez que vos contributions soient sous la même licence que le projet (MIT License).
+### Contributors
+Voir [CONTRIBUTORS.md](CONTRIBUTORS.md) pour la liste complète.
 
 ---
 
-**Merci de contribuer à VITACH GUINÉE !** 🎉
-
-*Dernière mise à jour : 25 Septembre 2025*
-
-
+**Note** : Ce guide est vivant et évolue avec le projet. N'hésitez pas à proposer des améliorations !

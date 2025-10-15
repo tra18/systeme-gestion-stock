@@ -1,66 +1,44 @@
 ---
 name: 🐛 Bug Report
-about: Signaler un bug pour nous aider à améliorer le projet
+about: Signaler un bug dans le système VITACH GUINÉE
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
 ## 🐛 Description du Bug
+Une description claire et concise du problème rencontré.
 
-Une description claire et concise du bug.
-
-## 🔄 Étapes pour Reproduire
-
-Étapes pour reproduire le comportement :
-
+## 🔄 Étapes pour reproduire
 1. Aller à '...'
-2. Cliquer sur '....'
-3. Faire défiler vers '....'
+2. Cliquer sur '...'
+3. Faire défiler vers '...'
 4. Voir l'erreur
 
-## ✅ Comportement Attendu
-
+## ✅ Comportement attendu
 Une description claire et concise de ce qui devrait se passer.
 
-## 📸 Captures d'Écran
+## ❌ Comportement actuel
+Une description claire et concise de ce qui se passe actuellement.
 
-Si applicable, ajouter des captures d'écran pour aider à expliquer votre problème.
+## 📱 Environnement
+- **OS** : [ex: Windows 10, macOS 12, Ubuntu 20.04]
+- **Navigateur** : [ex: Chrome 95, Firefox 94, Safari 15]
+- **Version de l'app** : [ex: 1.2.3]
+- **Mode** : [ex: PWA installée, navigateur web, mobile]
 
-## 🖥️ Environnement
+## 📸 Captures d'écran
+Si applicable, ajoutez des captures d'écran pour expliquer votre problème.
 
-**Desktop (veuillez compléter les informations suivantes) :**
- - OS: [ex: Windows, macOS, Linux]
- - Navigateur: [ex: Chrome, Firefox, Safari]
- - Version: [ex: 22]
-
-**Mobile (veuillez compléter les informations suivantes) :**
- - Appareil: [ex: iPhone6]
- - OS: [ex: iOS8.1]
- - Navigateur: [ex: stock browser, safari]
- - Version: [ex: 22]
-
-## 📋 Informations Supplémentaires
-
-Ajouter tout autre contexte concernant le problème ici.
-
-## 🔍 Logs d'Erreur
-
-Si applicable, ajouter les logs d'erreur :
-
+## 📝 Logs
 ```
-Paste error logs here
+Collez ici les logs d'erreur s'il y en a
 ```
 
-## 🏷️ Labels
+## 🔧 Informations supplémentaires
+Ajoutez tout autre contexte sur le problème ici.
 
-- [ ] Bug critique
-- [ ] Bug mineur
-- [ ] Interface utilisateur
-- [ ] Performance
-- [ ] Base de données
-- [ ] API
-- [ ] Authentification
-- [ ] Export/Import
-
-
+## ✅ Checklist
+- [ ] J'ai vérifié que ce bug n'a pas déjà été signalé
+- [ ] J'ai fourni toutes les informations nécessaires
+- [ ] J'ai testé sur plusieurs navigateurs/environnements

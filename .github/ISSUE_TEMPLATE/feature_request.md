@@ -1,75 +1,58 @@
 ---
 name: ✨ Feature Request
-about: Suggérer une idée pour ce projet
+about: Suggérer une nouvelle fonctionnalité pour VITACH GUINÉE
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
 ---
 
-## ✨ Fonctionnalité Demandée
+## ✨ Résumé de la fonctionnalité
+Une description claire et concise de la fonctionnalité que vous aimeriez voir ajoutée.
 
-Une description claire et concise de la fonctionnalité que vous souhaitez.
+## 🎯 Problème à résoudre
+Décrivez le problème que cette fonctionnalité résoudrait. Ex: "Je suis toujours frustré quand [...]"
 
-## 🤔 Problème Résolu
+## 💡 Solution proposée
+Une description claire et concise de ce que vous voulez qui se passe.
 
-Quel problème cette fonctionnalité résout-elle ? Décrivez clairement le problème.
+## 🔄 Alternatives considérées
+Une description claire et concise de toutes les solutions alternatives ou fonctionnalités que vous avez considérées.
 
-## 💡 Solution Proposée
+## 📊 Priorité
+- [ ] 🔴 Critique - Bloque l'utilisation
+- [ ] 🟠 Haute - Amélioration importante
+- [ ] 🟡 Moyenne - Amélioration utile
+- [ ] 🟢 Basse - Nice to have
 
-Décrivez clairement ce que vous voulez qu'il se passe.
+## 🏷️ Module concerné
+- [ ] 📊 Dashboard
+- [ ] 📦 Stock
+- [ ] 👥 RH
+- [ ] 💻 IT
+- [ ] 🚛 Maintenance
+- [ ] 📋 Commandes
+- [ ] 📱 PWA
+- [ ] 🔐 Authentification
+- [ ] 📈 Rapports
+- [ ] Autre: _______________
 
-## 🔄 Alternatives Considérées
+## 📱 Type d'utilisateur
+- [ ] 👨‍💼 Direction Générale
+- [ ] 👩‍💼 Ressources Humaines
+- [ ] 👨‍💻 IT/Technique
+- [ ] 👩‍💼 Gestionnaire Stock
+- [ ] 👨‍🔧 Maintenance
+- [ ] 👩‍💼 Commercial
+- [ ] Autre: _______________
 
-Décrivez les solutions alternatives que vous avez considérées.
+## 📸 Mockups/Wireframes
+Si vous avez des idées visuelles, ajoutez des images ou des diagrammes.
 
-## 📋 Contexte Supplémentaire
+## 📝 Informations supplémentaires
+Ajoutez tout autre contexte ou captures d'écran sur la demande de fonctionnalité ici.
 
-Ajouter tout autre contexte ou captures d'écran concernant la demande de fonctionnalité ici.
-
-## 🎯 Priorité
-
-- [ ] Critique
-- [ ] Haute
-- [ ] Moyenne
-- [ ] Faible
-
-## 🏷️ Catégorie
-
-- [ ] Interface utilisateur
-- [ ] Fonctionnalité métier
-- [ ] Performance
-- [ ] Sécurité
-- [ ] Export/Import
-- [ ] Rapports
-- [ ] Authentification
-- [ ] Base de données
-- [ ] API
-- [ ] Documentation
-
-## 👥 Impact Utilisateur
-
-Qui bénéficierait de cette fonctionnalité ?
-
-- [ ] Tous les utilisateurs
-- [ ] Administrateurs
-- [ ] Managers
-- [ ] Utilisateurs standard
-- [ ] Visualiseurs
-
-## 🔧 Complexité Technique
-
-- [ ] Simple
-- [ ] Moyenne
-- [ ] Complexe
-- [ ] Très complexe
-
-## 📅 Délai Souhaité
-
-Quand aimeriez-vous voir cette fonctionnalité implémentée ?
-
-- [ ] Urgent (dans la semaine)
-- [ ] Court terme (dans le mois)
-- [ ] Moyen terme (dans les 3 mois)
-- [ ] Long terme (plus de 3 mois)
-
-
+## ✅ Checklist
+- [ ] J'ai vérifié que cette fonctionnalité n'existe pas déjà
+- [ ] J'ai fourni toutes les informations nécessaires
+- [ ] J'ai considéré l'impact sur tous les modules
+- [ ] J'ai vérifié la cohérence avec l'architecture existante
