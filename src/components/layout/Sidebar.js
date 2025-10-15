@@ -43,7 +43,7 @@ const Sidebar = ({ onClose, isOpen }) => {
     { name: 'Articles', href: '/articles', icon: Hash, roles: ['service', 'achat', 'dg'] },
     { name: 'Services', href: '/services', icon: Building, roles: ['dg'] },
     { name: 'Ressources Humaines', href: '/ressources-humaines', icon: Briefcase, roles: ['dg'] },
-    { name: 'Gestion IT', href: '/gestion-it', icon: Monitor, roles: ['dg'] },
+    { name: 'Gestion IT', href: '/gestion-it', icon: Monitor, roles: ['dg', 'admin', 'it'] },
     { name: 'Budgets', href: '/budgets', icon: DollarSign, roles: ['dg'] },
     { name: 'Rapports', href: '/rapports', icon: FileText, roles: ['dg'] },
     { name: 'Fournisseurs', href: '/fournisseurs', icon: Building2, roles: ['achat', 'dg'] },

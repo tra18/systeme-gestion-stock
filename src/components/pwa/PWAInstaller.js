@@ -138,7 +138,7 @@ const PWAInstaller = () => {
   // Ne pas afficher si déjà installé
   if (isInstalled) {
     return (
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-30 hidden md:block">
         {/* Indicateur de statut de connexion */}
         <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
           isOnline 
@@ -146,7 +146,7 @@ const PWAInstaller = () => {
             : 'bg-red-100 text-red-800'
         }`}>
           {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
-          <span>{isOnline ? 'En ligne' : 'Hors ligne'}</span>
+          <span className="hidden lg:inline">{isOnline ? 'En ligne' : 'Hors ligne'}</span>
         </div>
       </div>
     );
@@ -156,7 +156,7 @@ const PWAInstaller = () => {
     <>
       {/* Prompt d'installation */}
       {showInstallPrompt && (
-        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50">
+        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-30">
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
@@ -191,8 +191,8 @@ const PWAInstaller = () => {
         </div>
       )}
 
-      {/* Indicateur de statut */}
-      <div className="fixed top-4 right-4 z-50">
+      {/* Indicateur de statut - masqué sur mobile pour éviter les conflits */}
+      <div className="fixed top-4 right-4 z-30 hidden md:block">
         <div className="flex flex-col space-y-2">
           {/* Statut de connexion */}
           <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
@@ -201,7 +201,7 @@ const PWAInstaller = () => {
               : 'bg-red-100 text-red-800'
           }`}>
             {isOnline ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
-            <span>{isOnline ? 'En ligne' : 'Hors ligne'}</span>
+            <span className="hidden lg:inline">{isOnline ? 'En ligne' : 'Hors ligne'}</span>
           </div>
 
           {/* Bouton notifications */}
@@ -211,7 +211,7 @@ const PWAInstaller = () => {
               className="flex items-center space-x-2 bg-blue-100 text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
             >
               <Bell className="h-4 w-4" />
-              <span>Notifications</span>
+              <span className="hidden lg:inline">Notifications</span>
             </button>
           )}
         </div>

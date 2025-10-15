@@ -224,7 +224,7 @@ const AppContent = () => {
             <Route 
               path="gestion-it" 
               element={
-                <ProtectedRoute allowedRoles={['dg']}>
+                <ProtectedRoute allowedRoles={['dg', 'admin', 'it']}>
                   <GestionIT />
                 </ProtectedRoute>
               } 
