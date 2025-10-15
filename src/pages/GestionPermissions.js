@@ -40,6 +40,7 @@ const GestionPermissions = () => {
     { id: 'services', name: 'Services', category: 'Organisation' },
     { id: 'employes', name: 'Employés', category: 'Organisation' },
     { id: 'ressources-humaines', name: 'Ressources Humaines', category: 'RH' },
+    { id: 'gestion-it', name: 'Gestion IT', category: 'IT' },
     { id: 'budgets', name: 'Budgets', category: 'Finance' },
     { id: 'rapports', name: 'Rapports', category: 'Analyse' },
     { id: 'fournisseurs', name: 'Fournisseurs', category: 'Partenaires' },

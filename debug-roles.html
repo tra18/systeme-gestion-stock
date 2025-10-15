@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Rôles - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .role-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .role-item.available {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .role-item.unavailable {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug Rôles - VITACH GUINÉE</h1>
+        
+        <div class="info">
+            <h3>📋 Rôles disponibles dans le système :</h3>
+            <ul>
+                <li><strong>dg</strong> - Directeur Général (accès complet)</li>
+                <li><strong>admin</strong> - Administrateur (gestion système)</li>
+                <li><strong>it</strong> - Technicien IT (gestion informatique)</li>
+                <li><strong>rh</strong> - Ressources Humaines</li>
+                <li><strong>service</strong> - Service technique</li>
+                <li><strong>achat</strong> - Service achat</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <h3>🎯 Permissions pour Gestion IT :</h3>
+            <p>La page "Gestion IT" est accessible aux rôles : <strong>dg, admin, it</strong></p>
+            <p>Si vous ne voyez pas cette page, vérifiez que votre utilisateur a l'un de ces rôles.</p>
+        </div>
+
+        <div id="userInfo">
+            <h3>👤 Informations utilisateur actuel :</h3>
+            <p id="currentUser">Chargement...</p>
+            <p id="currentRole">Chargement...</p>
+        </div>
+
+        <div>
+            <h3>🔧 Actions de debug :</h3>
+            <button class="btn" onclick="checkCurrentUser()">Vérifier utilisateur actuel</button>
+            <button class="btn" onclick="testNavigation()">Tester navigation</button>
+            <button class="btn" onclick="showAllRoles()">Afficher tous les rôles</button>
+            <button class="btn btn-danger" onclick="clearStorage()">Vider le cache</button>
+        </div>
+
+        <div id="results">
+            <h3>📊 Résultats :</h3>
+            <div id="resultsContent"></div>
+        </div>
+
+        <div>
+            <h3>🚀 Liens de test :</h3>
+            <a href="/gestion-it" class="btn btn-success">Aller à Gestion IT</a>
+            <a href="/gestion-permissions" class="btn">Gestion Permissions</a>
+            <a href="/dashboard" class="btn">Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour vérifier l'utilisateur actuel
+        function checkCurrentUser() {
+            const resultsDiv = document.getElementById('resultsContent');
+            resultsDiv.innerHTML = '<p>🔍 Vérification en cours...</p>';
+
+            // Vérifier localStorage
+            const userProfile = localStorage.getItem('userProfile');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            let html = '<div class="info"><h4>📱 LocalStorage :</h4>';
+            
+            if (userProfile) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    html += `<p><strong>Profil :</strong> ${profile.nom || 'N/A'} (${profile.role || 'N/A'})</p>`;
+                    html += `<p><strong>Email :</strong> ${profile.email || 'N/A'}</p>`;
+                    html += `<p><strong>UID :</strong> ${profile.uid || 'N/A'}</p>`;
+                } catch (e) {
+                    html += `<p><strong>Erreur parsing profil :</strong> ${e.message}</p>`;
+                }
+            } else {
+                html += '<p><strong>Profil :</strong> Non trouvé</p>';
+            }
+            
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    html += `<p><strong>Utilisateur :</strong> ${user.email || 'N/A'}</p>`;
+                } catch (e) {
+                    html += `<p><strong>Erreur parsing utilisateur :</strong> ${e.message}</p>`;
+                }
+            } else {
+                html += '<p><strong>Utilisateur :</strong> Non trouvé</p>';
+            }
+            
+            html += '</div>';
+            
+            // Vérifier sessionStorage
+            html += '<div class="info"><h4>💾 SessionStorage :</h4>';
+            const sessionKeys = Object.keys(sessionStorage);
+            if (sessionKeys.length > 0) {
+                sessionKeys.forEach(key => {
+                    html += `<p><strong>${key} :</strong> ${sessionStorage.getItem(key)}</p>`;
+                });
+            } else {
+                html += '<p>Aucune donnée en session</p>';
+            }
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Fonction pour tester la navigation
+        function testNavigation() {
+            const resultsDiv = document.getElementById('resultsContent');
+            resultsDiv.innerHTML = '<p>🧭 Test de navigation en cours...</p>';
+
+            const allowedRoles = ['dg', 'admin', 'it'];
+            const userProfile = localStorage.getItem('userProfile');
+            
+            let html = '<div class="info"><h4>🎯 Test d\'accès Gestion IT :</h4>';
+            
+            if (userProfile) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    const userRole = profile.role;
+                    
+                    html += `<p><strong>Rôle utilisateur :</strong> ${userRole}</p>`;
+                    html += `<p><strong>Rôles autorisés :</strong> ${allowedRoles.join(', ')}</p>`;
+                    
+                    if (allowedRoles.includes(userRole)) {
+                        html += '<p class="role-item available">✅ <strong>ACCÈS AUTORISÉ</strong> - Vous devriez pouvoir accéder à Gestion IT</p>';
+                    } else {
+                        html += '<p class="role-item unavailable">❌ <strong>ACCÈS REFUSÉ</strong> - Votre rôle ne permet pas l\'accès à Gestion IT</p>';
+                        html += '<p><strong>Solution :</strong> Demandez à un administrateur de modifier votre rôle ou connectez-vous avec un compte ayant le rôle dg, admin ou it.</p>';
+                    }
+                } catch (e) {
+                    html += `<p><strong>Erreur :</strong> ${e.message}</p>`;
+                }
+            } else {
+                html += '<p class="role-item unavailable">❌ <strong>NON CONNECTÉ</strong> - Veuillez vous connecter d\'abord</p>';
+            }
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        // Fonction pour afficher tous les rôles
+        function showAllRoles() {
+            const resultsDiv = document.getElementById('resultsContent');
+            
+            const roles = [
+                { id: 'dg', name: 'Directeur Général', permissions: ['Tous les modules'] },
+                { id: 'admin', name: 'Administrateur', permissions: ['Gestion système', 'Gestion IT', 'Rapports'] },
+                { id: 'it', name: 'Technicien IT', permissions: ['Gestion IT uniquement'] },
+                { id: 'rh', name: 'Ressources Humaines', permissions: ['RH', 'Pointage', 'Employés'] },
+                { id: 'service', name: 'Service Technique', permissions: ['Maintenance', 'Stock', 'Commandes'] },
+                { id: 'achat', name: 'Service Achat', permissions: ['Commandes', 'Fournisseurs', 'Stock'] }
+            ];
+            
+            let html = '<div class="info"><h4>👥 Tous les rôles du système :</h4>';
+            
+            roles.forEach(role => {
+                const isITRole = ['dg', 'admin', 'it'].includes(role.id);
+                html += `<div class="role-item ${isITRole ? 'available' : ''}">`;
+                html += `<div><strong>${role.name}</strong> (${role.id})`;
+                if (isITRole) {
+                    html += ' <span style="color: green;">✅ Accès IT</span>';
+                }
+                html += '</div>';
+                html += `<div>${role.permissions.join(', ')}</div>`;
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        // Fonction pour vider le cache
+        function clearStorage() {
+            if (confirm('Êtes-vous sûr de vouloir vider tout le cache ? Cela vous déconnectera.')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                alert('Cache vidé ! Veuillez vous reconnecter.');
+                window.location.reload();
+            }
+        }
+
+        // Charger les informations au démarrage
+        window.onload = function() {
+            const userProfile = localStorage.getItem('userProfile');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (userProfile) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    document.getElementById('currentUser').innerHTML = `<strong>${profile.nom || 'N/A'}</strong> (${profile.email || 'N/A'})`;
+                    document.getElementById('currentRole').innerHTML = `<strong>Rôle :</strong> ${profile.role || 'N/A'}`;
+                } catch (e) {
+                    document.getElementById('currentUser').innerHTML = 'Erreur de parsing du profil';
+                    document.getElementById('currentRole').innerHTML = 'Erreur de parsing du profil';
+                }
+            } else {
+                document.getElementById('currentUser').innerHTML = 'Non connecté';
+                document.getElementById('currentRole').innerHTML = 'Non connecté';
+            }
+        };
+    </script>
+</body>
+</html>
