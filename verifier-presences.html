@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérifier Présences - Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .presence-item {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .date-info {
+            background: #e3f2fd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Vérification des Présences</h1>
+        <p>Cet outil vérifie les présences dans Firestore et affiche les détails de debug.</p>
+        
+        <div>
+            <button onclick="loadPresences()">🔄 Charger les Présences</button>
+            <button onclick="clearResults()">🗑️ Effacer</button>
+        </div>
+
+        <div id="loading" style="display: none;">
+            <div class="success">⏳ Chargement en cours...</div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Configuration Firebase (utilise la même que votre app)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqVWqXqXqXqXqXqXqXqXqXqXqXqXqXqXqX",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456789"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.loadPresences = async function() {
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            
+            loading.style.display = 'block';
+            results.innerHTML = '';
+
+            try {
+                console.log('🔍 Chargement des présences...');
+                
+                // Charger toutes les présences
+                const presencesSnapshot = await getDocs(collection(db, 'presences'));
+                const presences = [];
+                
+                presencesSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    presences.push({
+                        id: doc.id,
+                        ...data
+                    });
+                });
+
+                console.log('📊 Présences trouvées:', presences.length);
+                console.log('📋 Données complètes:', presences);
+
+                // Afficher les statistiques
+                const today = new Date().toISOString().split('T')[0];
+                const todayPresences = presences.filter(p => {
+                    let presenceDate;
+                    if (p.date?.toDate) {
+                        presenceDate = p.date.toDate().toISOString().split('T')[0];
+                    } else if (p.date instanceof Date) {
+                        presenceDate = p.date.toISOString().split('T')[0];
+                    } else if (typeof p.date === 'string') {
+                        presenceDate = p.date.split('T')[0];
+                    }
+                    return presenceDate === today;
+                });
+
+                results.innerHTML = `
+                    <div class="stats">
+                        <div class="stat-card">
+                            <h3>${presences.length}</h3>
+                            <p>Total Présences</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${todayPresences.length}</h3>
+                            <p>Aujourd'hui (${today})</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${presences.filter(p => p.statut === 'present').length}</h3>
+                            <p>Présents</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>${presences.filter(p => p.statut === 'absent').length}</h3>
+                            <p>Absents</p>
+                        </div>
+                    </div>
+                `;
+
+                // Afficher toutes les présences avec détails de debug
+                if (presences.length === 0) {
+                    results.innerHTML += '<div class="error">❌ Aucune présence trouvée dans Firestore</div>';
+                } else {
+                    results.innerHTML += '<h3>📋 Toutes les Présences:</h3>';
+                    
+                    presences.forEach(presence => {
+                        let dateInfo = 'Date non définie';
+                        let dateType = 'undefined';
+                        
+                        if (presence.date) {
+                            dateType = typeof presence.date;
+                            if (presence.date.toDate) {
+                                dateInfo = `Firestore Timestamp: ${presence.date.toDate().toISOString()}`;
+                            } else if (presence.date instanceof Date) {
+                                dateInfo = `Date Object: ${presence.date.toISOString()}`;
+                            } else if (typeof presence.date === 'string') {
+                                dateInfo = `String: ${presence.date}`;
+                            }
+                        }
+
+                        results.innerHTML += `
+                            <div class="presence-item">
+                                <strong>ID:</strong> ${presence.id}<br>
+                                <strong>Employé ID:</strong> ${presence.employeId || 'N/A'}<br>
+                                <strong>Statut:</strong> ${presence.statut || 'N/A'}<br>
+                                <strong>Heure Arrivée:</strong> ${presence.heureArrivee || 'N/A'}<br>
+                                <div class="date-info">
+                                    <strong>Type de Date:</strong> ${dateType}<br>
+                                    <strong>Date:</strong> ${dateInfo}
+                                </div>
+                                <strong>Données complètes:</strong>
+                                <pre style="background: #f0f0f0; padding: 10px; border-radius: 5px; margin-top: 5px; overflow-x: auto;">${JSON.stringify(presence, null, 2)}</pre>
+                            </div>
+                        `;
+                    });
+                }
+
+                loading.style.display = 'none';
+                
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                results.innerHTML = `<div class="error">❌ Erreur: ${error.message}</div>`;
+                loading.style.display = 'none';
+            }
+        };
+
+        window.clearResults = function() {
+            document.getElementById('results').innerHTML = '';
+        };
+
+        // Charger automatiquement au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPresences();
+        });
+    </script>
+</body>
+</html>

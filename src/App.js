@@ -16,17 +16,19 @@ import Articles from './pages/Articles';
 import Services from './pages/Services';
 import Fournisseurs from './pages/Fournisseurs';
 import Prestataires from './pages/Prestataires';
-import Employes from './pages/Employes';
 import Alertes from './pages/Alertes';
 import Parametres from './pages/Parametres';
 import RessourcesHumaines from './pages/RessourcesHumaines';
 import Rapports from './pages/Rapports';
 import Budgets from './pages/Budgets';
 import GestionPermissions from './pages/GestionPermissions';
+import PointageMobile from './pages/PointageMobile';
+import GestionIT from './pages/GestionIT';
 
 // Nouveaux composants avancés
 import AdvancedDashboard from './components/dashboard/AdvancedDashboardSimple';
 import OfflineManager from './components/offline/OfflineManager';
+import PWAInstaller from './components/pwa/PWAInstaller';
 
 // Composant de protection des routes avec permissions personnalisées
 const ProtectedRoute = ({ children, allowedRoles = [], pageId = null }) => {
@@ -75,6 +77,7 @@ const AppContent = () => {
   return (
     <Router future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
       <div className="App">
+        <PWAInstaller />
         <Toaster
           position="top-right"
           toastOptions={{
@@ -101,6 +104,12 @@ const AppContent = () => {
         />
         
         <Routes>
+          {/* Route publique - Pointage mobile via QR code */}
+          <Route 
+            path="/pointage-mobile" 
+            element={<PointageMobile />} 
+          />
+          
           <Route 
             path="/login" 
             element={currentUser ? <Navigate to="/dashboard" replace /> : <LoginForm />} 
@@ -197,14 +206,6 @@ const AppContent = () => {
               } 
             />
             <Route 
-              path="employes" 
-              element={
-                <ProtectedRoute allowedRoles={['dg']}>
-                  <Employes />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
               path="ressources-humaines" 
               element={
                 <ProtectedRoute allowedRoles={['dg']}>
@@ -217,6 +218,14 @@ const AppContent = () => {
               element={
                 <ProtectedRoute allowedRoles={['dg']}>
                   <Rapports />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="gestion-it" 
+              element={
+                <ProtectedRoute allowedRoles={['dg']}>
+                  <GestionIT />
                 </ProtectedRoute>
               } 
             />

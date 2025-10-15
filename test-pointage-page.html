@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page Pointage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #667eea;
+        }
+        .url {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-card">
+        <h1>🧪 Test de la Page de Pointage Mobile</h1>
+        <p>Cette page teste si la route <code>/pointage-mobile</code> fonctionne correctement</p>
+    </div>
+
+    <div class="test-card">
+        <h2>📍 URL à tester</h2>
+        <div class="url" id="url">https://stock-bcbd3.web.app/pointage-mobile</div>
+        
+        <button onclick="openInNewTab()">🌐 Ouvrir dans un nouvel onglet</button>
+        <button onclick="loadInIframe()">📱 Charger dans l'iframe ci-dessous</button>
+        <button onclick="testFetch()">🔍 Tester la requête HTTP</button>
+    </div>
+
+    <div class="test-card" id="results" style="display:none;">
+        <h2>📊 Résultats</h2>
+        <div id="resultContent"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>🖼️ Aperçu (iframe)</h2>
+        <div id="iframeContainer"></div>
+    </div>
+
+    <script>
+        const url = 'https://stock-bcbd3.web.app/pointage-mobile';
+
+        function openInNewTab() {
+            console.log('🌐 Ouverture dans nouvel onglet:', url);
+            window.open(url, '_blank');
+            showResult('info', 'Page ouverte dans un nouvel onglet. Vérifiez si elle s\'affiche correctement.');
+        }
+
+        function loadInIframe() {
+            console.log('📱 Chargement dans iframe:', url);
+            const container = document.getElementById('iframeContainer');
+            container.innerHTML = `<iframe src="${url}" onload="onIframeLoad()" onerror="onIframeError()"></iframe>`;
+            showResult('info', 'Chargement de la page dans l\'iframe...');
+        }
+
+        function onIframeLoad() {
+            console.log('✅ Iframe chargée avec succès');
+            showResult('success', '✅ La page s\'est chargée avec succès dans l\'iframe !');
+        }
+
+        function onIframeError() {
+            console.error('❌ Erreur lors du chargement de l\'iframe');
+            showResult('error', '❌ Erreur lors du chargement de l\'iframe');
+        }
+
+        async function testFetch() {
+            console.log('🔍 Test de requête HTTP:', url);
+            showResult('info', 'Test de la requête HTTP en cours...');
+
+            try {
+                const response = await fetch(url);
+                console.log('📡 Réponse HTTP:', response);
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    console.log('✅ Contenu reçu (premiers 500 caractères):', text.substring(0, 500));
+                    
+                    showResult('success', `
+                        ✅ Requête HTTP réussie !<br>
+                        <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                        <strong>Content-Type:</strong> ${response.headers.get('content-type')}<br>
+                        <strong>Taille:</strong> ${text.length} caractères<br>
+                        <br>
+                        <details>
+                            <summary>Voir le contenu HTML (premiers 1000 caractères)</summary>
+                            <pre style="background:#f5f5f5;padding:10px;overflow:auto;max-height:300px;">${escapeHtml(text.substring(0, 1000))}</pre>
+                        </details>
+                    `);
+                } else {
+                    showResult('error', `❌ Erreur HTTP: ${response.status} ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('❌ Erreur:', error);
+                showResult('error', `❌ Erreur réseau: ${error.message}`);
+            }
+        }
+
+        function showResult(type, message) {
+            const results = document.getElementById('results');
+            const content = document.getElementById('resultContent');
+            results.style.display = 'block';
+            content.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-charger dans l'iframe au démarrage
+        window.onload = () => {
+            console.log('🚀 Page de test chargée');
+            setTimeout(() => {
+                loadInIframe();
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
+

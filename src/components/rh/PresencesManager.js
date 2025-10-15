@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Clock, CheckCircle, XCircle, AlertCircle, Calendar, User } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, AlertCircle, Calendar, User, Smartphone } from 'lucide-react';
 import { db } from '../../firebase/config';
 import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
+import UniversalQRGenerator from './UniversalQRGenerator';
 
 const PresencesManager = ({ presences, employes, onRefresh }) => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showModal, setShowModal] = useState(false);
+  const [showUniversalQR, setShowUniversalQR] = useState(false);
   const [formData, setFormData] = useState({
     employeId: '',
     date: new Date().toISOString().split('T')[0],
@@ -125,9 +127,48 @@ const PresencesManager = ({ presences, employes, onRefresh }) => {
 
   // Filtrer les présences par date
   const filteredPresences = presences.filter(p => {
-    const presenceDate = p.date?.toDate?.()?.toISOString().split('T')[0];
-    return presenceDate === selectedDate;
+    // Gérer différents formats de date
+    let presenceDate;
+    if (p.date?.toDate) {
+      // Firestore Timestamp
+      presenceDate = p.date.toDate().toISOString().split('T')[0];
+    } else if (p.date instanceof Date) {
+      // Objet Date
+      presenceDate = p.date.toISOString().split('T')[0];
+    } else if (typeof p.date === 'string') {
+      // String
+      presenceDate = p.date.split('T')[0];
+    }
+    
+    const match = presenceDate === selectedDate;
+    console.log('📅 Filtrage présence:', {
+      employeId: p.employeId,
+      presenceDate,
+      selectedDate,
+      match,
+      dateType: typeof p.date,
+      hasToDate: !!p.date?.toDate,
+      rawDate: p.date,
+      dateString: p.date?.toString()
+    });
+    
+    return match;
   });
+  
+  console.log('📋 Présences totales:', presences.length, 'Filtrées:', filteredPresences.length, 'Date:', selectedDate);
+  
+  // Debug: Afficher toutes les dates uniques des présences
+  const uniqueDates = [...new Set(presences.map(p => {
+    if (p.date?.toDate) {
+      return p.date.toDate().toISOString().split('T')[0];
+    } else if (p.date instanceof Date) {
+      return p.date.toISOString().split('T')[0];
+    } else if (typeof p.date === 'string') {
+      return p.date.split('T')[0];
+    }
+    return 'undefined';
+  }))];
+  console.log('📅 Dates disponibles dans Firestore:', uniqueDates);
 
   // Statistiques du jour
   const stats = {
@@ -165,7 +206,14 @@ const PresencesManager = ({ presences, employes, onRefresh }) => {
           <h2 className="text-2xl font-bold text-gray-800">Gestion des Présences</h2>
           <p className="text-gray-600">Suivez la présence quotidienne des employés</p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setShowUniversalQR(true)}
+            className="flex items-center space-x-2 bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition shadow-lg font-semibold"
+          >
+            <Smartphone size={20} />
+            <span>QR Universel</span>
+          </button>
           <button
             onClick={handleQuickAttendance}
             className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
@@ -178,7 +226,7 @@ const PresencesManager = ({ presences, employes, onRefresh }) => {
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
           >
             <Clock size={20} />
-            <span>Pointer</span>
+            <span>Manuel</span>
           </button>
         </div>
       </div>
@@ -254,6 +302,7 @@ const PresencesManager = ({ presences, employes, onRefresh }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Arrivée</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Départ</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Signature</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Commentaire</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
@@ -304,6 +353,52 @@ const PresencesManager = ({ presences, employes, onRefresh }) => {
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {presence.heureDepart || '-'}
                     </td>
+                    <td className="px-6 py-4">
+                      {presence.signature ? (
+                        <div className="flex items-center space-x-2">
+                          <img 
+                            src={presence.signature} 
+                            alt="Signature arrivée" 
+                            className="w-8 h-6 border rounded cursor-pointer hover:scale-150 transition-transform"
+                            onClick={() => {
+                              const newWindow = window.open();
+                              newWindow.document.write(`
+                                <html>
+                                  <head><title>Signature d'arrivée</title></head>
+                                  <body style="margin:0; padding:20px; background:#f5f5f5;">
+                                    <h2>Signature d'arrivée</h2>
+                                    <img src="${presence.signature}" style="max-width:100%; border:1px solid #ccc; background:white;">
+                                  </body>
+                                </html>
+                              `);
+                            }}
+                            title="Cliquer pour agrandir"
+                          />
+                          {presence.signatureDepart && (
+                            <img 
+                              src={presence.signatureDepart} 
+                              alt="Signature départ" 
+                              className="w-8 h-6 border rounded cursor-pointer hover:scale-150 transition-transform"
+                              onClick={() => {
+                                const newWindow = window.open();
+                                newWindow.document.write(`
+                                  <html>
+                                    <head><title>Signature de départ</title></head>
+                                    <body style="margin:0; padding:20px; background:#f5f5f5;">
+                                      <h2>Signature de départ</h2>
+                                      <img src="${presence.signatureDepart}" style="max-width:100%; border:1px solid #ccc; background:white;">
+                                    </body>
+                                  </html>
+                                `);
+                              }}
+                              title="Cliquer pour agrandir"
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-xs">Non signé</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {presence.commentaire || '-'}
                     </td>
@@ -331,11 +426,19 @@ const PresencesManager = ({ presences, employes, onRefresh }) => {
         )}
       </div>
 
-      {/* Modal de pointage */}
+      {/* Modal QR Universel */}
+      {showUniversalQR && (
+        <UniversalQRGenerator
+          onClose={() => setShowUniversalQR(false)}
+        />
+      )}
+
+
+      {/* Modal de pointage manuel */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4">Pointer une présence</h3>
+            <h3 className="text-xl font-bold mb-4">Pointer une présence manuellement</h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

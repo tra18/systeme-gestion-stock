@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import AdvancedDashboard from '../components/dashboard/AdvancedDashboard';
-import OverviewDashboard from '../components/dashboard/OverviewDashboard';
 
 const DashboardSimple = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -9,13 +8,13 @@ const DashboardSimple = () => {
     <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
       {/* En-tête */}
       <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900">
           Tableau de Bord
         </h1>
         <p className="mt-1 text-sm text-gray-600">
           Vue d'ensemble de votre entreprise
-          </p>
-        </div>
+        </p>
+      </div>
 
       {/* Navigation par onglets */}
       <div className="bg-white rounded-xl shadow-sm">
@@ -45,7 +44,12 @@ const DashboardSimple = () => {
 
       {/* Contenu selon l'onglet */}
       {activeTab === 'overview' && (
-        <OverviewDashboard />
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4">Vue d'ensemble</h2>
+          <p className="text-gray-600">
+            Cette vue d'ensemble sera développée avec des statistiques de base.
+          </p>
+        </div>
       )}
 
       {activeTab === 'advanced' && (

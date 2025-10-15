@@ -1,0 +1,27 @@
+<svg width="256" height="64" viewBox="0 0 256 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="256" height="64" fill="#14B8A6"/>
+  
+  <!-- Circular Icon with Leaf -->
+  <circle cx="24" cy="32" r="20" stroke="white" stroke-width="2" fill="none"/>
+  
+  <!-- Leaf design inside circle -->
+  <path d="M24 16 C18 19, 18 25, 24 28 C30 25, 30 19, 24 16 Z" fill="white"/>
+  <path d="M24 16 L24 28 M24 22 C21 23, 21 23, 24 22 C27 23, 27 23, 24 22" stroke="white" stroke-width="1" fill="none"/>
+  
+  <!-- Connection line from circle -->
+  <line x1="44" y1="32" x2="56" y2="32" stroke="white" stroke-width="2"/>
+  
+  <!-- Leaves above VITACH -->
+  <path d="M72 20 C68 17, 68 23, 72 26 C76 23, 76 17, 72 20 Z" fill="white"/>
+  <path d="M88 20 C84 17, 84 23, 88 26 C92 23, 92 17, 88 20 Z" fill="white"/>
+  
+  <!-- VITACH text -->
+  <text x="72" y="42" font-family="Arial, sans-serif" font-size="20" fill="white" font-weight="bold">VITACH</text>
+  
+  <!-- GUINÉE text -->
+  <text x="72" y="52" font-family="Arial, sans-serif" font-size="10" fill="white">GUINÉE</text>
+  
+  <!-- Curved line below GUINÉE -->
+  <path d="M64 58 C120 64, 176 64, 232 58" stroke="white" stroke-width="1.5" fill="none"/>
+</svg>

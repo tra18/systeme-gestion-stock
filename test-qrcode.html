@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .qr-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: inline-block;
+            margin: 20px;
+        }
+        h1 {
+            color: #667eea;
+        }
+        .test-url {
+            background: #f0f4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test du QR Code</h1>
+    
+    <div class="test-url">
+        <strong>URL testée :</strong><br>
+        <span id="testUrl"></span>
+    </div>
+
+    <div class="qr-container">
+        <h3>QR Code généré avec QRCode.js</h3>
+        <div id="qrcode"></div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // URL de test (même que celle utilisée dans votre app)
+        const testUrl = window.location.origin + '/pointage-mobile';
+        document.getElementById('testUrl').textContent = testUrl;
+
+        try {
+            // Générer le QR code
+            new QRCode(document.getElementById("qrcode"), {
+                text: testUrl,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('status').className = 'status success';
+            document.getElementById('status').textContent = '✅ QR Code généré avec succès !';
+            
+            console.log('✅ Test réussi');
+            console.log('URL:', testUrl);
+        } catch (error) {
+            document.getElementById('status').className = 'status error';
+            document.getElementById('status').textContent = '❌ Erreur: ' + error.message;
+            console.error('❌ Erreur:', error);
+        }
+    </script>
+
+    <div style="margin-top: 40px; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+        <h3>📋 Instructions de test</h3>
+        <ol>
+            <li>Ouvrez ce fichier dans votre navigateur</li>
+            <li>Vérifiez que le QR code s'affiche</li>
+            <li>Scannez-le avec votre téléphone</li>
+            <li>Vérifiez que l'URL est correcte</li>
+        </ol>
+        
+        <h4 style="margin-top: 20px;">🔍 Diagnostic</h4>
+        <ul>
+            <li>Si le QR code s'affiche ici mais pas dans l'app React → Problème d'import React</li>
+            <li>Si le QR code ne s'affiche pas ici non plus → Problème général</li>
+            <li>Si l'URL scannée est incorrecte → Problème de configuration</li>
+        </ul>
+    </div>
+</body>
+</html>
+

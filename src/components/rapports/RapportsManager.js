@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { FileText, Download, Calendar, Filter, TrendingUp, DollarSign } from 'lucide-react';
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
+import PayrollManager from './PayrollManager';
 
 const RapportsManager = ({ 
   commandes = [], 
@@ -19,141 +20,334 @@ const RapportsManager = ({
   const [dateDebut, setDateDebut] = useState('');
   const [dateFin, setDateFin] = useState('');
 
+  // Fonction utilitaire pour formater les prix
+  const formatPrice = (price) => {
+    if (!price && price !== 0) return 'N/A';
+    
+    // Convertir en chaîne et nettoyer
+    let cleanPrice = String(price).trim();
+    
+    // Gérer les cas spéciaux de formatage
+    if (cleanPrice.includes('/')) {
+      // Remplacer les barres obliques par des espaces (séparateurs de milliers)
+      cleanPrice = cleanPrice.replace(/\//g, '');
+    }
+    
+    // Enlever tous les caractères non numériques sauf points et virgules
+    cleanPrice = cleanPrice.replace(/[^\d.,]/g, '');
+    
+    // Remplacer les virgules par des points pour le parsing décimal
+    cleanPrice = cleanPrice.replace(',', '.');
+    
+    // Convertir en nombre
+    const numPrice = parseFloat(cleanPrice);
+    
+    // Vérifier si c'est un nombre valide
+    if (isNaN(numPrice)) return 'N/A';
+    
+    // Formater avec Intl.NumberFormat (espaces comme séparateurs de milliers)
+    return new Intl.NumberFormat('fr-FR', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(numPrice) + ' GNF';
+  };
+
+
   // Générer rapport PDF pour les commandes
   const generateCommandesPDF = () => {
-    const doc = new jsPDF();
-    
-    // En-tête
-    doc.setFontSize(20);
-    doc.text('Rapport des Commandes', 14, 20);
-    
-    doc.setFontSize(10);
-    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, 14, 28);
-    
-    // Statistiques
-    const total = commandes.length;
-    const approuvees = commandes.filter(c => c.statut === 'approuve').length;
-    const enAttente = commandes.filter(c => c.statut === 'en_attente').length;
-    const montantTotal = commandes.reduce((sum, c) => sum + (c.prix || 0), 0);
-    
-    doc.setFontSize(12);
-    doc.text('Vue d\'ensemble', 14, 38);
-    doc.setFontSize(10);
-    doc.text(`Total commandes: ${total}`, 14, 45);
-    doc.text(`Approuvées: ${approuvees}`, 14, 52);
-    doc.text(`En attente: ${enAttente}`, 14, 59);
-    doc.text(`Montant total: ${new Intl.NumberFormat('fr-FR').format(montantTotal)} GNF`, 14, 66);
-    
-    // Tableau des commandes
-    const tableData = commandes.slice(0, 50).map(cmd => [
-      cmd.service || 'N/A',
-      cmd.description?.substring(0, 40) || 'N/A',
-      cmd.prix ? `${new Intl.NumberFormat('fr-FR').format(cmd.prix)} GNF` : 'N/A',
-      cmd.statut || 'N/A',
-      cmd.createdAt?.toDate?.()?.toLocaleDateString('fr-FR') || 'N/A'
-    ]);
-    
-    doc.autoTable({
-      head: [['Service', 'Description', 'Prix', 'Statut', 'Date']],
-      body: tableData,
-      startY: 75,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [59, 130, 246] }
-    });
-    
-    // Sauvegarder
-    doc.save(`rapport-commandes-${new Date().toISOString().split('T')[0]}.pdf`);
-    toast.success('Rapport PDF généré avec succès !');
+    try {
+      const doc = new jsPDF();
+      
+      // Filtrer les commandes par période
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      let commandesFiltrees = commandes;
+      if (periode === 'aujourd_hui') {
+        commandesFiltrees = commandes.filter(c => {
+          const dateCommande = c.createdAt?.toDate?.() || new Date(c.createdAt);
+          dateCommande.setHours(0, 0, 0, 0);
+          return dateCommande.getTime() === today.getTime();
+        });
+      } else if (periode === 'semaine') {
+        const semaineDebut = new Date(today);
+        semaineDebut.setDate(today.getDate() - 7);
+        commandesFiltrees = commandes.filter(c => {
+          const dateCommande = c.createdAt?.toDate?.() || new Date(c.createdAt);
+          return dateCommande >= semaineDebut;
+        });
+      } else if (periode === 'mois') {
+        const moisDebut = new Date(today);
+        moisDebut.setMonth(today.getMonth() - 1);
+        commandesFiltrees = commandes.filter(c => {
+          const dateCommande = c.createdAt?.toDate?.() || new Date(c.createdAt);
+          return dateCommande >= moisDebut;
+        });
+      }
+      
+      // En-tête avec logo
+      doc.setFillColor(20, 184, 166); // Teal background
+      doc.rect(0, 0, 210, 40, 'F');
+      
+      doc.setTextColor(255, 255, 255); // White text
+      doc.setFontSize(16);
+      doc.text('VITACH GUINÉE', 20, 15);
+      
+      doc.setFontSize(12);
+      doc.text('Rapport des Commandes', 20, 25);
+      
+      doc.setFontSize(8);
+      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}`, 20, 35);
+      
+      // Statistiques avec données filtrées
+      const total = commandesFiltrees.length;
+      const approuvees = commandesFiltrees.filter(c => c.statut === 'approuve').length;
+      const enAttente = commandesFiltrees.filter(c => c.statut === 'en_attente').length;
+      const rejetees = commandesFiltrees.filter(c => c.statut === 'rejete').length;
+      const montantTotal = commandesFiltrees.reduce((sum, c) => {
+        if (!c.prix) return sum;
+        let cleanPrice = String(c.prix).trim();
+        if (cleanPrice.includes('/')) {
+          cleanPrice = cleanPrice.replace(/\//g, '');
+        }
+        const price = parseFloat(cleanPrice.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+        return sum + price;
+      }, 0);
+      
+      doc.setTextColor(0, 0, 0); // Black text
+      doc.setFontSize(12);
+      doc.text('Vue d\'ensemble', 20, 50);
+      
+      doc.setFontSize(10);
+      doc.text(`Période: ${periode === 'aujourd_hui' ? 'Aujourd\'hui' : periode === 'semaine' ? '7 derniers jours' : periode === 'mois' ? '30 derniers jours' : 'Toutes'}`, 20, 58);
+      doc.text(`Total commandes: ${total}`, 20, 65);
+      doc.text(`Approuvées: ${approuvees} (${total > 0 ? Math.round((approuvees/total)*100) : 0}%)`, 20, 72);
+      doc.text(`En attente: ${enAttente} (${total > 0 ? Math.round((enAttente/total)*100) : 0}%)`, 20, 79);
+      doc.text(`Rejetées: ${rejetees} (${total > 0 ? Math.round((rejetees/total)*100) : 0}%)`, 20, 86);
+      doc.text(`Montant total: ${formatPrice(montantTotal)}`, 20, 93);
+      
+      // Tableau des commandes filtrées
+      const tableData = commandesFiltrees.slice(0, 50).map(cmd => [
+        cmd.service || 'N/A',
+        cmd.description?.substring(0, 40) || 'N/A',
+        formatPrice(cmd.prix),
+        cmd.statut || 'N/A',
+        cmd.createdAt?.toDate?.()?.toLocaleDateString('fr-FR') || new Date(cmd.createdAt).toLocaleDateString('fr-FR') || 'N/A'
+      ]);
+      
+      autoTable(doc, {
+        head: [['Service', 'Description', 'Prix', 'Statut', 'Date']],
+        body: tableData,
+        startY: 105,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [20, 184, 166] },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { left: 20, right: 20 }
+      });
+      
+      // Pied de page
+      const pageHeight = doc.internal.pageSize.height;
+      doc.setFillColor(20, 184, 166);
+      doc.rect(0, pageHeight - 20, 210, 20, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      doc.text('VITACH GUINÉE - Système de Gestion Intégré', 20, pageHeight - 8);
+      doc.text(`Page 1 - ${total} commandes`, 160, pageHeight - 8);
+      
+      // Sauvegarder
+      const fileName = `rapport-commandes-${periode}-${new Date().toISOString().split('T')[0]}.pdf`;
+      
+      // Essayer de sauvegarder le PDF
+      try {
+        doc.save(fileName);
+        toast.success('Rapport PDF généré avec succès !');
+      } catch (saveError) {
+        console.error('Erreur lors de la sauvegarde:', saveError);
+        // Alternative: créer un blob et télécharger
+        const pdfBlob = doc.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        toast.success('Rapport PDF généré avec succès !');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la génération du PDF des commandes:', error);
+      toast.error('Erreur lors de la génération du PDF des commandes');
+    }
   };
 
   // Générer rapport PDF pour la maintenance
   const generateMaintenancePDF = () => {
-    const doc = new jsPDF();
-    
-    doc.setFontSize(20);
-    doc.text('Rapport de Maintenance', 14, 20);
-    
-    doc.setFontSize(10);
-    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, 14, 28);
-    
-    // Statistiques
-    const total = maintenances.length;
-    const enCours = maintenances.filter(m => m.statut === 'en_cours').length;
-    const terminees = maintenances.filter(m => m.statut === 'termine').length;
-    const coutTotal = maintenances.reduce((sum, m) => sum + (m.coutEstime || 0), 0);
-    
-    doc.setFontSize(12);
-    doc.text('Vue d\'ensemble', 14, 38);
-    doc.setFontSize(10);
-    doc.text(`Total maintenances: ${total}`, 14, 45);
-    doc.text(`En cours: ${enCours}`, 14, 52);
-    doc.text(`Terminées: ${terminees}`, 14, 59);
-    doc.text(`Coût total: ${new Intl.NumberFormat('fr-FR').format(coutTotal)} GNF`, 14, 66);
-    
-    // Tableau
-    const tableData = maintenances.slice(0, 50).map(m => [
-      m.vehicule || 'N/A',
-      m.type || 'N/A',
-      m.prestataire || 'N/A',
-      m.coutEstime ? `${new Intl.NumberFormat('fr-FR').format(m.coutEstime)} GNF` : 'N/A',
-      m.statut || 'N/A'
-    ]);
-    
-    doc.autoTable({
-      head: [['Véhicule', 'Type', 'Prestataire', 'Coût', 'Statut']],
-      body: tableData,
-      startY: 75,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [249, 115, 22] }
-    });
-    
-    doc.save(`rapport-maintenance-${new Date().toISOString().split('T')[0]}.pdf`);
-    toast.success('Rapport PDF généré avec succès !');
+    try {
+      const doc = new jsPDF();
+      
+      // En-tête avec logo
+      doc.setFillColor(20, 184, 166); // Teal background
+      doc.rect(0, 0, 210, 40, 'F');
+      
+      doc.setTextColor(255, 255, 255); // White text
+      doc.setFontSize(16);
+      doc.text('VITACH GUINÉE', 20, 15);
+      
+      doc.setFontSize(12);
+      doc.text('Rapport de Maintenance', 20, 25);
+      
+      doc.setFontSize(8);
+      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}`, 20, 35);
+      
+      // Statistiques
+      const total = maintenances.length;
+      const enCours = maintenances.filter(m => m.statut === 'en_cours').length;
+      const terminees = maintenances.filter(m => m.statut === 'termine').length;
+      const enAttente = maintenances.filter(m => m.statut === 'en_attente').length;
+      const coutTotal = maintenances.reduce((sum, m) => {
+        if (!m.coutEstime) return sum;
+        let cleanPrice = String(m.coutEstime).trim();
+        if (cleanPrice.includes('/')) {
+          cleanPrice = cleanPrice.replace(/\//g, '');
+        }
+        const price = parseFloat(cleanPrice.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+        return sum + price;
+      }, 0);
+      
+      doc.setTextColor(0, 0, 0); // Black text
+      doc.setFontSize(12);
+      doc.text('Vue d\'ensemble', 20, 50);
+      
+      doc.setFontSize(10);
+      doc.text(`Total maintenances: ${total}`, 20, 58);
+      doc.text(`En cours: ${enCours} (${total > 0 ? Math.round((enCours/total)*100) : 0}%)`, 20, 65);
+      doc.text(`Terminées: ${terminees} (${total > 0 ? Math.round((terminees/total)*100) : 0}%)`, 20, 72);
+      doc.text(`En attente: ${enAttente} (${total > 0 ? Math.round((enAttente/total)*100) : 0}%)`, 20, 79);
+      doc.text(`Coût total: ${formatPrice(coutTotal)}`, 20, 86);
+      
+      // Tableau
+      const tableData = maintenances.slice(0, 50).map(m => [
+        m.vehicule || 'N/A',
+        m.type || 'N/A',
+        m.prestataire || 'N/A',
+        formatPrice(m.coutEstime),
+        m.statut || 'N/A'
+      ]);
+      
+      autoTable(doc, {
+        head: [['Véhicule', 'Type', 'Prestataire', 'Coût', 'Statut']],
+        body: tableData,
+        startY: 98,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [20, 184, 166] },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { left: 20, right: 20 }
+      });
+      
+      // Pied de page
+      const pageHeight = doc.internal.pageSize.height;
+      doc.setFillColor(20, 184, 166);
+      doc.rect(0, pageHeight - 20, 210, 20, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      doc.text('VITACH GUINÉE - Système de Gestion Intégré', 20, pageHeight - 8);
+      doc.text(`Page 1 - ${total} maintenances`, 160, pageHeight - 8);
+      
+      const fileName = `rapport-maintenance-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      toast.success('Rapport PDF généré avec succès !');
+    } catch (error) {
+      console.error('Erreur lors de la génération du PDF de maintenance:', error);
+      toast.error('Erreur lors de la génération du PDF de maintenance');
+    }
   };
 
   // Générer rapport PDF RH
   const generateRHPDF = () => {
-    const doc = new jsPDF();
+    try {
+      const doc = new jsPDF();
+      
+      // En-tête avec logo
+      doc.setFillColor(20, 184, 166); // Teal background
+      doc.rect(0, 0, 210, 40, 'F');
+      
+      doc.setTextColor(255, 255, 255); // White text
+      doc.setFontSize(16);
+      doc.text('VITACH GUINÉE', 20, 15);
+      
+      doc.setFontSize(12);
+      doc.text('Rapport Ressources Humaines', 20, 25);
+      
+      doc.setFontSize(8);
+      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}`, 20, 35);
+      
+      // Statistiques RH
+      const totalEmployes = employes.length;
+      const actifs = employes.filter(e => e.statut === 'actif').length;
+      const inactifs = employes.filter(e => e.statut === 'inactif').length;
+      const congesAttente = conges.filter(c => c.statut === 'en_attente').length;
+      const congesApprouves = conges.filter(c => c.statut === 'approuve').length;
+      const masseSalariale = employes.filter(e => e.statut === 'actif').reduce((sum, e) => {
+        if (!e.salaire) return sum;
+        let cleanPrice = String(e.salaire).trim();
+        if (cleanPrice.includes('/')) {
+          cleanPrice = cleanPrice.replace(/\//g, '');
+        }
+        const price = parseFloat(cleanPrice.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+        return sum + price;
+      }, 0);
+      
+      doc.setTextColor(0, 0, 0); // Black text
+      doc.setFontSize(12);
+      doc.text('Vue d\'ensemble', 20, 50);
+      
+      doc.setFontSize(10);
+      doc.text(`Total employés: ${totalEmployes}`, 20, 58);
+      doc.text(`Employés actifs: ${actifs} (${totalEmployes > 0 ? Math.round((actifs/totalEmployes)*100) : 0}%)`, 20, 65);
+      doc.text(`Employés inactifs: ${inactifs} (${totalEmployes > 0 ? Math.round((inactifs/totalEmployes)*100) : 0}%)`, 20, 72);
+      doc.text(`Congés en attente: ${congesAttente}`, 20, 79);
+      doc.text(`Congés approuvés: ${congesApprouves}`, 20, 86);
+      doc.text(`Masse salariale mensuelle: ${formatPrice(masseSalariale)}`, 20, 93);
     
-    doc.setFontSize(20);
-    doc.text('Rapport Ressources Humaines', 14, 20);
-    
-    doc.setFontSize(10);
-    doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, 14, 28);
-    
-    // Statistiques RH
-    const totalEmployes = employes.length;
-    const actifs = employes.filter(e => e.statut === 'actif').length;
-    const congesAttente = conges.filter(c => c.statut === 'en_attente').length;
-    const masseSalariale = employes.filter(e => e.statut === 'actif').reduce((sum, e) => sum + (parseFloat(e.salaire) || 0), 0);
-    
-    doc.setFontSize(12);
-    doc.text('Vue d\'ensemble', 14, 38);
-    doc.setFontSize(10);
-    doc.text(`Total employés: ${totalEmployes}`, 14, 45);
-    doc.text(`Employés actifs: ${actifs}`, 14, 52);
-    doc.text(`Congés en attente: ${congesAttente}`, 14, 59);
-    doc.text(`Masse salariale: ${new Intl.NumberFormat('fr-FR').format(masseSalariale)} GNF`, 14, 66);
-    
-    // Tableau employés
-    const tableData = employes.slice(0, 50).map(emp => [
-      emp.nom || 'N/A',
-      emp.poste || 'N/A',
-      emp.departement || 'N/A',
-      emp.salaire ? `${new Intl.NumberFormat('fr-FR').format(emp.salaire)} GNF` : 'N/A',
-      emp.statut || 'N/A'
-    ]);
-    
-    doc.autoTable({
-      head: [['Nom', 'Poste', 'Département', 'Salaire', 'Statut']],
-      body: tableData,
-      startY: 75,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [34, 197, 94] }
-    });
-    
-    doc.save(`rapport-rh-${new Date().toISOString().split('T')[0]}.pdf`);
-    toast.success('Rapport PDF généré avec succès !');
+      // Tableau employés
+      const tableData = employes.slice(0, 50).map(emp => [
+        `${emp.nom || 'N/A'} ${emp.prenom || ''}`.trim(),
+        emp.poste || 'N/A',
+        emp.service || emp.departement || 'N/A',
+        formatPrice(emp.salaire),
+        emp.statut || 'N/A'
+      ]);
+      
+      autoTable(doc, {
+        head: [['Nom Complet', 'Poste', 'Service', 'Salaire', 'Statut']],
+        body: tableData,
+        startY: 105,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [20, 184, 166] },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { left: 20, right: 20 }
+      });
+      
+      // Pied de page
+      const pageHeight = doc.internal.pageSize.height;
+      doc.setFillColor(20, 184, 166);
+      doc.rect(0, pageHeight - 20, 210, 20, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      doc.text('VITACH GUINÉE - Système de Gestion Intégré', 20, pageHeight - 8);
+      doc.text(`Page 1 - ${totalEmployes} employés`, 160, pageHeight - 8);
+      
+      const fileName = `rapport-rh-${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      toast.success('Rapport PDF généré avec succès !');
+    } catch (error) {
+      console.error('Erreur lors de la génération du PDF RH:', error);
+      toast.error('Erreur lors de la génération du PDF RH');
+    }
   };
 
   // Générer Excel pour les commandes
@@ -333,23 +527,33 @@ const RapportsManager = ({
     { value: 'commandes', label: 'Commandes', icon: FileText },
     { value: 'maintenance', label: 'Maintenance', icon: FileText },
     { value: 'rh', label: 'Ressources Humaines', icon: FileText },
+    { value: 'paie', label: '💰 Paie', icon: FileText },
     { value: 'stock', label: 'Stock & Inventaire', icon: FileText },
     { value: 'complet', label: 'Rapport Complet', icon: TrendingUp }
   ];
 
   const handleGeneratePDF = () => {
-    switch(typeRapport) {
-      case 'commandes':
-        generateCommandesPDF();
-        break;
-      case 'maintenance':
-        generateMaintenancePDF();
-        break;
-      case 'rh':
-        generateRHPDF();
-        break;
-      default:
-        toast.error('Type de rapport non pris en charge pour PDF');
+    try {
+      switch(typeRapport) {
+        case 'commandes':
+          generateCommandesPDF();
+          break;
+        case 'maintenance':
+          generateMaintenancePDF();
+          break;
+        case 'rh':
+          generateRHPDF();
+          break;
+        case 'paie':
+          // La paie est gérée par le composant PayrollManager
+          toast.info('Utilisez les boutons de la section Paie ci-dessous');
+          break;
+        default:
+          toast.error('Type de rapport non pris en charge pour PDF');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la génération du PDF:', error);
+      toast.error('Erreur lors de la génération du PDF');
     }
   };
 
@@ -360,6 +564,10 @@ const RapportsManager = ({
         break;
       case 'rh':
         generateRHExcel();
+        break;
+      case 'paie':
+        // La paie est gérée par le composant PayrollManager
+        toast.info('Utilisez les boutons de la section Paie ci-dessous');
         break;
       case 'stock':
         generateStockExcel();
@@ -374,6 +582,7 @@ const RapportsManager = ({
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
+      
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">📊 Génération de Rapports</h2>
@@ -424,7 +633,15 @@ const RapportsManager = ({
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">
-                  {new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(commandes.reduce((sum, c) => sum + (c.prix || 0), 0))} GNF
+                  {new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(commandes.reduce((sum, c) => {
+                    if (!c.prix) return sum;
+                    let cleanPrice = String(c.prix).trim();
+                    if (cleanPrice.includes('/')) {
+                      cleanPrice = cleanPrice.replace(/\//g, '');
+                    }
+                    const price = parseFloat(cleanPrice.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                    return sum + price;
+                  }, 0))} GNF
                 </p>
                 <p className="text-xs text-gray-600">Montant total</p>
               </div>
@@ -534,6 +751,13 @@ const RapportsManager = ({
             Les rapports PDF sont optimisés pour l'impression.
           </p>
         </div>
+
+        {/* Section Paie */}
+        {typeRapport === 'paie' && (
+          <div className="mt-6">
+            <PayrollManager employes={employes} />
+          </div>
+        )}
       </div>
     </div>
   );

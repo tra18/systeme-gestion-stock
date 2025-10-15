@@ -3,7 +3,7 @@ import {
   Users, Calendar, Clock, DollarSign,
   Award, UserPlus,
   Edit2, Trash2, Eye,
-  BarChart3
+  BarChart3, Star
 } from 'lucide-react';
 import { db } from '../firebase/config';
 import { 
@@ -12,17 +12,23 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  onSnapshot
 } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import CongesManager from '../components/rh/CongesManager';
 import PresencesManager from '../components/rh/PresencesManager';
 import SalairesManager from '../components/rh/SalairesManager';
 import EvaluationsManager from '../components/rh/EvaluationsManager';
+import AdvancedDashboard from '../components/dashboard/AdvancedDashboard';
+import TeamPlanning from '../components/rh/TeamPlanning';
+import SkillsManagement from '../components/rh/SkillsManagement';
+import Evaluations360 from '../components/rh/Evaluations360';
 
 const RessourcesHumaines = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [employes, setEmployes] = useState([]);
+  const [services, setServices] = useState([]);
   const [conges, setConges] = useState([]);
   const [presences, setPresences] = useState([]);
   const [salaires, setSalaires] = useState([]);
@@ -35,6 +41,36 @@ const RessourcesHumaines = () => {
   // Charger les données au montage du composant
   useEffect(() => {
     loadAllData();
+    
+    // Listener en temps réel pour les présences
+    let isFirstLoad = true;
+    const unsubscribePresences = onSnapshot(
+      collection(db, 'presences'),
+      (snapshot) => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Détecter les nouveaux pointages (sauf au premier chargement)
+        if (!isFirstLoad && data.length > presences.length) {
+          const newCount = data.length - presences.length;
+          toast.success(`✅ ${newCount} nouveau(x) pointage(s) !`, {
+            duration: 3000,
+            icon: '📍'
+          });
+        }
+        
+        setPresences(data);
+        console.log('✅ Présences mises à jour en temps réel:', data.length);
+        isFirstLoad = false;
+      },
+      (error) => {
+        console.error('❌ Erreur listener présences:', error);
+      }
+    );
+    
+    // Cleanup : désabonner le listener quand le composant se démonte
+    return () => {
+      unsubscribePresences();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -43,6 +79,7 @@ const RessourcesHumaines = () => {
     try {
       await Promise.all([
         loadEmployes(),
+        loadServices(),
         loadConges(),
         loadPresences(),
         loadSalaires(),
@@ -60,6 +97,12 @@ const RessourcesHumaines = () => {
     const snapshot = await getDocs(collection(db, 'employes'));
     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setEmployes(data);
+  };
+
+  const loadServices = async () => {
+    const snapshot = await getDocs(collection(db, 'services'));
+    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setServices(data);
   };
 
   const loadConges = async () => {
@@ -113,90 +156,7 @@ const RessourcesHumaines = () => {
 
   // Rendu du Dashboard
   const renderDashboard = () => (
-    <div className="space-y-6">
-      {/* Statistiques principales */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          icon={Users}
-          title="Total Employés"
-          value={stats.totalEmployes}
-          subtitle={`${stats.employesActifs} actifs`}
-          color="blue"
-        />
-        <StatCard
-          icon={Calendar}
-          title="Congés en attente"
-          value={stats.congesEnAttente}
-          subtitle="À traiter"
-          color="orange"
-        />
-        <StatCard
-          icon={Clock}
-          title="Présences aujourd'hui"
-          value={stats.presencesAujourdhui}
-          subtitle={`/ ${stats.employesActifs}`}
-          color="green"
-        />
-        <StatCard
-          icon={DollarSign}
-          title="Masse salariale"
-          value={`${calculateTotalSalaire()} GNF`}
-          subtitle="Mensuel"
-          color="purple"
-        />
-      </div>
-
-      {/* Graphiques et activités récentes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Congés récents */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Demandes de congés récentes</h3>
-            <button 
-              onClick={() => setActiveTab('conges')}
-              className="text-sm text-blue-600 hover:text-blue-700"
-            >
-              Voir tout
-            </button>
-          </div>
-          <div className="space-y-3">
-            {conges.slice(0, 5).map(conge => (
-              <CongeItem key={conge.id} conge={conge} employes={employes} />
-            ))}
-            {conges.length === 0 && (
-              <p className="text-gray-500 text-sm text-center py-4">Aucune demande de congé</p>
-            )}
-          </div>
-        </div>
-
-        {/* Évaluations à venir */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Évaluations à venir</h3>
-            <button 
-              onClick={() => setActiveTab('evaluations')}
-              className="text-sm text-blue-600 hover:text-blue-700"
-            >
-              Voir tout
-            </button>
-          </div>
-          <div className="space-y-3">
-            {evaluations.slice(0, 5).map(evaluation => (
-              <EvaluationItem key={evaluation.id} evaluation={evaluation} employes={employes} />
-            ))}
-            {evaluations.length === 0 && (
-              <p className="text-gray-500 text-sm text-center py-4">Aucune évaluation prévue</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Graphique de présence */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Vue d'ensemble des présences</h3>
-        <PresenceChart presences={presences} />
-      </div>
-    </div>
+    <AdvancedDashboard />
   );
 
   // Calculer la masse salariale totale
@@ -223,10 +183,10 @@ const RessourcesHumaines = () => {
       {/* En-tête */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          Gestion des Ressources Humaines
+          Ressources Humaines
         </h1>
         <p className="text-gray-600">
-          Gérez vos employés, congés, présences, salaires et évaluations
+          Gestion complète des employés, congés, présences, salaires et évaluations
         </p>
       </div>
 
@@ -243,7 +203,7 @@ const RessourcesHumaines = () => {
             active={activeTab === 'employes'}
             onClick={() => setActiveTab('employes')}
             icon={Users}
-            label="Employés"
+            label="Gestion Employés"
           />
           <TabButton
             active={activeTab === 'conges'}
@@ -256,6 +216,24 @@ const RessourcesHumaines = () => {
             onClick={() => setActiveTab('presences')}
             icon={Clock}
             label="Présences"
+          />
+          <TabButton
+            active={activeTab === 'planning'}
+            onClick={() => setActiveTab('planning')}
+            icon={Calendar}
+            label="Planning"
+          />
+          <TabButton
+            active={activeTab === 'competences'}
+            onClick={() => setActiveTab('competences')}
+            icon={Award}
+            label="Compétences"
+          />
+          <TabButton
+            active={activeTab === 'evaluations360'}
+            onClick={() => setActiveTab('evaluations360')}
+            icon={Star}
+            label="Évaluations 360°"
           />
           <TabButton
             active={activeTab === 'salaires'}
@@ -276,8 +254,11 @@ const RessourcesHumaines = () => {
       <div>
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'employes' && <EmployesTab employes={employes} onRefresh={loadEmployes} openModal={openModal} />}
-        {activeTab === 'conges' && <CongesTab conges={conges} employes={employes} onRefresh={loadConges} />}
         {activeTab === 'presences' && <PresencesTab presences={presences} employes={employes} onRefresh={loadPresences} />}
+        {activeTab === 'planning' && <TeamPlanning employes={employes} />}
+        {activeTab === 'competences' && <SkillsManagement employes={employes} />}
+        {activeTab === 'evaluations360' && <Evaluations360 employes={employes} />}
+        {activeTab === 'conges' && <CongesTab conges={conges} employes={employes} onRefresh={loadConges} />}
         {activeTab === 'salaires' && <SalairesTab salaires={salaires} employes={employes} onRefresh={loadSalaires} />}
         {activeTab === 'evaluations' && <EvaluationsTab evaluations={evaluations} employes={employes} onRefresh={loadEvaluations} />}
       </div>
@@ -288,6 +269,7 @@ const RessourcesHumaines = () => {
           type={modalType}
           item={selectedItem}
           employes={employes}
+          services={services}
           onClose={closeModal}
           onSave={() => {
             closeModal();
@@ -448,8 +430,11 @@ const EmployesTab = ({ employes, onRefresh, openModal }) => (
         <thead className="bg-gray-50">
           <tr>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prénom</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Poste</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Département</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rôle</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code PIN</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Salaire</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -459,8 +444,28 @@ const EmployesTab = ({ employes, onRefresh, openModal }) => (
           {employes.map(employe => (
             <tr key={employe.id} className="hover:bg-gray-50">
               <td className="px-4 py-3 text-sm text-gray-800">{employe.nom}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">{employe.prenom || '-'}</td>
               <td className="px-4 py-3 text-sm text-gray-600">{employe.poste}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">{employe.departement}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">{employe.service || 'N/A'}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">
+                <span className={`px-2 py-1 text-xs rounded-full ${
+                  employe.role === 'dg' ? 'bg-purple-100 text-purple-800' :
+                  employe.role === 'achat' ? 'bg-blue-100 text-blue-800' :
+                  employe.role === 'service' ? 'bg-green-100 text-green-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {employe.role || 'N/A'}
+                </span>
+              </td>
+              <td className="px-4 py-3">
+                {employe.codePin || employe.codePIN || employe.code_pin ? (
+                  <span className="font-mono text-sm font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                    {employe.codePin || employe.codePIN || employe.code_pin}
+                  </span>
+                ) : (
+                  <span className="text-xs text-gray-400 italic">Non défini</span>
+                )}
+              </td>
               <td className="px-4 py-3 text-sm text-gray-600">{employe.salaire} GNF</td>
               <td className="px-4 py-3">
                 <span className={`px-2 py-1 text-xs rounded-full ${
@@ -519,7 +524,7 @@ const EvaluationsTab = ({ evaluations, employes, onRefresh }) => (
 );
 
 // Modal pour employés
-const Modal = ({ type, item, employes, onClose, onSave }) => {
+const Modal = ({ type, item, employes, services, onClose, onSave }) => {
   const [formData, setFormData] = useState(item || {});
   const [loading, setLoading] = useState(false);
 
@@ -534,7 +539,8 @@ const Modal = ({ type, item, employes, onClose, onSave }) => {
           nom: formData.nom,
           prenom: formData.prenom || '',
           poste: formData.poste,
-          departement: formData.departement,
+          service: formData.service,
+          role: formData.role,
           salaire: parseFloat(formData.salaire) || 0,
           email: formData.email || '',
           telephone: formData.telephone || '',
@@ -548,10 +554,27 @@ const Modal = ({ type, item, employes, onClose, onSave }) => {
           await updateDoc(doc(db, 'employes', item.id), employeData);
           toast.success('✅ Employé modifié avec succès');
         } else {
-          // Création
+          // Création - Générer automatiquement un code PIN unique
+          const generateUniquePIN = () => {
+            return Math.floor(100000 + Math.random() * 900000).toString(); // PIN à 6 chiffres
+          };
+          
+          const newPIN = generateUniquePIN();
+          employeData.codePin = newPIN;
+          employeData.code_pin = newPIN; // Pour compatibilité
+          employeData.pinGenereAt = new Date();
           employeData.createdAt = new Date();
+          
+          console.log('🔐 Code PIN généré automatiquement:', newPIN);
           await addDoc(collection(db, 'employes'), employeData);
-          toast.success('✅ Employé ajouté avec succès');
+          toast.success(
+            <div>
+              <strong>✅ Employé ajouté avec succès !</strong>
+              <br/>
+              <span className="font-mono text-blue-600">Code PIN: {newPIN}</span>
+            </div>,
+            { duration: 6000 }
+          );
         }
       } else if (type === 'delete-employe' && item?.id) {
         // Suppression
@@ -620,8 +643,12 @@ const Modal = ({ type, item, employes, onClose, onSave }) => {
               <p className="font-medium">{item?.poste}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Département</p>
-              <p className="font-medium">{item?.departement}</p>
+              <p className="text-sm text-gray-600">Service</p>
+              <p className="font-medium">{item?.service || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Rôle</p>
+              <p className="font-medium">{item?.role || 'N/A'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Salaire</p>
@@ -708,16 +735,42 @@ const Modal = ({ type, item, employes, onClose, onSave }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Département *
+                Service *
               </label>
-              <input
-                type="text"
-                name="departement"
-                value={formData.departement || ''}
+              <select
+                name="service"
+                value={formData.service || ''}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                <option value="">Sélectionner un service</option>
+                {services.map(service => (
+                  <option key={service.id} value={service.nom}>
+                    {service.nom}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Rôle *
+              </label>
+              <select
+                name="role"
+                value={formData.role || ''}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Sélectionner un rôle</option>
+                <option value="service">Service</option>
+                <option value="achat">Achat</option>
+                <option value="dg">Directeur Général</option>
+                <option value="rh">Ressources Humaines</option>
+                <option value="comptabilite">Comptabilité</option>
+                <option value="maintenance">Maintenance</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

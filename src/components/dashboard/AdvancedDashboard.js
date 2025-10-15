@@ -1,405 +1,279 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from 'chart.js';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { 
-  TrendingUp, 
-  TrendingDown, 
-  Package, 
   Users, 
   ShoppingCart, 
+  TrendingUp, 
+  CheckCircle,
   AlertTriangle,
-  Download,
-  FileText,
   BarChart3,
   PieChart
 } from 'lucide-react';
-import { collection, getDocs } from 'firebase/firestore';
+import { 
+  AreaChart, 
+  Area, 
+  BarChart, 
+  Bar, 
+  PieChart as RechartsPieChart, 
+  Pie,
+  Cell, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer 
+} from 'recharts';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase/config';
-import { useAuth } from '../../contexts/AuthContext';
-import toast from 'react-hot-toast';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
-
-// Enregistrer les composants Chart.js
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 
 const AdvancedDashboard = () => {
   const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState({
-    stock: [],
-    commandes: [],
-    employes: [],
-    articles: [],
-    fournisseurs: []
-  });
-
-  // États pour les graphiques
-  const [stockChartData, setStockChartData] = useState(null);
-  const [commandesChartData, setCommandesChartData] = useState(null);
-  const [servicesChartData, setServicesChartData] = useState(null);
-  const [budgetChartData, setBudgetChartData] = useState(null);
+  const [timeRange, setTimeRange] = useState('7'); // 7 derniers jours par défaut
+  const [stats, setStats] = useState({});
+  const [chartData, setChartData] = useState([]);
+  const [presenceData, setPresenceData] = useState([]);
+  const [commandesData, setCommandesData] = useState([]);
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [timeRange]);
 
   const loadDashboardData = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
+      const days = parseInt(timeRange);
+      const startDate = startOfDay(subDays(new Date(), days));
+      const endDate = endOfDay(new Date());
       
       // Charger toutes les données en parallèle
-      const [stockSnapshot, commandesSnapshot, employesSnapshot, articlesSnapshot, fournisseursSnapshot] = await Promise.all([
-        getDocs(collection(db, 'stock')),
-        getDocs(collection(db, 'commandes')),
+      const [
+        employesSnap,
+        commandesSnap,
+        presencesSnap,
+        stockSnap,
+        vehiculesSnap
+      ] = await Promise.all([
         getDocs(collection(db, 'employes')),
-        getDocs(collection(db, 'articles')),
-        getDocs(collection(db, 'fournisseurs'))
+        getDocs(query(collection(db, 'commandes'), where('createdAt', '>=', startDate), where('createdAt', '<=', endDate))),
+        getDocs(query(collection(db, 'presences'), where('date', '>=', startDate), where('date', '<=', endDate))),
+        getDocs(collection(db, 'stock')),
+        getDocs(collection(db, 'vehicules'))
       ]);
 
-      const stock = stockSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const commandes = commandesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const employes = employesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const articles = articlesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const fournisseurs = fournisseursSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Traiter les données
+      const employes = employesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const commandes = commandesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const presences = presencesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const stock = stockSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const vehicules = vehiculesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      setDashboardData({ stock, commandes, employes, articles, fournisseurs });
-      
-      // Générer les données des graphiques
-      generateChartsData({ stock, commandes, employes, articles, fournisseurs });
+      // Calculer les statistiques
+      const newStats = {
+        totalEmployes: employes.length,
+        employesActifs: employes.filter(e => e.statut === 'actif').length,
+        totalCommandes: commandes.length,
+        commandesApprouvees: commandes.filter(c => c.statut === 'approuve').length,
+        commandesEnAttente: commandes.filter(c => c.statut === 'en_attente').length,
+        totalPresences: presences.length,
+        presencesAujourdhui: presences.filter(p => {
+          const presenceDate = p.date?.toDate?.() || p.date;
+          return format(presenceDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+        }).length,
+        stockFaible: stock.filter(s => s.quantite <= (s.seuilMin || 10)).length,
+        vehiculesEnMaintenance: vehicules.filter(v => v.statut === 'en_maintenance').length
+      };
+
+      setStats(newStats);
+
+      // Préparer les données pour les graphiques
+      prepareChartData(commandes, presences);
+      preparePresenceData(presences, employes);
+      prepareCommandesData(commandes);
       
     } catch (error) {
-      console.error('Erreur lors du chargement des données:', error);
-      toast.error('Erreur lors du chargement du tableau de bord');
+      console.error('Erreur chargement dashboard:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const generateChartsData = (data) => {
-    // Graphique des mouvements de stock
-    const stockMovements = generateStockMovements(data.stock);
-    setStockChartData({
-      labels: stockMovements.labels,
-      datasets: [
-        {
-          label: 'Stock Disponible',
-          data: stockMovements.stock,
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          tension: 0.4
-        },
-        {
-          label: 'Seuil Minimum',
-          data: stockMovements.seuils,
-          borderColor: 'rgb(239, 68, 68)',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          tension: 0.4
-        }
-      ]
-    });
+  const prepareChartData = (commandes, presences) => {
+    const days = parseInt(timeRange);
+    const chartData = [];
 
-    // Graphique des commandes par statut
-    const commandesByStatus = generateCommandesByStatus(data.commandes);
-    setCommandesChartData({
-      labels: commandesByStatus.labels,
-      datasets: [
-        {
-          label: 'Nombre de commandes',
-          data: commandesByStatus.data,
-          backgroundColor: [
-            'rgba(255, 206, 86, 0.8)',
-            'rgba(54, 162, 235, 0.8)',
-            'rgba(75, 192, 192, 0.8)',
-            'rgba(153, 102, 255, 0.8)',
-            'rgba(255, 99, 132, 0.8)'
-          ],
-          borderColor: [
-            'rgba(255, 206, 86, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 99, 132, 1)'
-          ],
-          borderWidth: 2
-        }
-      ]
-    });
+    for (let i = days - 1; i >= 0; i--) {
+      const date = subDays(new Date(), i);
+      const dateStr = format(date, 'yyyy-MM-dd');
 
-    // Graphique des commandes par service
-    const commandesByService = generateCommandesByService(data.commandes);
-    setServicesChartData({
-      labels: commandesByService.labels,
-      datasets: [
-        {
-          label: 'Commandes par service',
-          data: commandesByService.data,
-          backgroundColor: 'rgba(34, 197, 94, 0.8)',
-          borderColor: 'rgba(34, 197, 94, 1)',
-          borderWidth: 1
-        }
-      ]
-    });
+      const dayCommandes = commandes.filter(c => {
+        const commandeDate = c.createdAt?.toDate?.() || c.createdAt;
+        return format(commandeDate, 'yyyy-MM-dd') === dateStr;
+      });
 
-    // Graphique des budgets
-    const budgetData = generateBudgetData(data.commandes);
-    setBudgetChartData({
-      labels: budgetData.labels,
-      datasets: [
-        {
-          label: 'Budget Utilisé (GNF)',
-          data: budgetData.data,
-          backgroundColor: 'rgba(168, 85, 247, 0.8)',
-          borderColor: 'rgba(168, 85, 247, 1)',
-          borderWidth: 2
-        }
-      ]
-    });
+      const dayPresences = presences.filter(p => {
+        const presenceDate = p.date?.toDate?.() || p.date;
+        return format(presenceDate, 'yyyy-MM-dd') === dateStr;
+      });
+
+      chartData.push({
+        date: format(date, 'dd/MM'),
+        commandes: dayCommandes.length,
+        presences: dayPresences.length,
+        approuvees: dayCommandes.filter(c => c.statut === 'approuve').length
+      });
+    }
+
+    setChartData(chartData);
   };
 
-  // Fonctions utilitaires pour générer les données des graphiques
-  const generateStockMovements = (stock) => {
-    const labels = stock.slice(0, 10).map(item => item.nom?.substring(0, 15) || 'Article');
-    const stockValues = stock.slice(0, 10).map(item => item.quantite || 0);
-    const seuils = stock.slice(0, 10).map(item => item.seuilMinimum || 0);
-    
-    return { labels, stock: stockValues, seuils };
+  const preparePresenceData = (presences, employes) => {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const todayPresences = presences.filter(p => {
+      const presenceDate = p.date?.toDate?.() || p.date;
+      return format(presenceDate, 'yyyy-MM-dd') === today;
+    });
+
+    const presenceByStatus = {
+      present: 0,
+      absent: 0,
+      retard: 0,
+      absent_justifie: 0
+    };
+
+    todayPresences.forEach(presence => {
+      if (presenceByStatus.hasOwnProperty(presence.statut)) {
+        presenceByStatus[presence.statut]++;
+      }
+    });
+
+    const data = [
+      { name: 'Présents', value: presenceByStatus.present, color: '#10B981' },
+      { name: 'Absents', value: presenceByStatus.absent, color: '#EF4444' },
+      { name: 'Retards', value: presenceByStatus.retard, color: '#F59E0B' },
+      { name: 'Justifiés', value: presenceByStatus.absent_justifie, color: '#3B82F6' }
+    ];
+
+    setPresenceData(data);
   };
 
-  const generateCommandesByStatus = (commandes) => {
-    const statusCount = commandes.reduce((acc, cmd) => {
-      const status = cmd.statut || 'inconnu';
-      acc[status] = (acc[status] || 0) + 1;
+  const prepareCommandesData = (commandes) => {
+    const statusCounts = commandes.reduce((acc, commande) => {
+      acc[commande.statut] = (acc[commande.statut] || 0) + 1;
       return acc;
     }, {});
 
-    return {
-      labels: Object.keys(statusCount),
-      data: Object.values(statusCount)
+    const data = Object.entries(statusCounts).map(([status, count]) => ({
+      status: status.replace('_', ' ').toUpperCase(),
+      count,
+      color: getStatusColor(status)
+    }));
+
+    setCommandesData(data);
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'en_attente': '#F59E0B',
+      'en_attente_prix': '#3B82F6',
+      'en_attente_approbation': '#8B5CF6',
+      'approuve': '#10B981',
+      'rejete': '#EF4444'
     };
+    return colors[status] || '#6B7280';
   };
 
-  const generateCommandesByService = (commandes) => {
-    const serviceCount = commandes.reduce((acc, cmd) => {
-      const service = cmd.service || 'Non défini';
-      acc[service] = (acc[service] || 0) + 1;
-      return acc;
-    }, {});
-
-    return {
-      labels: Object.keys(serviceCount),
-      data: Object.values(serviceCount)
-    };
-  };
-
-  const generateBudgetData = (commandes) => {
-    const serviceBudget = commandes.reduce((acc, cmd) => {
-      const service = cmd.service || 'Non défini';
-      const prix = parseFloat(cmd.prix) || 0;
-      acc[service] = (acc[service] || 0) + prix;
-      return acc;
-    }, {});
-
-    return {
-      labels: Object.keys(serviceBudget),
-      data: Object.values(serviceBudget)
-    };
-  };
-
-  // Fonctions d'export
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-    
-    // Titre
-    doc.setFontSize(20);
-    doc.text('Rapport de Gestion - Tableau de Bord', 20, 20);
-    
-    // Données du stock
-    doc.setFontSize(16);
-    doc.text('État du Stock', 20, 40);
-    
-    const stockData = dashboardData.stock.map(item => [
-      item.nom || 'N/A',
-      item.quantite || 0,
-      item.seuilMinimum || 0,
-      item.prixUnitaire ? `${item.prixUnitaire} GNF` : 'N/A'
-    ]);
-    
-    doc.autoTable({
-      head: [['Article', 'Quantité', 'Seuil Min', 'Prix Unitaire']],
-      body: stockData,
-      startY: 50
-    });
-    
-    // Données des commandes
-    doc.setFontSize(16);
-    doc.text('Commandes Récentes', 20, doc.lastAutoTable.finalY + 20);
-    
-    const commandesData = dashboardData.commandes.slice(0, 10).map(cmd => [
-      cmd.article || 'N/A',
-      cmd.service || 'N/A',
-      cmd.quantite || 0,
-      cmd.statut || 'N/A',
-      cmd.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'
-    ]);
-    
-    doc.autoTable({
-      head: [['Article', 'Service', 'Quantité', 'Statut', 'Date']],
-      body: commandesData,
-      startY: doc.lastAutoTable.finalY + 30
-    });
-    
-    doc.save('rapport-gestion.pdf');
-    toast.success('Rapport PDF généré avec succès');
-  };
-
-  const exportToExcel = () => {
-    const wb = XLSX.utils.book_new();
-    
-    // Feuille Stock
-    const stockWS = XLSX.utils.json_to_sheet(
-      dashboardData.stock.map(item => ({
-        'Article': item.nom,
-        'Quantité': item.quantite,
-        'Seuil Minimum': item.seuilMinimum,
-        'Prix Unitaire': item.prixUnitaire,
-        'Catégorie': item.categorie
-      }))
-    );
-    XLSX.utils.book_append_sheet(wb, stockWS, 'Stock');
-    
-    // Feuille Commandes
-    const commandesWS = XLSX.utils.json_to_sheet(
-      dashboardData.commandes.map(cmd => ({
-        'Article': cmd.article,
-        'Service': cmd.service,
-        'Quantité': cmd.quantite,
-        'Prix': cmd.prix,
-        'Statut': cmd.statut,
-        'Date': cmd.createdAt?.toDate?.()?.toLocaleDateString()
-      }))
-    );
-    XLSX.utils.book_append_sheet(wb, commandesWS, 'Commandes');
-    
-    // Feuille Employés
-    const employesWS = XLSX.utils.json_to_sheet(
-      dashboardData.employes.map(emp => ({
-        'Nom': emp.nom,
-        'Prénom': emp.prenom,
-        'Service': emp.service,
-        'Rôle': emp.role,
-        'Email': emp.email
-      }))
-    );
-    XLSX.utils.book_append_sheet(wb, employesWS, 'Employés');
-    
-    XLSX.writeFile(wb, 'rapport-gestion.xlsx');
-    toast.success('Rapport Excel généré avec succès');
+  const getKPIColor = (value, threshold = 0) => {
+    if (value > threshold) return 'text-green-600';
+    if (value < threshold) return 'text-red-600';
+    return 'text-gray-600';
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* En-tête avec actions d'export */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* En-tête avec sélecteur de période */}
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tableau de Bord Avancé</h1>
-          <p className="text-gray-600">Analyses et rapports détaillés</p>
+          <h2 className="text-2xl font-bold text-gray-900">Tableau de Bord Avancé</h2>
+          <p className="text-gray-600">Vue d'ensemble des {timeRange} derniers jours</p>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={exportToPDF}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <FileText className="h-4 w-4" />
-            Export PDF
-          </button>
-          <button
-            onClick={exportToExcel}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Download className="h-4 w-4" />
-            Export Excel
-          </button>
-        </div>
+        <select
+          value={timeRange}
+          onChange={(e) => setTimeRange(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        >
+          <option value="7">7 derniers jours</option>
+          <option value="30">30 derniers jours</option>
+          <option value="90">3 derniers mois</option>
+        </select>
       </div>
 
-      {/* Métriques principales */}
+      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="card">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Package className="h-8 w-8 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Articles en Stock</p>
-              <p className="text-2xl font-semibold text-gray-900">{dashboardData.stock.length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <ShoppingCart className="h-8 w-8 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Commandes Total</p>
-              <p className="text-2xl font-semibold text-gray-900">{dashboardData.commandes.length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Users className="h-8 w-8 text-purple-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Employés</p>
-              <p className="text-2xl font-semibold text-gray-900">{dashboardData.employes.length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <AlertTriangle className="h-8 w-8 text-orange-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Alertes Stock</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {dashboardData.stock.filter(item => (item.quantite || 0) <= (item.seuilMinimum || 0)).length}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Employés Actifs</p>
+              <p className={`text-2xl font-bold ${getKPIColor(stats.employesActifs)}`}>
+                {stats.employesActifs}
               </p>
+              <p className="text-xs text-gray-500">sur {stats.totalEmployes} total</p>
+            </div>
+            <div className="p-3 bg-blue-100 rounded-full">
+              <Users className="text-blue-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Présences Aujourd'hui</p>
+              <p className={`text-2xl font-bold ${getKPIColor(stats.presencesAujourdhui)}`}>
+                {stats.presencesAujourdhui}
+              </p>
+              <p className="text-xs text-gray-500">pointages du jour</p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-full">
+              <CheckCircle className="text-green-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Commandes Approuvées</p>
+              <p className={`text-2xl font-bold ${getKPIColor(stats.commandesApprouvees)}`}>
+                {stats.commandesApprouvees}
+              </p>
+              <p className="text-xs text-gray-500">sur {stats.totalCommandes} total</p>
+            </div>
+            <div className="p-3 bg-purple-100 rounded-full">
+              <ShoppingCart className="text-purple-600" size={24} />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Stock Faible</p>
+              <p className={`text-2xl font-bold ${stats.stockFaible > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                {stats.stockFaible}
+              </p>
+              <p className="text-xs text-gray-500">articles à réapprovisionner</p>
+            </div>
+            <div className="p-3 bg-orange-100 rounded-full">
+              <AlertTriangle className="text-orange-600" size={24} />
             </div>
           </div>
         </div>
@@ -407,182 +281,80 @@ const AdvancedDashboard = () => {
 
       {/* Graphiques */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Graphique des mouvements de stock */}
-        {stockChartData && (
-          <div className="card">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
-              <h3 className="text-lg font-semibold">Mouvements de Stock</h3>
-            </div>
-            <Line 
-              data={stockChartData} 
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
-          </div>
-        )}
-
-        {/* Graphique des commandes par statut */}
-        {commandesChartData && (
-          <div className="card">
-            <div className="flex items-center gap-2 mb-4">
-              <BarChart3 className="h-5 w-5 text-green-600" />
-              <h3 className="text-lg font-semibold">Commandes par Statut</h3>
-            </div>
-            <Bar 
-              data={commandesChartData} 
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
-          </div>
-        )}
-
-        {/* Graphique des commandes par service */}
-        {servicesChartData && (
-          <div className="card">
-            <div className="flex items-center gap-2 mb-4">
-              <PieChart className="h-5 w-5 text-purple-600" />
-              <h3 className="text-lg font-semibold">Commandes par Service</h3>
-            </div>
-            <Bar 
-              data={servicesChartData} 
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
-          </div>
-        )}
-
-        {/* Graphique des budgets */}
-        {budgetChartData && (
-          <div className="card">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingDown className="h-5 w-5 text-orange-600" />
-              <h3 className="text-lg font-semibold">Budget par Service</h3>
-            </div>
-            <Doughnut 
-              data={budgetChartData} 
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'bottom',
-                  },
-                },
-              }}
-            />
-          </div>
-        )}
+        {/* Graphique des tendances */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <TrendingUp className="mr-2 text-blue-600" size={20} />
+            Tendances des {timeRange} derniers jours
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area 
+                type="monotone" 
+                dataKey="commandes" 
+                stackId="1" 
+                stroke="#8884d8" 
+                fill="#8884d8" 
+                name="Commandes"
+              />
+              <Area 
+                type="monotone" 
+                dataKey="presences" 
+                stackId="2" 
+                stroke="#82ca9d" 
+                fill="#82ca9d" 
+                name="Présences"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
       </div>
 
-      {/* Tableau récapitulatif */}
-      <div className="card">
-        <h3 className="text-lg font-semibold mb-4">Résumé des Données</h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Catégorie
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Dernière Mise à Jour
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Statut
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Articles en Stock
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {dashboardData.stock.length}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date().toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                    Actif
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Commandes
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {dashboardData.commandes.length}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date().toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                    En cours
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Employés
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {dashboardData.employes.length}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date().toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                    Géré
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        {/* Graphique des présences aujourd'hui */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <h3 className="text-lg font-semibold mb-4 flex items-center">
+            <PieChart className="mr-2 text-green-600" size={20} />
+            Présences Aujourd'hui
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <RechartsPieChart>
+              <Pie
+                data={presenceData}
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                dataKey="value"
+                label={({ name, value }) => `${name}: ${value}`}
+              >
+                {presenceData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </RechartsPieChart>
+          </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Graphique des commandes par statut */}
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold mb-4 flex items-center">
+          <BarChart3 className="mr-2 text-purple-600" size={20} />
+          Répartition des Commandes par Statut
+        </h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={commandesData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="status" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="count" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

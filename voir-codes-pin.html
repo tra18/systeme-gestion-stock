@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voir Codes PIN - Système de Pointage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 15px 45px 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+        }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        th:first-child {
+            border-top-left-radius: 10px;
+        }
+        th:last-child {
+            border-top-right-radius: 10px;
+        }
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+        tbody tr:hover {
+            background: #f8f9ff;
+            transform: scale(1.01);
+        }
+        td {
+            padding: 15px;
+        }
+        .pin-code {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .no-pin {
+            color: #999;
+            font-style: italic;
+        }
+        .copy-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Codes PIN Employés</h1>
+        <p class="subtitle">Consultez et gérez les codes PIN pour le pointage mobile</p>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalEmployes">-</div>
+                <div class="stat-label">Employés Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avecPin">-</div>
+                <div class="stat-label">Avec Code PIN</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="sansPin">-</div>
+                <div class="stat-label">Sans Code PIN</div>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Rechercher un employé par nom, matricule ou code PIN...">
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <div class="actions">
+            <button class="btn-primary" onclick="chargerEmployes()">
+                🔄 Actualiser
+            </button>
+            <button class="btn-secondary" onclick="exporterCSV()">
+                📥 Exporter CSV
+            </button>
+            <button class="btn-secondary" onclick="copierTout()">
+                📋 Copier Tout
+            </button>
+            <button class="btn-primary" onclick="window.location.href='generer-codes-pin.html'">
+                ➕ Générer Codes PIN
+            </button>
+        </div>
+
+        <div id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Chargement des employés...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Configuration Firebase (REMPLACEZ avec votre config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcWSN81r98qUqr60s-p5rwJ4kMHKGde1w",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.firebasestorage.app",
+            messagingSenderId: "528718662188",
+            appId: "1:528718662188:web:9e19c02b36e8f57be83078"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let employes = [];
+
+        // Charger les employés
+        window.chargerEmployes = async function() {
+            try {
+                document.getElementById('content').innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Chargement des employés...</p>
+                    </div>
+                `;
+
+                const querySnapshot = await getDocs(collection(db, 'employes'));
+                employes = [];
+                
+                querySnapshot.forEach((doc) => {
+                    employes.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                // Trier par nom
+                employes.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+
+                afficherEmployes(employes);
+                mettreAJourStats();
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('content').innerHTML = `
+                    <div class="loading">
+                        <p style="color: red;">❌ Erreur: ${error.message}</p>
+                        <button class="btn-primary" onclick="chargerEmployes()">Réessayer</button>
+                    </div>
+                `;
+            }
+        };
+
+        function afficherEmployes(data) {
+            if (data.length === 0) {
+                document.getElementById('content').innerHTML = `
+                    <div class="loading">
+                        <p>Aucun employé trouvé</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Matricule</th>
+                            <th>Nom & Prénom</th>
+                            <th>Poste</th>
+                            <th>Code PIN</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach(emp => {
+                const pin = emp.codePin || emp.code_pin;
+                const pinHtml = pin 
+                    ? `<span class="pin-code">${pin}</span>`
+                    : `<span class="no-pin">Non défini</span>`;
+                
+                const statutBadge = pin
+                    ? `<span class="badge badge-success">✓ Activé</span>`
+                    : `<span class="badge badge-warning">⚠ Manquant</span>`;
+
+                html += `
+                    <tr>
+                        <td>${emp.matricule || '-'}</td>
+                        <td><strong>${emp.nom || '-'} ${emp.prenom || ''}</strong></td>
+                        <td>${emp.poste || '-'}</td>
+                        <td>${pinHtml}</td>
+                        <td>${statutBadge}</td>
+                        <td>
+                            ${pin ? `<button class="copy-btn" onclick="copierPin('${pin}')">📋 Copier</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function mettreAJourStats() {
+            const total = employes.length;
+            const avecPin = employes.filter(e => e.codePin || e.code_pin).length;
+            const sansPin = total - avecPin;
+
+            document.getElementById('totalEmployes').textContent = total;
+            document.getElementById('avecPin').textContent = avecPin;
+            document.getElementById('sansPin').textContent = sansPin;
+        }
+
+        // Recherche
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const terme = e.target.value.toLowerCase();
+            const filtres = employes.filter(emp => {
+                const nom = (emp.nom || '').toLowerCase();
+                const prenom = (emp.prenom || '').toLowerCase();
+                const matricule = (emp.matricule || '').toLowerCase();
+                const pin = (emp.codePin || emp.code_pin || '').toLowerCase();
+                
+                return nom.includes(terme) || 
+                       prenom.includes(terme) || 
+                       matricule.includes(terme) ||
+                       pin.includes(terme);
+            });
+            afficherEmployes(filtres);
+        });
+
+        // Copier PIN
+        window.copierPin = function(pin) {
+            navigator.clipboard.writeText(pin).then(() => {
+                alert('✅ Code PIN copié: ' + pin);
+            });
+        };
+
+        // Copier tout
+        window.copierTout = function() {
+            let texte = 'MATRICULE\tNOM\tPRENOM\tPOSTE\tCODE PIN\n';
+            employes.forEach(emp => {
+                const pin = emp.codePin || emp.code_pin || 'NON DÉFINI';
+                texte += `${emp.matricule || '-'}\t${emp.nom || '-'}\t${emp.prenom || '-'}\t${emp.poste || '-'}\t${pin}\n`;
+            });
+            
+            navigator.clipboard.writeText(texte).then(() => {
+                alert('✅ Tous les codes PIN ont été copiés dans le presse-papier !');
+            });
+        };
+
+        // Exporter CSV
+        window.exporterCSV = function() {
+            let csv = 'Matricule,Nom,Prénom,Poste,Code PIN\n';
+            employes.forEach(emp => {
+                const pin = emp.codePin || emp.code_pin || '';
+                csv += `"${emp.matricule || ''}","${emp.nom || ''}","${emp.prenom || ''}","${emp.poste || ''}","${pin}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `codes-pin-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        };
+
+        // Charger au démarrage
+        chargerEmployes();
+    </script>
+</body>
+</html>
+

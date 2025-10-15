@@ -1,0 +1,71 @@
+{
+  "short_name": "VITACH GUINÉE",
+  "name": "VITACH GUINÉE - Système de Gestion Intégré",
+  "description": "Système de Gestion Intégré - Commandes, Maintenance & Ressources Humaines",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#14B8A6",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fr",
+  "categories": ["business", "productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tableau de bord principal"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Interface mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nouvelle Commande",
+      "short_name": "Commande",
+      "description": "Créer une nouvelle commande",
+      "url": "/nouvelle-commande",
+      "icons": [{ "src": "favicon.ico", "sizes": "96x96" }]
+    },
+    {
+      "name": "Pointage Mobile",
+      "short_name": "Pointage",
+      "description": "Pointage des employés",
+      "url": "/pointage-mobile",
+      "icons": [{ "src": "favicon.ico", "sizes": "96x96" }]
+    },
+    {
+      "name": "Stock",
+      "short_name": "Stock",
+      "description": "Gestion du stock",
+      "url": "/stock",
+      "icons": [{ "src": "favicon.ico", "sizes": "96x96" }]
+    }
+  ]
+}

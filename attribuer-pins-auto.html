@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attribution Automatique des Codes PIN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+        }
+        .info-box li {
+            margin-bottom: 8px;
+        }
+        .settings {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .setting-row label {
+            font-weight: 600;
+            color: #333;
+        }
+        .setting-row input,
+        .setting-row select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            width: 200px;
+        }
+        button {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        #progress {
+            display: none;
+            margin-top: 30px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        #log {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .log-success {
+            color: #28a745;
+        }
+        .log-error {
+            color: #dc3545;
+        }
+        .log-info {
+            color: #667eea;
+        }
+        #results {
+            display: none;
+            margin-top: 30px;
+        }
+        .result-card {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .result-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .pin-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        .pin-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #e0e0e0;
+        }
+        .pin-item strong {
+            color: #333;
+        }
+        .pin-code {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Attribution Automatique des PINs</h1>
+        <p class="subtitle">Générez et attribuez automatiquement des codes PIN à tous vos employés</p>
+
+        <div class="info-box">
+            <h3>ℹ️ Comment ça marche ?</h3>
+            <ul>
+                <li>✅ Le script va charger tous vos employés depuis Firestore</li>
+                <li>✅ Générer automatiquement un code PIN unique pour chaque employé</li>
+                <li>✅ Enregistrer les codes PIN directement dans Firestore</li>
+                <li>✅ Vous fournir une liste complète à imprimer ou copier</li>
+            </ul>
+        </div>
+
+        <div class="settings">
+            <h3 style="margin-bottom: 20px; color: #333;">⚙️ Paramètres</h3>
+            
+            <div class="setting-row">
+                <label>Longueur du code PIN :</label>
+                <select id="pinLength">
+                    <option value="4">4 chiffres (ex: 1234)</option>
+                    <option value="5">5 chiffres (ex: 12345)</option>
+                    <option value="6" selected>6 chiffres (ex: 123456)</option>
+                </select>
+            </div>
+
+            <div class="setting-row">
+                <label>Mode :</label>
+                <select id="mode">
+                    <option value="nouveaux">Seulement les nouveaux (sans PIN)</option>
+                    <option value="tous">Tous les employés (régénérer tout)</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="startBtn" class="btn-primary" onclick="demarrer()">
+            🚀 Générer et Attribuer les PINs
+        </button>
+
+        <button class="btn-secondary" onclick="window.location.href='voir-codes-pin.html'">
+            👀 Voir les codes PIN existants
+        </button>
+
+        <div id="progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div id="log"></div>
+        </div>
+
+        <div id="results">
+            <div class="result-card">
+                <h3>📊 Résumé</h3>
+                <p id="summary"></p>
+            </div>
+            <div class="result-card">
+                <h3>📋 Codes PIN générés</h3>
+                <div class="pin-list" id="pinList"></div>
+            </div>
+            <button class="btn-primary" onclick="exporterResultats()">
+                📥 Télécharger la liste (CSV)
+            </button>
+            <button class="btn-secondary" onclick="copierResultats()">
+                📋 Copier dans le presse-papier
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcWSN81r98qUqr60s-p5rwJ4kMHKGde1w",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.firebasestorage.app",
+            messagingSenderId: "528718662188",
+            appId: "1:528718662188:web:9e19c02b36e8f57be83078"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let resultatsGeneres = [];
+
+        function genererPIN(longueur) {
+            let pin = '';
+            for (let i = 0; i < longueur; i++) {
+                pin += Math.floor(Math.random() * 10);
+            }
+            return pin;
+        }
+
+        function ajouterLog(message, type = 'info') {
+            const log = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        window.demarrer = async function() {
+            const startBtn = document.getElementById('startBtn');
+            const progress = document.getElementById('progress');
+            const results = document.getElementById('results');
+            const pinLength = parseInt(document.getElementById('pinLength').value);
+            const mode = document.getElementById('mode').value;
+
+            // Réinitialiser
+            document.getElementById('log').innerHTML = '';
+            document.getElementById('pinList').innerHTML = '';
+            results.style.display = 'none';
+            progress.style.display = 'block';
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<span class="spinner"></span> Traitement en cours...';
+            resultatsGeneres = [];
+
+            try {
+                ajouterLog('🔍 Chargement des employés...', 'info');
+                const querySnapshot = await getDocs(collection(db, 'employes'));
+                
+                let employes = [];
+                querySnapshot.forEach((doc) => {
+                    employes.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                ajouterLog(`✅ ${employes.length} employés trouvés`, 'success');
+
+                // Filtrer selon le mode
+                let employesATraiter = employes;
+                if (mode === 'nouveaux') {
+                    employesATraiter = employes.filter(e => !e.codePin && !e.code_pin);
+                    ajouterLog(`🔍 ${employesATraiter.length} employés sans code PIN`, 'info');
+                }
+
+                if (employesATraiter.length === 0) {
+                    ajouterLog('ℹ️ Aucun employé à traiter', 'info');
+                    startBtn.disabled = false;
+                    startBtn.innerHTML = '🚀 Générer et Attribuer les PINs';
+                    return;
+                }
+
+                ajouterLog(`🚀 Début de la génération de ${employesATraiter.length} codes PIN...`, 'info');
+
+                // Générer et enregistrer les PINs
+                let pinsGeneres = new Set();
+                let traites = 0;
+                let erreurs = 0;
+
+                for (const employe of employesATraiter) {
+                    try {
+                        // Générer un PIN unique
+                        let pin;
+                        do {
+                            pin = genererPIN(pinLength);
+                        } while (pinsGeneres.has(pin));
+                        pinsGeneres.add(pin);
+
+                        // Enregistrer dans Firestore
+                        await updateDoc(doc(db, 'employes', employe.id), {
+                            codePin: pin,
+                            code_pin: pin, // Pour compatibilité
+                            pinGenereAt: new Date(),
+                            pinGenerePar: 'Script automatique'
+                        });
+
+                        traites++;
+                        const nom = `${employe.nom || ''} ${employe.prenom || ''}`.trim() || 'Employé';
+                        ajouterLog(`✅ ${nom} → PIN: ${pin}`, 'success');
+
+                        resultatsGeneres.push({
+                            matricule: employe.matricule || '-',
+                            nom: employe.nom || '',
+                            prenom: employe.prenom || '',
+                            poste: employe.poste || '',
+                            pin: pin
+                        });
+
+                        // Mettre à jour la progression
+                        const pourcentage = Math.round((traites / employesATraiter.length) * 100);
+                        document.getElementById('progressFill').style.width = pourcentage + '%';
+                        document.getElementById('progressFill').textContent = pourcentage + '%';
+
+                    } catch (error) {
+                        erreurs++;
+                        const nom = `${employe.nom || ''} ${employe.prenom || ''}`.trim() || 'Employé';
+                        ajouterLog(`❌ Erreur pour ${nom}: ${error.message}`, 'error');
+                    }
+                }
+
+                // Afficher les résultats
+                ajouterLog(`\n🎉 Terminé ! ${traites} codes PIN générés, ${erreurs} erreurs`, 'success');
+                
+                document.getElementById('summary').innerHTML = `
+                    <strong>✅ ${traites} codes PIN</strong> ont été générés et enregistrés avec succès<br>
+                    ${erreurs > 0 ? `<strong>❌ ${erreurs} erreurs</strong><br>` : ''}
+                    <em>Les codes PIN sont maintenant disponibles dans Firestore</em>
+                `;
+
+                // Afficher la liste des PINs
+                const pinList = document.getElementById('pinList');
+                resultatsGeneres.forEach(res => {
+                    const item = document.createElement('div');
+                    item.className = 'pin-item';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${res.nom} ${res.prenom}</strong><br>
+                            <small>${res.matricule}</small>
+                        </div>
+                        <span class="pin-code">${res.pin}</span>
+                    `;
+                    pinList.appendChild(item);
+                });
+
+                results.style.display = 'block';
+
+            } catch (error) {
+                ajouterLog(`❌ Erreur fatale: ${error.message}`, 'error');
+                console.error(error);
+            } finally {
+                startBtn.disabled = false;
+                startBtn.innerHTML = '🚀 Générer et Attribuer les PINs';
+            }
+        };
+
+        window.exporterResultats = function() {
+            let csv = 'Matricule,Nom,Prénom,Poste,Code PIN\n';
+            resultatsGeneres.forEach(res => {
+                csv += `"${res.matricule}","${res.nom}","${res.prenom}","${res.poste}","${res.pin}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `codes-pin-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            ajouterLog('📥 Fichier CSV téléchargé', 'success');
+        };
+
+        window.copierResultats = function() {
+            let texte = 'CODES PIN - EMPLOYÉS\n';
+            texte += '='.repeat(50) + '\n\n';
+            resultatsGeneres.forEach(res => {
+                texte += `${res.nom} ${res.prenom}\n`;
+                texte += `Matricule: ${res.matricule}\n`;
+                texte += `Code PIN: ${res.pin}\n`;
+                texte += '-'.repeat(50) + '\n';
+            });
+            
+            navigator.clipboard.writeText(texte).then(() => {
+                alert('✅ Les codes PIN ont été copiés dans le presse-papier !');
+                ajouterLog('📋 Copié dans le presse-papier', 'success');
+            });
+        };
+    </script>
+</body>
+</html>
+

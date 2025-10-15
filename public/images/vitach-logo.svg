@@ -1,0 +1,58 @@
+<svg width="300" height="120" viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#14b8a6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f766e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="300" height="120" fill="url(#bgGradient)" rx="8"/>
+  
+  <!-- Leaves above T -->
+  <g transform="translate(85, 15)">
+    <path d="M8 0 Q12 -4 16 0 Q12 4 8 0" fill="white" opacity="0.9"/>
+    <path d="M12 0 Q16 -4 20 0 Q16 4 12 0" fill="white" opacity="0.9"/>
+  </g>
+  
+  <!-- VITACH Text -->
+  <text x="25" y="45" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="white">
+    <tspan x="25" dy="0">V</tspan>
+    <tspan x="45" dy="0">I</tspan>
+    <tspan x="55" dy="0">T</tspan>
+    <tspan x="75" dy="0">A</tspan>
+    <tspan x="95" dy="0">C</tspan>
+    <tspan x="115" dy="0">H</tspan>
+  </text>
+  
+  <!-- GUINÉE Text -->
+  <text x="25" y="65" font-family="Arial, sans-serif" font-size="16" font-weight="normal" fill="white">
+    <tspan x="25" dy="0">G</tspan>
+    <tspan x="35" dy="0">U</tspan>
+    <tspan x="45" dy="0">I</tspan>
+    <tspan x="55" dy="0">N</tspan>
+    <tspan x="70" dy="0">É</tspan>
+    <tspan x="85" dy="0" font-style="normal">E</tspan>
+  </text>
+  
+  <!-- Circular emblem with plug and leaf -->
+  <g transform="translate(200, 35)">
+    <circle cx="0" cy="0" r="25" fill="white" opacity="0.2"/>
+    <circle cx="0" cy="0" r="22" fill="none" stroke="white" stroke-width="2"/>
+    
+    <!-- Electrical plug with leaf -->
+    <g transform="translate(-8, -5)">
+      <!-- Plug body -->
+      <rect x="0" y="8" width="16" height="12" fill="white" rx="2"/>
+      <!-- Left prong -->
+      <rect x="2" y="0" width="3" height="8" fill="white"/>
+      <!-- Right prong (leaf) -->
+      <path d="M11 0 Q13 -2 15 0 Q13 2 11 0" fill="white"/>
+      <!-- Leaf details -->
+      <path d="M11 2 Q12 1 13 2" stroke="white" stroke-width="0.5" fill="none"/>
+    </g>
+  </g>
+  
+  <!-- Bottom arc -->
+  <path d="M20 90 Q150 110 280 90" stroke="white" stroke-width="2" fill="none" opacity="0.7"/>
+</svg>

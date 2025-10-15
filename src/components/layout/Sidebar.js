@@ -18,6 +18,7 @@ import {
   Hash,
   X,
   BarChart3,
+  Monitor,
   Wifi,
   Briefcase,
   FileText,
@@ -26,7 +27,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const Sidebar = ({ onClose }) => {
+const Sidebar = ({ onClose, isOpen }) => {
   const location = useLocation();
   const { userProfile, logout } = useAuth();
   const { isDark } = useTheme();
@@ -41,8 +42,8 @@ const Sidebar = ({ onClose }) => {
     { name: 'Stock', href: '/stock', icon: Package, roles: ['service', 'achat', 'dg'] },
     { name: 'Articles', href: '/articles', icon: Hash, roles: ['service', 'achat', 'dg'] },
     { name: 'Services', href: '/services', icon: Building, roles: ['dg'] },
-    { name: 'Employés', href: '/employes', icon: Users, roles: ['dg'] },
     { name: 'Ressources Humaines', href: '/ressources-humaines', icon: Briefcase, roles: ['dg'] },
+    { name: 'Gestion IT', href: '/gestion-it', icon: Monitor, roles: ['dg'] },
     { name: 'Budgets', href: '/budgets', icon: DollarSign, roles: ['dg'] },
     { name: 'Rapports', href: '/rapports', icon: FileText, roles: ['dg'] },
     { name: 'Fournisseurs', href: '/fournisseurs', icon: Building2, roles: ['achat', 'dg'] },
@@ -75,7 +76,18 @@ const Sidebar = ({ onClose }) => {
   };
 
   return (
-    <div className="flex flex-col w-64 bg-white shadow-lg h-full">
+    <>
+      {/* Overlay pour mobile */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      <div className={`flex flex-col w-64 bg-white shadow-lg h-full fixed lg:relative z-50 transform transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
       <div className="flex items-center justify-between h-16 px-4 bg-primary-600">
         <div className="flex items-center space-x-3">
           <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-lg border-2 border-white/20 overflow-hidden p-2 logo-container">
@@ -180,7 +192,8 @@ const Sidebar = ({ onClose }) => {
           <LogOut className="h-5 w-5" />
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

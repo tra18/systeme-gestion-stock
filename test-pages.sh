@@ -31,3 +31,5 @@ echo "📱 Accédez à http://localhost:3000 pour utiliser l'application"
 echo "🔐 Connectez-vous avec vos identifiants pour accéder aux nouvelles fonctionnalités"
 
 
+
+

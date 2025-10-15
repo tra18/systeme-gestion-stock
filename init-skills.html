@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialisation des Skills - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #14B8A6;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .skill-category {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #14B8A6;
+        }
+        .skill-category h3 {
+            color: #14B8A6;
+            margin: 0 0 10px 0;
+        }
+        .skill-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .skill-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+        .btn {
+            background: #14B8A6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px 0;
+            display: block;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #0D9488;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Initialisation des Skills VITACH GUINÉE</h1>
+        
+        <p>Cette page permet d'initialiser les compétences de base dans la base de données Firestore.</p>
+        
+        <div class="skill-category">
+            <h3>📊 Compétences Techniques</h3>
+            <div class="skill-list">
+                <div class="skill-item">Gestion de stock</div>
+                <div class="skill-item">Maintenance véhicules</div>
+                <div class="skill-item">Gestion des commandes</div>
+                <div class="skill-item">Comptabilité</div>
+                <div class="skill-item">Informatique</div>
+                <div class="skill-item">Électronique</div>
+                <div class="skill-item">Mécanique</div>
+                <div class="skill-item">Électricité</div>
+            </div>
+        </div>
+        
+        <div class="skill-category">
+            <h3>💬 Compétences Interpersonnelles</h3>
+            <div class="skill-list">
+                <div class="skill-item">Communication</div>
+                <div class="skill-item">Leadership</div>
+                <div class="skill-item">Travail d'équipe</div>
+                <div class="skill-item">Négociation</div>
+                <div class="skill-item">Service client</div>
+                <div class="skill-item">Formation</div>
+                <div class="skill-item">Mentoring</div>
+            </div>
+        </div>
+        
+        <div class="skill-category">
+            <h3>🎯 Compétences Métier</h3>
+            <div class="skill-list">
+                <div class="skill-item">Gestion de projet</div>
+                <div class="skill-item">Planification</div>
+                <div class="skill-item">Analyse de données</div>
+                <div class="skill-item">Reporting</div>
+                <div class="skill-item">Qualité</div>
+                <div class="skill-item">Sécurité</div>
+                <div class="skill-item">Innovation</div>
+                <div class="skill-item">Résolution de problèmes</div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="initSkills()">
+            🚀 Initialiser les Skills dans Firestore
+        </button>
+        
+        <div id="status" class="status info" style="display: none;">
+            Cliquez sur le bouton pour commencer l'initialisation...
+        </div>
+        
+        <div id="log" class="log" style="display: none;"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Configuration Firebase (utilisez votre configuration)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQJvVvXmQjKjKjKjKjKjKjKjKjKjKjKjKjK",
+            authDomain: "stock-bcbd3.firebaseapp.com",
+            projectId: "stock-bcbd3",
+            storageBucket: "stock-bcbd3.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdefghijklmnop"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Skills à initialiser
+        const skillsToAdd = [
+            // Compétences Techniques
+            { nom: 'Gestion de stock', categorie: 'technique', description: 'Gestion et optimisation des stocks' },
+            { nom: 'Maintenance véhicules', categorie: 'technique', description: 'Maintenance préventive et curative des véhicules' },
+            { nom: 'Gestion des commandes', categorie: 'technique', description: 'Suivi et traitement des commandes' },
+            { nom: 'Comptabilité', categorie: 'technique', description: 'Gestion comptable et financière' },
+            { nom: 'Informatique', categorie: 'technique', description: 'Maîtrise des outils informatiques' },
+            { nom: 'Électronique', categorie: 'technique', description: 'Diagnostic et réparation électronique' },
+            { nom: 'Mécanique', categorie: 'technique', description: 'Réparation et maintenance mécanique' },
+            { nom: 'Électricité', categorie: 'technique', description: 'Installation et maintenance électrique' },
+            
+            // Compétences Interpersonnelles
+            { nom: 'Communication', categorie: 'interpersonnel', description: 'Communication efficace' },
+            { nom: 'Leadership', categorie: 'interpersonnel', description: 'Encadrement et motivation d\'équipe' },
+            { nom: 'Travail d\'équipe', categorie: 'interpersonnel', description: 'Collaboration et coopération' },
+            { nom: 'Négociation', categorie: 'interpersonnel', description: 'Négociation commerciale' },
+            { nom: 'Service client', categorie: 'interpersonnel', description: 'Relation client et satisfaction' },
+            { nom: 'Formation', categorie: 'interpersonnel', description: 'Transmission de connaissances' },
+            { nom: 'Mentoring', categorie: 'interpersonnel', description: 'Accompagnement et coaching' },
+            
+            // Compétences Métier
+            { nom: 'Gestion de projet', categorie: 'metier', description: 'Planification et suivi de projets' },
+            { nom: 'Planification', categorie: 'metier', description: 'Organisation et planification' },
+            { nom: 'Analyse de données', categorie: 'metier', description: 'Analyse et interprétation de données' },
+            { nom: 'Reporting', categorie: 'metier', description: 'Rapports et tableaux de bord' },
+            { nom: 'Qualité', categorie: 'metier', description: 'Gestion de la qualité' },
+            { nom: 'Sécurité', categorie: 'metier', description: 'Sécurité au travail' },
+            { nom: 'Innovation', categorie: 'metier', description: 'Innovation et amélioration continue' },
+            { nom: 'Résolution de problèmes', categorie: 'metier', description: 'Analyse et résolution de problèmes' }
+        ];
+
+        window.initSkills = async function() {
+            const statusDiv = document.getElementById('status');
+            const logDiv = document.getElementById('log');
+            
+            statusDiv.style.display = 'block';
+            logDiv.style.display = 'block';
+            logDiv.textContent = '';
+            
+            try {
+                // Vérifier si des skills existent déjà
+                logDiv.textContent += '🔍 Vérification des skills existants...\n';
+                const existingSkills = await getDocs(collection(db, 'skills'));
+                
+                if (existingSkills.size > 0) {
+                    statusDiv.className = 'status info';
+                    statusDiv.textContent = `✅ ${existingSkills.size} skills déjà présents dans la base de données`;
+                    logDiv.textContent += `📊 ${existingSkills.size} skills trouvés\n`;
+                    return;
+                }
+                
+                // Ajouter les skills
+                logDiv.textContent += '🚀 Début de l\'ajout des skills...\n';
+                statusDiv.className = 'status info';
+                statusDiv.textContent = '⏳ Ajout des skills en cours...';
+                
+                let addedCount = 0;
+                for (const skill of skillsToAdd) {
+                    try {
+                        const skillData = {
+                            ...skill,
+                            createdAt: new Date(),
+                            createdBy: 'system',
+                            createdByName: 'Système'
+                        };
+                        
+                        await addDoc(collection(db, 'skills'), skillData);
+                        addedCount++;
+                        logDiv.textContent += `✅ Ajouté: ${skill.nom} (${skill.categorie})\n`;
+                    } catch (error) {
+                        logDiv.textContent += `❌ Erreur pour ${skill.nom}: ${error.message}\n`;
+                    }
+                }
+                
+                statusDiv.className = 'status success';
+                statusDiv.textContent = `🎉 Initialisation terminée ! ${addedCount} skills ajoutés avec succès`;
+                logDiv.textContent += `\n🎉 Terminé ! ${addedCount} skills ajoutés\n`;
+                
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Erreur lors de l'initialisation: ${error.message}`;
+                logDiv.textContent += `\n❌ Erreur: ${error.message}\n`;
+                console.error('Erreur:', error);
+            }
+        };
+
+        // Afficher le statut initial
+        document.getElementById('status').style.display = 'block';
+    </script>
+</body>
+</html>

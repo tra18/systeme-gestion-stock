@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#14B8A6" />
+    <meta name="description" content="VITACH GUINÉE - Mode hors ligne" />
+    <title>Hors ligne - VITACH GUINÉE</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            padding: 2rem;
+        }
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .logo-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #14B8A6;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        .features {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+        .features h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .features li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+        .features li::before {
+            content: "✓";
+            color: #4ADE80;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        .retry-btn {
+            background: white;
+            color: #14B8A6;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .status {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-text">VITACH</div>
+        </div>
+        
+        <h1>Mode Hors Ligne</h1>
+        
+        <p>Vous n'êtes pas connecté à Internet, mais vous pouvez toujours accéder aux fonctionnalités de base de VITACH GUINÉE.</p>
+        
+        <div class="features">
+            <h3>Fonctionnalités disponibles hors ligne :</h3>
+            <ul>
+                <li>Consultation des données mises en cache</li>
+                <li>Pointage des employés (synchronisation différée)</li>
+                <li>Consultation du stock local</li>
+                <li>Navigation dans l'application</li>
+            </ul>
+        </div>
+        
+        <button class="retry-btn" onclick="retryConnection()">
+            🔄 Réessayer la connexion
+        </button>
+        
+        <div class="status">
+            <p>La synchronisation se fera automatiquement dès que la connexion sera rétablie.</p>
+        </div>
+    </div>
+
+    <script>
+        function retryConnection() {
+            if (navigator.onLine) {
+                window.location.reload();
+            } else {
+                alert('Aucune connexion Internet détectée. Veuillez vérifier votre connexion.');
+            }
+        }
+
+        // Écouter les changements de statut de connexion
+        window.addEventListener('online', () => {
+            console.log('Connexion rétablie');
+            window.location.reload();
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('Connexion perdue');
+        });
+
+        // Vérifier le statut de connexion au chargement
+        if (navigator.onLine) {
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

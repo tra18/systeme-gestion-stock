@@ -103,15 +103,6 @@ service cloud.firestore {
       allow read, write: if isDG();
     }
     
-    // Règles pour les employés
-    match /employes/{employeId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'dg';
-      // Le DG peut tout faire sur les employés
-      allow read, write: if isDG();
-    }
-    
         // Règles pour les articles
         match /articles/{articleId} {
           allow read: if request.auth != null;
@@ -121,14 +112,59 @@ service cloud.firestore {
           allow read, write: if isDG();
         }
         
-        // Règles pour les sorties de stock
-        match /sorties_stock/{sortieId} {
-          allow read: if request.auth != null;
-          allow write: if request.auth != null && 
-            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['service', 'achat', 'dg'];
-          // Le DG peut tout faire sur les sorties de stock
-          allow read, write: if isDG();
-        }
+    // Règles pour les sorties de stock
+    match /sorties_stock/{sortieId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['service', 'achat', 'dg'];
+      // Le DG peut tout faire sur les sorties de stock
+      allow read, write: if isDG();
+    }
+
+    // Règles pour les équipements IT
+    match /it_assets/{assetId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['dg'];
+      // Le DG peut tout faire sur les équipements IT
+      allow read, write: if isDG();
+    }
+
+    // Règles pour les incidents IT
+    match /incidents_it/{incidentId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['dg'];
+      // Le DG peut tout faire sur les incidents IT
+      allow read, write: if isDG();
+    }
+
+    // Règles pour les compétences RH
+    match /competences/{competenceId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['dg'];
+      // Le DG peut tout faire sur les compétences
+      allow read, write: if isDG();
+    }
+
+    // Règles pour les skills RH
+    match /skills/{skillId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['dg'];
+      // Le DG peut tout faire sur les skills
+      allow read, write: if isDG();
+    }
+
+    // Règles pour les évaluations 360°
+    match /evaluations360/{evaluationId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['dg'];
+      // Le DG peut tout faire sur les évaluations
+      allow read, write: if isDG();
+    }
         
         // Règles pour les congés RH
         match /conges/{congeId} {
@@ -137,12 +173,7 @@ service cloud.firestore {
           allow update, delete: if request.auth != null && isDG();
         }
         
-        // Règles pour les présences RH
-        match /presences/{presenceId} {
-          allow read: if request.auth != null;
-          allow create: if request.auth != null;
-          allow update, delete: if request.auth != null && isDG();
-        }
+        // NOTE: Les règles pour /presences/ sont définies plus bas (ligne 162) pour le pointage mobile
         
         // Règles pour les salaires RH
         match /salaires/{salaireId} {
@@ -160,6 +191,24 @@ service cloud.firestore {
         match /budgets/{budgetId} {
           allow read: if request.auth != null;
           allow write: if request.auth != null && isDG();
+        }
+        
+        // Règles pour le pointage mobile (QR universel)
+        match /devices/{deviceId} {
+          allow read, write: if true; // Accès public pour le pointage mobile
+        }
+        
+        // Règles pour les présences (pointage mobile sans auth)
+        match /presences/{presenceId} {
+          allow read: if true; // Lecture publique pour debug et affichage
+          allow create: if true; // Permet le pointage mobile sans authentification
+          allow update, delete: if request.auth != null && isDG();
+        }
+        
+        // Règles pour les employés (lecture pour vérification PIN)
+        match /employes/{employeId} {
+          allow read: if true; // Nécessaire pour vérifier le code PIN
+          allow write: if request.auth != null && isDG(); // Seul le DG peut modifier
         }
       }
     }
