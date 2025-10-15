@@ -62,6 +62,11 @@ const ProtectedRoute = ({ children, allowedRoles = [], pageId = null }) => {
     }
   }
 
+  // Accès complet pour le DG (dg@gmail.com)
+  if (userProfile?.email === 'dg@gmail.com' || userProfile?.isSuperAdmin) {
+    return children;
+  }
+
   // Si pas de permissions personnalisées, utiliser le système de rôles par défaut
   if (allowedRoles.length > 0 && !allowedRoles.includes(userProfile?.role)) {
     return <Navigate to="/dashboard" replace />;

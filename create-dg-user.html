@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer Utilisateur DG - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👑 Créer Utilisateur DG - VITACH GUINÉE</h1>
+        
+        <div class="warning">
+            <h3>⚠️ Attention</h3>
+            <p>Ce script crée un utilisateur Directeur Général avec <strong>ACCÈS COMPLET</strong> 
+            à toutes les fonctionnalités du système sans aucune restriction.</p>
+        </div>
+
+        <div class="highlight">
+            <h3>🎯 Utilisateur DG configuré</h3>
+            <p><strong>Email :</strong> dg@gmail.com</p>
+            <p><strong>Nom :</strong> Directeur Général</p>
+            <p><strong>Rôle :</strong> dg (Super Admin)</p>
+            <p><strong>Accès :</strong> TOUTES les pages et fonctionnalités</p>
+        </div>
+
+        <form id="dgForm">
+            <div class="form-group">
+                <label for="nom">Nom complet :</label>
+                <input type="text" id="nom" name="nom" value="Directeur Général" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" value="dg@gmail.com" readonly style="background-color: #f8f9fa;">
+                <small style="color: #6c757d;">Cet email est configuré pour l'accès complet</small>
+            </div>
+
+            <div class="form-group">
+                <label for="prenom">Prénom :</label>
+                <input type="text" id="prenom" name="prenom" value="DG" required>
+            </div>
+
+            <div class="form-group">
+                <label for="poste">Poste :</label>
+                <input type="text" id="poste" name="poste" value="Directeur Général" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Créer Utilisateur DG</button>
+            <button type="button" class="btn btn-danger" onclick="clearDGUser()">Supprimer Utilisateur DG</button>
+        </form>
+
+        <div id="result"></div>
+
+        <div class="info">
+            <h3>📋 Instructions :</h3>
+            <ol>
+                <li>Cliquez sur "Créer Utilisateur DG"</li>
+                <li>Allez sur la page principale de l'application</li>
+                <li>Connectez-vous avec l'email <strong>dg@gmail.com</strong></li>
+                <li>Vous aurez maintenant accès à <strong>TOUTES</strong> les fonctionnalités :
+                    <ul>
+                        <li>✅ Gestion IT (Parc informatique + Incidents)</li>
+                        <li>✅ Toutes les pages de l'application</li>
+                        <li>✅ Gestion des permissions</li>
+                        <li>✅ Dashboard avancé</li>
+                        <li>✅ Mode hors ligne</li>
+                        <li>✅ Tous les rapports et exports</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="success">
+            <h3>🎯 Pages accessibles avec dg@gmail.com :</h3>
+            <ul>
+                <li>📊 Tableau de bord</li>
+                <li>🛒 Toutes les commandes</li>
+                <li>🔧 Maintenance</li>
+                <li>📦 Stock complet</li>
+                <li>👥 Ressources Humaines</li>
+                <li>💻 <strong>Gestion IT</strong> (Parc + Incidents)</li>
+                <li>💰 Budgets</li>
+                <li>📈 Rapports</li>
+                <li>🏢 Fournisseurs/Prestataires</li>
+                <li>⚙️ Paramètres</li>
+                <li>🔐 Gestion des permissions</li>
+                <li>📊 Dashboard avancé</li>
+                <li>📱 Mode hors ligne</li>
+            </ul>
+        </div>
+
+        <div>
+            <h3>🔗 Liens rapides :</h3>
+            <a href="/" class="btn">Aller à l'application</a>
+            <a href="/gestion-it" class="btn">Aller à Gestion IT</a>
+            <a href="/gestion-permissions" class="btn">Gestion des permissions</a>
+            <a href="/dashboard-avance" class="btn">Dashboard avancé</a>
+            <a href="debug-roles.html" class="btn">Debug des rôles</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('dgForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            createDGUser();
+        });
+
+        function createDGUser() {
+            const formData = new FormData(document.getElementById('dgForm'));
+            const userData = Object.fromEntries(formData.entries());
+            
+            // Créer l'objet utilisateur DG avec accès complet
+            const userProfile = {
+                uid: 'dg-super-admin-' + Date.now(),
+                nom: userData.nom,
+                prenom: userData.prenom,
+                email: userData.email,
+                role: 'dg',
+                poste: userData.poste,
+                permissions: 'all',
+                isSuperAdmin: true,
+                createdAt: new Date().toISOString(),
+                isTestUser: true
+            };
+
+            const currentUser = {
+                uid: userProfile.uid,
+                email: userData.email,
+                displayName: userData.nom,
+                isTestUser: true
+            };
+
+            try {
+                // Sauvegarder dans localStorage
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Créer aussi une session Firebase simulée
+                localStorage.setItem('firebase:authUser', JSON.stringify({
+                    uid: userProfile.uid,
+                    email: userData.email,
+                    displayName: userData.nom,
+                    emailVerified: true,
+                    isAnonymous: false,
+                    providerData: [{
+                        providerId: 'password',
+                        uid: userData.email,
+                        email: userData.email,
+                        displayName: userData.nom
+                    }]
+                }));
+
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Utilisateur DG créé avec succès !</h3>
+                        <p><strong>Nom :</strong> ${userProfile.nom} ${userProfile.prenom}</p>
+                        <p><strong>Email :</strong> ${userProfile.email}</p>
+                        <p><strong>Rôle :</strong> ${userProfile.role} (Super Admin)</p>
+                        <p><strong>Poste :</strong> ${userProfile.poste}</p>
+                        <p><strong>UID :</strong> ${userProfile.uid}</p>
+                        
+                        <div class="highlight">
+                            <h4>🎯 ACCÈS COMPLET CONFIGURÉ</h4>
+                            <p>Cet utilisateur a maintenant accès à <strong>TOUTES</strong> les fonctionnalités :</p>
+                            <ul>
+                                <li>✅ Toutes les pages de l'application</li>
+                                <li>✅ Gestion IT (Parc informatique + Incidents)</li>
+                                <li>✅ Gestion des permissions utilisateur</li>
+                                <li>✅ Dashboard avancé et mode hors ligne</li>
+                                <li>✅ Tous les rapports et exports</li>
+                            </ul>
+                        </div>
+                        
+                        <p><strong>Prochaine étape :</strong> Allez sur l'application principale et connectez-vous avec <strong>dg@gmail.com</strong></p>
+                    </div>
+                `;
+
+            } catch (error) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors de la création</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function clearDGUser() {
+            if (confirm('Êtes-vous sûr de vouloir supprimer l\'utilisateur DG ?')) {
+                localStorage.removeItem('userProfile');
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('firebase:authUser');
+                
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="info">
+                        <h3>🗑️ Utilisateur DG supprimé</h3>
+                        <p>L'utilisateur DG a été supprimé du localStorage.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Vérifier si l'utilisateur DG existe déjà
+        window.onload = function() {
+            const existingProfile = localStorage.getItem('userProfile');
+            if (existingProfile) {
+                try {
+                    const profile = JSON.parse(existingProfile);
+                    if (profile.email === 'dg@gmail.com') {
+                        document.getElementById('result').innerHTML = `
+                            <div class="info">
+                                <h3>👤 Utilisateur DG déjà configuré</h3>
+                                <p>L'utilisateur DG (${profile.email}) est déjà configuré dans le système.</p>
+                                <p>Vous pouvez aller directement sur l'application.</p>
+                            </div>
+                        `;
+                    }
+                } catch (e) {
+                    console.log('Erreur parsing profil existant:', e);
+                }
+            }
+        };
+    </script>
+</body>
+</html>

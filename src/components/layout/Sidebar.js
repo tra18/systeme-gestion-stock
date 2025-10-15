@@ -59,12 +59,15 @@ const Sidebar = ({ onClose, isOpen }) => {
     { name: 'Mode Hors Ligne', href: '/hors-ligne', icon: Wifi, roles: ['dg'] },
   ];
 
+  // Accès complet pour le DG (dg@gmail.com)
+  const isSuperAdmin = userProfile?.email === 'dg@gmail.com' || userProfile?.isSuperAdmin;
+  
   const filteredNavigation = navigation.filter(item => 
-    item.roles.includes(userProfile?.role)
+    isSuperAdmin || item.roles.includes(userProfile?.role)
   );
 
   const filteredAdvancedNavigation = advancedNavigation.filter(item => 
-    item.roles.includes(userProfile?.role)
+    isSuperAdmin || item.roles.includes(userProfile?.role)
   );
 
   const handleLogout = async () => {

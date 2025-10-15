@@ -47,6 +47,22 @@ export const AuthProvider = ({ children }) => {
   // Charger le profil utilisateur
   const loadUserProfile = async (user) => {
     if (user) {
+      // Vérifier si c'est l'email du DG avec accès complet
+      if (user.email === 'dg@gmail.com') {
+        setUserProfile({
+          id: user.uid,
+          email: user.email,
+          nom: 'Directeur Général',
+          prenom: 'DG',
+          role: 'dg',
+          poste: 'Directeur Général',
+          permissions: 'all',
+          isSuperAdmin: true,
+          createdAt: new Date()
+        });
+        return;
+      }
+      
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (userDoc.exists()) {
         setUserProfile({ id: user.uid, ...userDoc.data() });
