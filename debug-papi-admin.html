@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Papi Admin - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .step {
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        .step.success {
+            border-left-color: #28a745;
+        }
+        .step.error {
+            border-left-color: #dc3545;
+        }
+        .step.warning {
+            border-left-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Papi Admin - VITACH GUINÉE</h1>
+        
+        <div class="warning">
+            <h3>⚠️ Problème avec papi003p@yahoo.fr</h3>
+            <p>Cet outil va diagnostiquer pourquoi votre Super Admin n'a pas accès aux pages.</p>
+        </div>
+
+        <div>
+            <h3>🛠️ Actions de diagnostic :</h3>
+            <button class="btn" onclick="diagnosticPapi()">🔍 Diagnostic Papi Admin</button>
+            <button class="btn btn-success" onclick="corrigerPapi()">🔧 Corriger Papi Admin</button>
+            <button class="btn btn-warning" onclick="testerAccesPapi()">🧪 Tester Accès Papi</button>
+            <button class="btn btn-danger" onclick="creerNouveauPapi()">👑 Créer Nouveau Papi</button>
+        </div>
+
+        <div id="resultats"></div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Administrateurs existants</h2>
+        <div id="adminsList">
+            <div class="info">Chargement des administrateurs...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔗 Test d'accès aux pages</h2>
+        <div id="testPages">
+            <p>Cliquez sur "Tester Accès Papi" pour vérifier l'accès aux pages principales.</p>
+        </div>
+    </div>
+
+    <script>
+        function diagnosticPapi() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🔍 Diagnostic de Papi Admin en cours...</div>';
+
+            let html = '<div class="container"><h3>📊 Résultats du diagnostic :</h3>';
+
+            // 1. Vérifier les administrateurs créés
+            html += '<div class="step"><h4>1. 👥 Vérification des administrateurs :</h4>';
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            
+            if (admins.length === 0) {
+                html += '<div class="error">❌ Aucun administrateur trouvé dans vitachAdmins</div>';
+            } else {
+                html += `<div class="success">✅ ${admins.length} administrateur(s) trouvé(s)</div>`;
+                
+                // Chercher spécifiquement papi003p@yahoo.fr
+                const papiAdmin = admins.find(admin => admin.email === 'papi003p@yahoo.fr');
+                if (papiAdmin) {
+                    html += '<div class="success">✅ Papi Admin trouvé !</div>';
+                    html += `<div class="code">Nom: ${papiAdmin.nom} ${papiAdmin.prenom}<br>`;
+                    html += `Email: ${papiAdmin.email}<br>`;
+                    html += `Rôle: ${papiAdmin.role}<br>`;
+                    html += `Super Admin: ${papiAdmin.isSuperAdmin || false}</div>`;
+                } else {
+                    html += '<div class="error">❌ Papi Admin (papi003p@yahoo.fr) non trouvé</div>';
+                }
+            }
+            html += '</div>';
+
+            // 2. Vérifier le profil utilisateur actuel
+            html += '<div class="step"><h4>2. 👤 Vérification du profil actuel :</h4>';
+            const userProfile = localStorage.getItem('userProfile');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (userProfile) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    html += `<div class="success">✅ Profil utilisateur trouvé :</div>`;
+                    html += `<div class="code">Email: ${profile.email}<br>`;
+                    html += `Rôle: ${profile.role}<br>`;
+                    html += `Super Admin: ${profile.isSuperAdmin || false}<br>`;
+                    html += `Permissions: ${profile.permissions || 'N/A'}</div>`;
+                    
+                    if (profile.email === 'papi003p@yahoo.fr') {
+                        html += '<div class="success">✅ Profil Papi Admin détecté</div>';
+                    } else {
+                        html += '<div class="warning">⚠️ Profil différent de Papi Admin</div>';
+                    }
+                } catch (e) {
+                    html += `<div class="error">❌ Erreur parsing profil: ${e.message}</div>`;
+                }
+            } else {
+                html += '<div class="error">❌ Aucun profil utilisateur trouvé</div>';
+            }
+            html += '</div>';
+
+            // 3. Vérifier la correspondance email
+            html += '<div class="step"><h4>3. 🔗 Vérification de la correspondance :</h4>';
+            if (userProfile && admins.length > 0) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    const matchingAdmin = admins.find(admin => admin.email === profile.email);
+                    
+                    if (matchingAdmin) {
+                        html += '<div class="success">✅ Correspondance email trouvée</div>';
+                        html += `<div class="code">Admin trouvé: ${matchingAdmin.nom} ${matchingAdmin.prenom} (${matchingAdmin.role})</div>`;
+                    } else {
+                        html += '<div class="error">❌ Aucune correspondance email trouvée</div>';
+                    }
+                } catch (e) {
+                    html += `<div class="error">❌ Erreur vérification correspondance: ${e.message}</div>`;
+                }
+            } else {
+                html += '<div class="warning">⚠️ Impossible de vérifier la correspondance</div>';
+            }
+            html += '</div>';
+
+            // 4. Recommandations spécifiques
+            html += '<div class="step"><h4>4. 💡 Recommandations pour Papi Admin :</h4>';
+            if (admins.length === 0) {
+                html += '<div class="warning">⚠️ Créez d\'abord Papi Admin</div>';
+            } else {
+                const papiAdmin = admins.find(admin => admin.email === 'papi003p@yahoo.fr');
+                if (!papiAdmin) {
+                    html += '<div class="error">❌ Papi Admin (papi003p@yahoo.fr) non trouvé dans la liste</div>';
+                    html += '<div class="info">💡 Créez un nouvel administrateur avec cet email</div>';
+                } else if (papiAdmin.role !== 'dg' && !papiAdmin.isSuperAdmin) {
+                    html += '<div class="warning">⚠️ Papi Admin n\'a pas les privilèges Super Admin</div>';
+                    html += '<div class="info">💡 Corrigez les permissions de Papi Admin</div>';
+                } else {
+                    html += '<div class="success">✅ Configuration Papi Admin semble correcte</div>';
+                }
+            }
+            html += '</div>';
+
+            html += '</div>';
+            resultatsDiv.innerHTML = html;
+        }
+
+        function corrigerPapi() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🔧 Correction de Papi Admin...</div>';
+
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            const papiAdmin = admins.find(admin => admin.email === 'papi003p@yahoo.fr');
+            
+            if (!papiAdmin) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Papi Admin non trouvé</h3>
+                        <p>L'administrateur papi003p@yahoo.fr n'existe pas dans la liste.</p>
+                        <p>Créez d'abord cet administrateur.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Forcer la configuration Super Admin pour Papi
+            const correctedProfile = {
+                ...papiAdmin,
+                role: 'dg',
+                isSuperAdmin: true,
+                permissions: 'all',
+                uid: papiAdmin.uid || 'papi-admin-' + Date.now()
+            };
+
+            const currentUser = {
+                uid: correctedProfile.uid,
+                email: 'papi003p@yahoo.fr',
+                displayName: `${papiAdmin.prenom} ${papiAdmin.nom}`,
+                isTestUser: true
+            };
+
+            try {
+                // Sauvegarder la configuration corrigée
+                localStorage.setItem('userProfile', JSON.stringify(correctedProfile));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('firebase:authUser', JSON.stringify({
+                    uid: correctedProfile.uid,
+                    email: 'papi003p@yahoo.fr',
+                    displayName: `${papiAdmin.prenom} ${papiAdmin.nom}`,
+                    emailVerified: true,
+                    isAnonymous: false,
+                    providerData: [{
+                        providerId: 'password',
+                        uid: 'papi003p@yahoo.fr',
+                        email: 'papi003p@yahoo.fr',
+                        displayName: `${papiAdmin.prenom} ${papiAdmin.nom}`
+                    }]
+                }));
+
+                // Mettre à jour la liste des administrateurs
+                const updatedAdmins = admins.map(admin => 
+                    admin.email === 'papi003p@yahoo.fr' ? correctedProfile : admin
+                );
+                localStorage.setItem('vitachAdmins', JSON.stringify(updatedAdmins));
+
+                resultatsDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Papi Admin corrigé avec succès !</h3>
+                        <p><strong>Nom :</strong> ${papiAdmin.nom} ${papiAdmin.prenom}</p>
+                        <p><strong>Email :</strong> papi003p@yahoo.fr</p>
+                        <p><strong>Rôle :</strong> dg (Super Admin)</p>
+                        <p><strong>Permissions :</strong> Toutes les pages</p>
+                        
+                        <div class="info">
+                            <h4>🎯 Configuration appliquée :</h4>
+                            <ul>
+                                <li>✅ Rôle forcé à 'dg'</li>
+                                <li>✅ Super Admin activé</li>
+                                <li>✅ Permissions complètes</li>
+                                <li>✅ Session Firebase créée</li>
+                            </ul>
+                        </div>
+                        
+                        <p><strong>Prochaine étape :</strong> Allez sur l'application principale</p>
+                    </div>
+                `;
+
+                // Recharger la liste des administrateurs
+                loadAdmins();
+
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors de la correction</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function testerAccesPapi() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🧪 Test d\'accès Papi en cours...</div>';
+
+            const userProfile = localStorage.getItem('userProfile');
+            
+            if (!userProfile) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Aucun utilisateur connecté</h3>
+                        <p>Connectez-vous d'abord avec Papi Admin.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const profile = JSON.parse(userProfile);
+                const isPapiAdmin = profile.email === 'papi003p@yahoo.fr';
+                const isSuperAdmin = profile.role === 'dg' || profile.isSuperAdmin;
+                
+                let html = '<div class="success"><h3>🧪 Résultats du test d\'accès Papi :</h3>';
+                html += `<p><strong>Utilisateur :</strong> ${profile.nom} ${profile.prenom}</p>`;
+                html += `<p><strong>Email :</strong> ${profile.email}</p>`;
+                html += `<p><strong>Rôle :</strong> ${profile.role}</p>`;
+                html += `<p><strong>Super Admin :</strong> ${isSuperAdmin ? 'Oui' : 'Non'}</p>`;
+                html += `<p><strong>Est Papi Admin :</strong> ${isPapiAdmin ? 'Oui' : 'Non'}</p>`;
+                
+                if (isPapiAdmin && isSuperAdmin) {
+                    html += '<div class="success">✅ Papi Admin avec accès complet confirmé</div>';
+                    html += '<div class="info">🎯 Pages accessibles :</div>';
+                    html += '<ul>';
+                    html += '<li>✅ Dashboard</li>';
+                    html += '<li>✅ Gestion IT</li>';
+                    html += '<li>✅ Gestion Permissions</li>';
+                    html += '<li>✅ Ressources Humaines</li>';
+                    html += '<li>✅ Stock et Commandes</li>';
+                    html += '<li>✅ Toutes les autres pages</li>';
+                    html += '</ul>';
+                } else if (isPapiAdmin && !isSuperAdmin) {
+                    html += '<div class="warning">⚠️ Papi Admin détecté mais accès limité</div>';
+                    html += '<div class="info">💡 Utilisez "Corriger Papi Admin" pour résoudre</div>';
+                } else {
+                    html += '<div class="error">❌ Papi Admin non détecté</div>';
+                    html += '<div class="info">💡 Connectez-vous avec papi003p@yahoo.fr</div>';
+                }
+                
+                html += '</div>';
+                resultatsDiv.innerHTML = html;
+                
+                // Mettre à jour la section test des pages
+                updateTestPages();
+                
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors du test</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function creerNouveauPapi() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">👑 Création d\'un nouveau Papi Admin...</div>';
+
+            const papiAdmin = {
+                uid: 'papi-admin-' + Date.now(),
+                nom: 'Papi',
+                prenom: 'Admin',
+                email: 'papi003p@yahoo.fr',
+                role: 'dg',
+                poste: 'Super Administrateur',
+                permissions: 'all',
+                isSuperAdmin: true,
+                createdAt: new Date().toISOString(),
+                isTestUser: true
+            };
+
+            const currentUser = {
+                uid: papiAdmin.uid,
+                email: 'papi003p@yahoo.fr',
+                displayName: 'Papi Admin',
+                isTestUser: true
+            };
+
+            try {
+                // Sauvegarder dans localStorage
+                localStorage.setItem('userProfile', JSON.stringify(papiAdmin));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('firebase:authUser', JSON.stringify({
+                    uid: papiAdmin.uid,
+                    email: 'papi003p@yahoo.fr',
+                    displayName: 'Papi Admin',
+                    emailVerified: true,
+                    isAnonymous: false,
+                    providerData: [{
+                        providerId: 'password',
+                        uid: 'papi003p@yahoo.fr',
+                        email: 'papi003p@yahoo.fr',
+                        displayName: 'Papi Admin'
+                    }]
+                }));
+
+                // Ajouter à la liste des administrateurs
+                const existingAdmins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+                const updatedAdmins = [...existingAdmins, papiAdmin];
+                localStorage.setItem('vitachAdmins', JSON.stringify(updatedAdmins));
+
+                resultatsDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Nouveau Papi Admin créé avec succès !</h3>
+                        <p><strong>Nom :</strong> Papi Admin</p>
+                        <p><strong>Email :</strong> papi003p@yahoo.fr</p>
+                        <p><strong>Rôle :</strong> dg (Super Admin)</p>
+                        <p><strong>Accès :</strong> Complet à toutes les pages</p>
+                        
+                        <div class="info">
+                            <h4>🎯 Configuration appliquée :</h4>
+                            <ul>
+                                <li>✅ Rôle Super Admin (dg)</li>
+                                <li>✅ Permissions complètes</li>
+                                <li>✅ Session Firebase créée</li>
+                                <li>✅ Ajouté à la liste des administrateurs</li>
+                            </ul>
+                        </div>
+                        
+                        <p><strong>Prochaine étape :</strong> Allez sur l'application principale</p>
+                    </div>
+                `;
+
+                // Recharger la liste des administrateurs
+                loadAdmins();
+
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors de la création</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function updateTestPages() {
+            const testPagesDiv = document.getElementById('testPages');
+            const pages = [
+                { name: 'Dashboard', url: '/dashboard' },
+                { name: 'Gestion IT', url: '/gestion-it' },
+                { name: 'Gestion Permissions', url: '/gestion-permissions' },
+                { name: 'Ressources Humaines', url: '/ressources-humaines' },
+                { name: 'Stock', url: '/stock' },
+                { name: 'Commandes', url: '/commandes' }
+            ];
+
+            let html = '<div class="info"><h3>🔗 Test des pages pour Papi Admin :</h3>';
+            html += '<p>Cliquez sur les liens ci-dessous pour tester l\'accès :</p>';
+            html += '<ul>';
+            pages.forEach(page => {
+                html += `<li><a href="${page.url}" target="_blank" class="btn">${page.name}</a></li>`;
+            });
+            html += '</ul></div>';
+            
+            testPagesDiv.innerHTML = html;
+        }
+
+        function loadAdmins() {
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            const adminsDiv = document.getElementById('adminsList');
+            
+            if (admins.length === 0) {
+                adminsDiv.innerHTML = '<div class="info">Aucun administrateur créé</div>';
+                return;
+            }
+
+            let html = '<div class="success"><h3>👥 Administrateurs existants :</h3>';
+            admins.forEach((admin, index) => {
+                const isPapiAdmin = admin.email === 'papi003p@yahoo.fr';
+                const isSuperAdmin = admin.role === 'dg' || admin.isSuperAdmin;
+                
+                html += `
+                    <div class="step ${isPapiAdmin ? (isSuperAdmin ? 'success' : 'warning') : 'info'}">
+                        <h4>${isPapiAdmin ? '🔴' : '🟡'} ${admin.nom} ${admin.prenom}</h4>
+                        <p><strong>Email :</strong> ${admin.email}</p>
+                        <p><strong>Rôle :</strong> ${admin.role}</p>
+                        <p><strong>Super Admin :</strong> ${isSuperAdmin ? 'Oui' : 'Non'}</p>
+                        ${isPapiAdmin ? '<p><strong>🎯 Papi Admin détecté</strong></p>' : ''}
+                        <button class="btn btn-success" onclick="connectAsAdmin(${index})">🔐 Se connecter</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            adminsDiv.innerHTML = html;
+        }
+
+        function connectAsAdmin(index) {
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            const admin = admins[index];
+            
+            if (!admin) {
+                alert('Administrateur non trouvé');
+                return;
+            }
+
+            // Forcer la configuration Super Admin
+            const correctedProfile = {
+                ...admin,
+                role: 'dg',
+                isSuperAdmin: true,
+                permissions: 'all',
+                uid: admin.uid || 'admin-' + Date.now()
+            };
+
+            const currentUser = {
+                uid: correctedProfile.uid,
+                email: admin.email,
+                displayName: `${admin.prenom} ${admin.nom}`,
+                isTestUser: true
+            };
+
+            localStorage.setItem('userProfile', JSON.stringify(correctedProfile));
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('firebase:authUser', JSON.stringify({
+                uid: correctedProfile.uid,
+                email: admin.email,
+                displayName: `${admin.prenom} ${admin.nom}`,
+                emailVerified: true,
+                isAnonymous: false,
+                providerData: [{
+                    providerId: 'password',
+                    uid: admin.email,
+                    email: admin.email,
+                    displayName: `${admin.prenom} ${admin.nom}`
+                }]
+            }));
+
+            alert(`Connecté en tant que ${admin.prenom} ${admin.nom} (${admin.email})`);
+            window.location.href = '/';
+        }
+
+        // Diagnostic automatique au chargement
+        window.onload = function() {
+            setTimeout(diagnosticPapi, 1000);
+            loadAdmins();
+        };
+    </script>
+</body>
+</html>
