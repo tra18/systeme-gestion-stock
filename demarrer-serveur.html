@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démarrer Serveur - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .step {
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Démarrer Serveur - VITACH GUINÉE</h1>
+        
+        <div class="warning">
+            <h3>⚠️ Problème de navigation détecté</h3>
+            <p>Les liens ne fonctionnent pas car l'application n'est pas servie par un serveur web. 
+            Suivez les instructions ci-dessous pour démarrer le serveur de développement.</p>
+        </div>
+
+        <div class="step">
+            <h3>📋 Étape 1 : Vérifier l'installation</h3>
+            <p>Assurez-vous que Node.js et npm sont installés :</p>
+            <div class="code">
+                node --version<br>
+                npm --version
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>📦 Étape 2 : Installer les dépendances</h3>
+            <p>Si ce n'est pas déjà fait, installez les dépendances :</p>
+            <div class="code">
+                npm install
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>🚀 Étape 3 : Démarrer le serveur de développement</h3>
+            <p>Démarrez le serveur de développement :</p>
+            <div class="code">
+                npm start
+            </div>
+            <p>Ou si vous préférez le build de production :</p>
+            <div class="code">
+                npm run build<br>
+                npx serve -s build
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>🌐 Étape 4 : Accéder à l'application</h3>
+            <p>Une fois le serveur démarré, accédez à :</p>
+            <div class="code">
+                http://localhost:3000
+            </div>
+        </div>
+
+        <div>
+            <h3>🛠️ Actions rapides :</h3>
+            <button class="btn btn-success" onclick="ouvrirApplication()">🌐 Ouvrir Application</button>
+            <button class="btn btn-warning" onclick="creerSuperAdmin()">👑 Créer Super Admin</button>
+            <button class="btn" onclick="testerLiens()">🔍 Tester Liens</button>
+        </div>
+
+        <div id="resultats"></div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Instructions détaillées</h2>
+        
+        <div class="info">
+            <h3>🔧 Méthode 1 : Serveur de développement (Recommandé)</h3>
+            <ol>
+                <li>Ouvrez un terminal dans le dossier du projet</li>
+                <li>Exécutez : <code>npm start</code></li>
+                <li>Attendez que le serveur démarre (généralement sur le port 3000)</li>
+                <li>Ouvrez votre navigateur sur <code>http://localhost:3000</code></li>
+            </ol>
+        </div>
+
+        <div class="info">
+            <h3>🏗️ Méthode 2 : Build de production</h3>
+            <ol>
+                <li>Exécutez : <code>npm run build</code></li>
+                <li>Installez serve : <code>npm install -g serve</code></li>
+                <li>Servez le build : <code>serve -s build</code></li>
+                <li>Accédez à l'URL affichée (généralement <code>http://localhost:5000</code>)</li>
+            </ol>
+        </div>
+
+        <div class="info">
+            <h3>🐍 Méthode 3 : Serveur Python (Alternative)</h3>
+            <ol>
+                <li>Exécutez : <code>npm run build</code></li>
+                <li>Naviguez vers le dossier build : <code>cd build</code></li>
+                <li>Démarrez le serveur Python : <code>python -m http.server 8000</code></li>
+                <li>Accédez à <code>http://localhost:8000</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔗 Liens de test</h2>
+        <div class="info">
+            <p>Une fois le serveur démarré, testez ces liens :</p>
+            <a href="http://localhost:3000" target="_blank" class="btn">🏠 Application (Dev)</a>
+            <a href="http://localhost:5000" target="_blank" class="btn">🏠 Application (Production)</a>
+            <a href="http://localhost:8000" target="_blank" class="btn">🏠 Application (Python)</a>
+        </div>
+    </div>
+
+    <script>
+        function ouvrirApplication() {
+            const urls = [
+                'http://localhost:3000',
+                'http://localhost:5000',
+                'http://localhost:8000'
+            ];
+            
+            let html = '<div class="info"><h3>🌐 Ouverture de l\'application :</h3>';
+            html += '<p>Testez ces URLs dans l\'ordre :</p>';
+            urls.forEach((url, index) => {
+                html += `<p>${index + 1}. <a href="${url}" target="_blank">${url}</a></p>`;
+            });
+            html += '<p>Si aucune ne fonctionne, démarrez d\'abord le serveur.</p>';
+            html += '</div>';
+            
+            document.getElementById('resultats').innerHTML = html;
+        }
+
+        function creerSuperAdmin() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">👑 Création du Super Admin...</div>';
+
+            const userProfile = {
+                uid: 'super-admin-' + Date.now(),
+                nom: 'Super Administrateur',
+                prenom: 'Admin',
+                email: 'admin@vitach-guinee.com',
+                role: 'dg',
+                poste: 'Super Administrateur',
+                permissions: 'all',
+                isSuperAdmin: true,
+                createdAt: new Date().toISOString(),
+                isTestUser: true
+            };
+
+            const currentUser = {
+                uid: userProfile.uid,
+                email: userProfile.email,
+                displayName: 'Super Administrateur',
+                isTestUser: true
+            };
+
+            try {
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('firebase:authUser', JSON.stringify({
+                    uid: userProfile.uid,
+                    email: userProfile.email,
+                    displayName: 'Super Administrateur',
+                    emailVerified: true,
+                    isAnonymous: false,
+                    providerData: [{
+                        providerId: 'password',
+                        uid: userProfile.email,
+                        email: userProfile.email,
+                        displayName: 'Super Administrateur'
+                    }]
+                }));
+
+                resultatsDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Super Admin créé avec succès !</h3>
+                        <p><strong>Email :</strong> admin@vitach-guinee.com</p>
+                        <p><strong>Rôle :</strong> dg (Super Admin)</p>
+                        <p><strong>Accès :</strong> Complet à toutes les pages</p>
+                        <p><strong>Prochaine étape :</strong> Démarrer le serveur et accéder à l'application</p>
+                    </div>
+                `;
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors de la création</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function testerLiens() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🔍 Test des liens...</div>';
+
+            const urls = [
+                'http://localhost:3000',
+                'http://localhost:5000',
+                'http://localhost:8000'
+            ];
+
+            let html = '<div class="info"><h3>🔍 Résultats des tests :</h3>';
+            
+            urls.forEach((url, index) => {
+                html += `<div class="step">`;
+                html += `<h4>Test ${index + 1}: ${url}</h4>`;
+                html += `<p><a href="${url}" target="_blank" class="btn">Tester ce lien</a></p>`;
+                html += `<p>Status: <span id="status-${index}">⏳ Test en cours...</span></p>`;
+                html += `</div>`;
+            });
+            
+            html += '</div>';
+            resultatsDiv.innerHTML = html;
+
+            // Tester chaque URL
+            urls.forEach((url, index) => {
+                testerURL(url, index);
+            });
+        }
+
+        function testerURL(url, index) {
+            const statusDiv = document.getElementById(`status-${index}`);
+            
+            fetch(url, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        statusDiv.innerHTML = '<span style="color: green;">✅ Serveur actif</span>';
+                    } else {
+                        statusDiv.innerHTML = `<span style="color: orange;">⚠️ Erreur ${response.status}</span>`;
+                    }
+                })
+                .catch(error => {
+                    statusDiv.innerHTML = '<span style="color: red;">❌ Serveur inactif</span>';
+                });
+        }
+
+        // Vérification automatique au chargement
+        window.onload = function() {
+            const currentUrl = window.location.href;
+            const isLocalFile = currentUrl.startsWith('file://');
+            
+            if (isLocalFile) {
+                document.getElementById('resultats').innerHTML = `
+                    <div class="warning">
+                        <h3>⚠️ Fichier local détecté</h3>
+                        <p>Vous utilisez un fichier local. Pour que les liens fonctionnent, vous devez démarrer un serveur web.</p>
+                        <p>Suivez les instructions ci-dessus pour démarrer le serveur de développement.</p>
+                    </div>
+                `;
+            }
+        };
+    </script>
+</body>
+</html>
