@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Complet - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .step {
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        .step.success {
+            border-left-color: #28a745;
+        }
+        .step.error {
+            border-left-color: #dc3545;
+        }
+        .step.warning {
+            border-left-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic Complet - VITACH GUINÉE</h1>
+        
+        <div class="warning">
+            <h3>⚠️ Problème d'accès détecté</h3>
+            <p>Cet outil va diagnostiquer pourquoi vous n'arrivez pas à accéder au système.</p>
+        </div>
+
+        <div>
+            <h3>🛠️ Actions de diagnostic :</h3>
+            <button class="btn" onclick="diagnosticComplet()">🔍 Diagnostic Complet</button>
+            <button class="btn btn-success" onclick="creerUtilisateurDG()">👑 Créer Utilisateur DG</button>
+            <button class="btn btn-warning" onclick="testerConnexion()">🔐 Tester Connexion</button>
+            <button class="btn btn-danger" onclick="nettoyerCache()">🗑️ Nettoyer Cache</button>
+        </div>
+
+        <div id="resultats"></div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Guide de résolution étape par étape</h2>
+        
+        <div class="step">
+            <h3>Étape 1 : Vérifier l'état actuel</h3>
+            <p>Cliquez sur "Diagnostic Complet" pour voir l'état de votre système.</p>
+        </div>
+
+        <div class="step">
+            <h3>Étape 2 : Créer l'utilisateur DG</h3>
+            <p>Si aucun utilisateur n'est configuré, cliquez sur "Créer Utilisateur DG".</p>
+        </div>
+
+        <div class="step">
+            <h3>Étape 3 : Tester la connexion</h3>
+            <p>Utilisez "Tester Connexion" pour vérifier l'accès aux pages.</p>
+        </div>
+
+        <div class="step">
+            <h3>Étape 4 : Nettoyer si nécessaire</h3>
+            <p>En cas de problème persistant, utilisez "Nettoyer Cache".</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔗 Liens de test rapide</h2>
+        <a href="/" class="btn">🏠 Page d'accueil</a>
+        <a href="/login" class="btn">🔐 Page de connexion</a>
+        <a href="/dashboard" class="btn">📊 Dashboard</a>
+        <a href="/gestion-it" class="btn">💻 Gestion IT</a>
+        <a href="/gestion-permissions" class="btn">⚙️ Gestion Permissions</a>
+    </div>
+
+    <script>
+        function diagnosticComplet() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🔍 Diagnostic en cours...</div>';
+
+            let html = '<div class="container"><h3>📊 Résultats du diagnostic :</h3>';
+
+            // 1. Vérifier localStorage
+            html += '<div class="step"><h4>1. 📱 Vérification du localStorage :</h4>';
+            const userProfile = localStorage.getItem('userProfile');
+            const currentUser = localStorage.getItem('currentUser');
+            const firebaseAuth = localStorage.getItem('firebase:authUser');
+
+            if (userProfile) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    html += `<div class="success">✅ Profil utilisateur trouvé :</div>`;
+                    html += `<div class="code">Email: ${profile.email || 'N/A'}<br>`;
+                    html += `Rôle: ${profile.role || 'N/A'}<br>`;
+                    html += `Nom: ${profile.nom || 'N/A'}<br>`;
+                    html += `Super Admin: ${profile.isSuperAdmin || false}</div>`;
+                } catch (e) {
+                    html += `<div class="error">❌ Erreur parsing profil: ${e.message}</div>`;
+                }
+            } else {
+                html += '<div class="error">❌ Aucun profil utilisateur trouvé</div>';
+            }
+
+            if (currentUser) {
+                html += '<div class="success">✅ Utilisateur actuel trouvé</div>';
+            } else {
+                html += '<div class="error">❌ Aucun utilisateur actuel trouvé</div>';
+            }
+
+            if (firebaseAuth) {
+                html += '<div class="success">✅ Session Firebase trouvée</div>';
+            } else {
+                html += '<div class="warning">⚠️ Aucune session Firebase trouvée</div>';
+            }
+            html += '</div>';
+
+            // 2. Vérifier les permissions
+            html += '<div class="step"><h4>2. 🔐 Vérification des permissions :</h4>';
+            if (userProfile) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    const isDG = profile.email === 'dg@gmail.com';
+                    const isSuperAdmin = profile.isSuperAdmin;
+                    
+                    if (isDG || isSuperAdmin) {
+                        html += '<div class="success">✅ Accès complet autorisé (DG/Super Admin)</div>';
+                    } else {
+                        html += `<div class="warning">⚠️ Rôle limité: ${profile.role}</div>`;
+                    }
+                } catch (e) {
+                    html += `<div class="error">❌ Erreur vérification permissions: ${e.message}</div>`;
+                }
+            } else {
+                html += '<div class="error">❌ Impossible de vérifier les permissions (pas de profil)</div>';
+            }
+            html += '</div>';
+
+            // 3. Vérifier la navigation
+            html += '<div class="step"><h4>3. 🧭 Test de navigation :</h4>';
+            const testPages = [
+                { name: 'Dashboard', url: '/dashboard' },
+                { name: 'Gestion IT', url: '/gestion-it' },
+                { name: 'Gestion Permissions', url: '/gestion-permissions' },
+                { name: 'Ressources Humaines', url: '/ressources-humaines' }
+            ];
+
+            testPages.forEach(page => {
+                html += `<div>📄 ${page.name}: <a href="${page.url}" target="_blank">Tester</a></div>`;
+            });
+            html += '</div>';
+
+            // 4. Recommandations
+            html += '<div class="step"><h4>4. 💡 Recommandations :</h4>';
+            if (!userProfile) {
+                html += '<div class="warning">⚠️ Créez un utilisateur DG pour avoir accès complet</div>';
+            } else {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    if (profile.email !== 'dg@gmail.com' && !profile.isSuperAdmin) {
+                        html += '<div class="warning">⚠️ Votre utilisateur n\'a pas les privilèges DG</div>';
+                    }
+                } catch (e) {
+                    html += '<div class="error">❌ Erreur analyse profil</div>';
+                }
+            }
+            html += '</div>';
+
+            html += '</div>';
+            resultatsDiv.innerHTML = html;
+        }
+
+        function creerUtilisateurDG() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">👑 Création de l\'utilisateur DG...</div>';
+
+            const userProfile = {
+                uid: 'dg-super-admin-' + Date.now(),
+                nom: 'Directeur Général',
+                prenom: 'DG',
+                email: 'dg@gmail.com',
+                role: 'dg',
+                poste: 'Directeur Général',
+                permissions: 'all',
+                isSuperAdmin: true,
+                createdAt: new Date().toISOString(),
+                isTestUser: true
+            };
+
+            const currentUser = {
+                uid: userProfile.uid,
+                email: 'dg@gmail.com',
+                displayName: 'Directeur Général',
+                isTestUser: true
+            };
+
+            try {
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('firebase:authUser', JSON.stringify({
+                    uid: userProfile.uid,
+                    email: 'dg@gmail.com',
+                    displayName: 'Directeur Général',
+                    emailVerified: true,
+                    isAnonymous: false,
+                    providerData: [{
+                        providerId: 'password',
+                        uid: 'dg@gmail.com',
+                        email: 'dg@gmail.com',
+                        displayName: 'Directeur Général'
+                    }]
+                }));
+
+                resultatsDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Utilisateur DG créé avec succès !</h3>
+                        <p><strong>Email :</strong> dg@gmail.com</p>
+                        <p><strong>Rôle :</strong> dg (Super Admin)</p>
+                        <p><strong>Accès :</strong> Complet à toutes les fonctionnalités</p>
+                        <p><strong>Prochaine étape :</strong> Allez sur l'application principale</p>
+                    </div>
+                `;
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors de la création</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function testerConnexion() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🔐 Test de connexion en cours...</div>';
+
+            const userProfile = localStorage.getItem('userProfile');
+            
+            if (!userProfile) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Aucun utilisateur configuré</h3>
+                        <p>Créez d'abord un utilisateur DG avec le bouton "Créer Utilisateur DG"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const profile = JSON.parse(userProfile);
+                const isDG = profile.email === 'dg@gmail.com';
+                
+                let html = '<div class="success"><h3>✅ Test de connexion réussi</h3>';
+                html += `<p><strong>Utilisateur :</strong> ${profile.nom} (${profile.email})</p>`;
+                html += `<p><strong>Rôle :</strong> ${profile.role}</p>`;
+                
+                if (isDG || profile.isSuperAdmin) {
+                    html += '<p><strong>Accès :</strong> Complet à toutes les fonctionnalités</p>';
+                    html += '<div class="info">🎯 Vous pouvez maintenant accéder à toutes les pages :</div>';
+                    html += '<ul>';
+                    html += '<li>✅ Dashboard</li>';
+                    html += '<li>✅ Gestion IT</li>';
+                    html += '<li>✅ Gestion Permissions</li>';
+                    html += '<li>✅ Toutes les autres pages</li>';
+                    html += '</ul>';
+                } else {
+                    html += '<p><strong>Accès :</strong> Limité selon le rôle</p>';
+                }
+                
+                html += '</div>';
+                resultatsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors du test</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function nettoyerCache() {
+            if (confirm('Êtes-vous sûr de vouloir nettoyer tout le cache ? Cela vous déconnectera.')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                const resultatsDiv = document.getElementById('resultats');
+                resultatsDiv.innerHTML = `
+                    <div class="info">
+                        <h3>🗑️ Cache nettoyé</h3>
+                        <p>Le cache a été vidé. Vous devez maintenant créer un nouvel utilisateur.</p>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
+        }
+
+        // Diagnostic automatique au chargement
+        window.onload = function() {
+            setTimeout(diagnosticComplet, 1000);
+        };
+    </script>
+</body>
+</html>
