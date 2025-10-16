@@ -63,6 +63,19 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       
+      // Vérifier les administrateurs créés localement
+      const localAdmins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+      const localAdmin = localAdmins.find(admin => admin.email === user.email);
+      
+      if (localAdmin) {
+        setUserProfile({
+          id: user.uid,
+          ...localAdmin,
+          isSuperAdmin: localAdmin.isSuperAdmin || localAdmin.role === 'dg'
+        });
+        return;
+      }
+      
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (userDoc.exists()) {
         setUserProfile({ id: user.uid, ...userDoc.data() });

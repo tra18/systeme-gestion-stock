@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer Administrateur - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #ffc107;
+            margin: 10px 0;
+        }
+        .admin-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .admin-type {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .admin-type:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .admin-type.selected {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+        .admin-type h4 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+        }
+        .admin-type ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .admin-type li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👑 Créer Nouvel Administrateur - VITACH GUINÉE</h1>
+        
+        <div class="info">
+            <h3>📋 Types d'administrateurs disponibles :</h3>
+            <p>Choisissez le type d'administrateur selon les besoins de votre organisation.</p>
+        </div>
+
+        <div class="admin-types">
+            <div class="admin-type" onclick="selectAdminType('super-admin')">
+                <h4>🔴 Super Administrateur</h4>
+                <p><strong>Accès :</strong> Complet sans restriction</p>
+                <ul>
+                    <li>✅ Toutes les pages</li>
+                    <li>✅ Gestion des utilisateurs</li>
+                    <li>✅ Configuration système</li>
+                    <li>✅ Gestion IT complète</li>
+                    <li>✅ Rapports et exports</li>
+                </ul>
+            </div>
+
+            <div class="admin-type" onclick="selectAdminType('admin')">
+                <h4>🟡 Administrateur</h4>
+                <p><strong>Accès :</strong> Gestion et supervision</p>
+                <ul>
+                    <li>✅ Dashboard et rapports</li>
+                    <li>✅ Gestion des employés</li>
+                    <li>✅ Gestion IT</li>
+                    <li>✅ Stock et commandes</li>
+                    <li>❌ Configuration système</li>
+                </ul>
+            </div>
+
+            <div class="admin-type" onclick="selectAdminType('it-admin')">
+                <h4>💻 Administrateur IT</h4>
+                <p><strong>Accès :</strong> Spécialisé informatique</p>
+                <ul>
+                    <li>✅ Gestion IT complète</li>
+                    <li>✅ Parc informatique</li>
+                    <li>✅ Incidents et tickets</li>
+                    <li>✅ Rapports techniques</li>
+                    <li>❌ RH et finances</li>
+                </ul>
+            </div>
+
+            <div class="admin-type" onclick="selectAdminType('rh-admin')">
+                <h4>👥 Administrateur RH</h4>
+                <p><strong>Accès :</strong> Spécialisé ressources humaines</p>
+                <ul>
+                    <li>✅ Gestion des employés</li>
+                    <li>✅ Pointage et présences</li>
+                    <li>✅ Planning et compétences</li>
+                    <li>✅ Bulletins de paie</li>
+                    <li>❌ Gestion IT</li>
+                </ul>
+            </div>
+        </div>
+
+        <form id="adminForm">
+            <div class="form-group">
+                <label for="nom">Nom complet :</label>
+                <input type="text" id="nom" name="nom" required placeholder="Ex: Jean Dupont">
+            </div>
+
+            <div class="form-group">
+                <label for="prenom">Prénom :</label>
+                <input type="text" id="prenom" name="prenom" required placeholder="Ex: Jean">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required placeholder="Ex: admin@vitach-guinee.com">
+            </div>
+
+            <div class="form-group">
+                <label for="poste">Poste :</label>
+                <input type="text" id="poste" name="poste" required placeholder="Ex: Administrateur Système">
+            </div>
+
+            <div class="form-group">
+                <label for="telephone">Téléphone :</label>
+                <input type="tel" id="telephone" name="telephone" placeholder="Ex: +224 123 456 789">
+            </div>
+
+            <div class="form-group">
+                <label for="departement">Département :</label>
+                <select id="departement" name="departement">
+                    <option value="direction">Direction</option>
+                    <option value="informatique">Informatique</option>
+                    <option value="rh">Ressources Humaines</option>
+                    <option value="finance">Finance</option>
+                    <option value="technique">Technique</option>
+                    <option value="commercial">Commercial</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="commentaires">Commentaires :</label>
+                <textarea id="commentaires" name="commentaires" rows="3" placeholder="Informations supplémentaires..."></textarea>
+            </div>
+
+            <div class="highlight">
+                <h4>🎯 Type d'administrateur sélectionné :</h4>
+                <p id="selectedType">Aucun type sélectionné</p>
+            </div>
+
+            <button type="submit" class="btn btn-success">👑 Créer Administrateur</button>
+            <button type="button" class="btn btn-warning" onclick="previewAdmin()">👁️ Aperçu</button>
+            <button type="button" class="btn btn-danger" onclick="resetForm()">🗑️ Réinitialiser</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Administrateurs existants</h2>
+        <div id="existingAdmins">
+            <div class="info">Chargement des administrateurs existants...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔗 Actions rapides</h2>
+        <a href="/" class="btn">🏠 Aller à l'Application</a>
+        <a href="/gestion-permissions" class="btn">⚙️ Gestion Permissions</a>
+        <a href="/gestion-it" class="btn">💻 Gestion IT</a>
+        <a href="test-acces-simple.html" class="btn">🔍 Test Accès</a>
+    </div>
+
+    <script>
+        let selectedAdminType = null;
+
+        function selectAdminType(type) {
+            selectedAdminType = type;
+            
+            // Mettre à jour l'affichage
+            document.querySelectorAll('.admin-type').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            // Mettre à jour le texte
+            const typeNames = {
+                'super-admin': 'Super Administrateur (Accès complet)',
+                'admin': 'Administrateur (Gestion et supervision)',
+                'it-admin': 'Administrateur IT (Spécialisé informatique)',
+                'rh-admin': 'Administrateur RH (Spécialisé ressources humaines)'
+            };
+            
+            document.getElementById('selectedType').textContent = typeNames[type] || 'Type inconnu';
+            
+            // Pré-remplir le poste selon le type
+            const postes = {
+                'super-admin': 'Super Administrateur',
+                'admin': 'Administrateur Système',
+                'it-admin': 'Administrateur IT',
+                'rh-admin': 'Administrateur RH'
+            };
+            
+            document.getElementById('poste').value = postes[type] || '';
+        }
+
+        function previewAdmin() {
+            if (!selectedAdminType) {
+                alert('Veuillez d\'abord sélectionner un type d\'administrateur');
+                return;
+            }
+
+            const formData = new FormData(document.getElementById('adminForm'));
+            const adminData = Object.fromEntries(formData.entries());
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div class="info">
+                    <h3>👁️ Aperçu de l'administrateur :</h3>
+                    <p><strong>Nom :</strong> ${adminData.nom} ${adminData.prenom}</p>
+                    <p><strong>Email :</strong> ${adminData.email}</p>
+                    <p><strong>Poste :</strong> ${adminData.poste}</p>
+                    <p><strong>Type :</strong> ${document.getElementById('selectedType').textContent}</p>
+                    <p><strong>Département :</strong> ${adminData.departement}</p>
+                    ${adminData.telephone ? `<p><strong>Téléphone :</strong> ${adminData.telephone}</p>` : ''}
+                    ${adminData.commentaires ? `<p><strong>Commentaires :</strong> ${adminData.commentaires}</p>` : ''}
+                </div>
+            `;
+        }
+
+        function resetForm() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ?')) {
+                document.getElementById('adminForm').reset();
+                selectedAdminType = null;
+                document.querySelectorAll('.admin-type').forEach(el => el.classList.remove('selected'));
+                document.getElementById('selectedType').textContent = 'Aucun type sélectionné';
+                document.getElementById('result').innerHTML = '';
+            }
+        }
+
+        document.getElementById('adminForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            createAdmin();
+        });
+
+        function createAdmin() {
+            if (!selectedAdminType) {
+                alert('Veuillez d\'abord sélectionner un type d\'administrateur');
+                return;
+            }
+
+            const formData = new FormData(document.getElementById('adminForm'));
+            const adminData = Object.fromEntries(formData.entries());
+            
+            // Définir les permissions selon le type
+            const permissions = getPermissionsForType(selectedAdminType);
+            
+            const userProfile = {
+                uid: 'admin-' + Date.now(),
+                nom: adminData.nom,
+                prenom: adminData.prenom,
+                email: adminData.email,
+                role: getRoleForType(selectedAdminType),
+                poste: adminData.poste,
+                telephone: adminData.telephone || '',
+                departement: adminData.departement,
+                commentaires: adminData.commentaires || '',
+                permissions: permissions,
+                isSuperAdmin: selectedAdminType === 'super-admin',
+                createdAt: new Date().toISOString(),
+                isTestUser: true
+            };
+
+            const currentUser = {
+                uid: userProfile.uid,
+                email: adminData.email,
+                displayName: `${adminData.prenom} ${adminData.nom}`,
+                isTestUser: true
+            };
+
+            try {
+                // Sauvegarder dans localStorage
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('firebase:authUser', JSON.stringify({
+                    uid: userProfile.uid,
+                    email: adminData.email,
+                    displayName: `${adminData.prenom} ${adminData.nom}`,
+                    emailVerified: true,
+                    isAnonymous: false,
+                    providerData: [{
+                        providerId: 'password',
+                        uid: adminData.email,
+                        email: adminData.email,
+                        displayName: `${adminData.prenom} ${adminData.nom}`
+                    }]
+                }));
+
+                // Sauvegarder dans la liste des administrateurs
+                saveAdminToList(userProfile);
+
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Administrateur créé avec succès !</h3>
+                        <p><strong>Nom :</strong> ${userProfile.nom} ${userProfile.prenom}</p>
+                        <p><strong>Email :</strong> ${userProfile.email}</p>
+                        <p><strong>Rôle :</strong> ${userProfile.role}</p>
+                        <p><strong>Poste :</strong> ${userProfile.poste}</p>
+                        <p><strong>Type :</strong> ${document.getElementById('selectedType').textContent}</p>
+                        
+                        <div class="highlight">
+                            <h4>🎯 Permissions accordées :</h4>
+                            <ul>
+                                ${permissions.map(perm => `<li>✅ ${perm}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <p><strong>Prochaine étape :</strong> Allez sur l'application principale</p>
+                    </div>
+                `;
+
+                // Recharger la liste des administrateurs
+                loadExistingAdmins();
+
+            } catch (error) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors de la création</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getRoleForType(type) {
+            const roles = {
+                'super-admin': 'dg',
+                'admin': 'admin',
+                'it-admin': 'it',
+                'rh-admin': 'rh'
+            };
+            return roles[type] || 'admin';
+        }
+
+        function getPermissionsForType(type) {
+            const permissions = {
+                'super-admin': [
+                    'Toutes les pages',
+                    'Gestion des utilisateurs',
+                    'Configuration système',
+                    'Gestion IT complète',
+                    'Rapports et exports',
+                    'Dashboard avancé',
+                    'Mode hors ligne'
+                ],
+                'admin': [
+                    'Dashboard et rapports',
+                    'Gestion des employés',
+                    'Gestion IT',
+                    'Stock et commandes',
+                    'Ressources Humaines',
+                    'Fournisseurs et prestataires'
+                ],
+                'it-admin': [
+                    'Gestion IT complète',
+                    'Parc informatique',
+                    'Incidents et tickets',
+                    'Rapports techniques',
+                    'Dashboard IT'
+                ],
+                'rh-admin': [
+                    'Gestion des employés',
+                    'Pointage et présences',
+                    'Planning et compétences',
+                    'Bulletins de paie',
+                    'Évaluations 360°'
+                ]
+            };
+            return permissions[type] || permissions['admin'];
+        }
+
+        function saveAdminToList(admin) {
+            let admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            admins.push(admin);
+            localStorage.setItem('vitachAdmins', JSON.stringify(admins));
+        }
+
+        function loadExistingAdmins() {
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            const adminsDiv = document.getElementById('existingAdmins');
+            
+            if (admins.length === 0) {
+                adminsDiv.innerHTML = '<div class="info">Aucun administrateur créé pour le moment</div>';
+                return;
+            }
+
+            let html = '<div class="success"><h3>👥 Administrateurs existants :</h3>';
+            admins.forEach((admin, index) => {
+                html += `
+                    <div class="admin-type" style="margin: 10px 0;">
+                        <h4>${admin.nom} ${admin.prenom}</h4>
+                        <p><strong>Email :</strong> ${admin.email}</p>
+                        <p><strong>Rôle :</strong> ${admin.role}</p>
+                        <p><strong>Poste :</strong> ${admin.poste}</p>
+                        <p><strong>Créé le :</strong> ${new Date(admin.createdAt).toLocaleDateString()}</p>
+                        <button class="btn btn-danger" onclick="deleteAdmin(${index})" style="font-size: 12px; padding: 5px 10px;">Supprimer</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            adminsDiv.innerHTML = html;
+        }
+
+        function deleteAdmin(index) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet administrateur ?')) {
+                let admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+                admins.splice(index, 1);
+                localStorage.setItem('vitachAdmins', JSON.stringify(admins));
+                loadExistingAdmins();
+            }
+        }
+
+        // Charger les administrateurs existants au démarrage
+        window.onload = function() {
+            loadExistingAdmins();
+        };
+    </script>
+</body>
+</html>
