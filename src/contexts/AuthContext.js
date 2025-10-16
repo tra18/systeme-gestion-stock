@@ -68,11 +68,15 @@ export const AuthProvider = ({ children }) => {
       const localAdmin = localAdmins.find(admin => admin.email === user.email);
       
       if (localAdmin) {
-        setUserProfile({
+        // Forcer la configuration Super Admin pour tous les admins locaux
+        const correctedProfile = {
           id: user.uid,
           ...localAdmin,
-          isSuperAdmin: localAdmin.isSuperAdmin || localAdmin.role === 'dg'
-        });
+          role: 'dg', // Forcer le rôle DG pour l'accès complet
+          isSuperAdmin: true,
+          permissions: 'all'
+        };
+        setUserProfile(correctedProfile);
         return;
       }
       

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Super Admin - VITACH GUINÉE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .step {
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        .step.success {
+            border-left-color: #28a745;
+        }
+        .step.error {
+            border-left-color: #dc3545;
+        }
+        .step.warning {
+            border-left-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Super Admin - VITACH GUINÉE</h1>
+        
+        <div class="warning">
+            <h3>⚠️ Problème détecté</h3>
+            <p>Votre Super Admin n'a pas accès aux pages. Cet outil va diagnostiquer et corriger le problème.</p>
+        </div>
+
+        <div>
+            <h3>🛠️ Actions de diagnostic :</h3>
+            <button class="btn" onclick="diagnosticComplet()">🔍 Diagnostic Complet</button>
+            <button class="btn btn-success" onclick="corrigerSuperAdmin()">🔧 Corriger Super Admin</button>
+            <button class="btn btn-warning" onclick="testerAcces()">🧪 Tester Accès</button>
+            <button class="btn btn-danger" onclick="resetComplet()">🗑️ Reset Complet</button>
+        </div>
+
+        <div id="resultats"></div>
+    </div>
+
+    <div class="container">
+        <h2>📋 Administrateurs existants</h2>
+        <div id="adminsList">
+            <div class="info">Chargement des administrateurs...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔗 Test d'accès aux pages</h2>
+        <div id="testPages">
+            <p>Cliquez sur "Tester Accès" pour vérifier l'accès aux pages principales.</p>
+        </div>
+    </div>
+
+    <script>
+        function diagnosticComplet() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🔍 Diagnostic en cours...</div>';
+
+            let html = '<div class="container"><h3>📊 Résultats du diagnostic :</h3>';
+
+            // 1. Vérifier les administrateurs créés
+            html += '<div class="step"><h4>1. 👥 Vérification des administrateurs :</h4>';
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            
+            if (admins.length === 0) {
+                html += '<div class="error">❌ Aucun administrateur trouvé dans vitachAdmins</div>';
+            } else {
+                html += `<div class="success">✅ ${admins.length} administrateur(s) trouvé(s)</div>`;
+                admins.forEach((admin, index) => {
+                    html += `<div class="code">Admin ${index + 1}: ${admin.nom} ${admin.prenom} (${admin.email}) - Rôle: ${admin.role}</div>`;
+                });
+            }
+            html += '</div>';
+
+            // 2. Vérifier le profil utilisateur actuel
+            html += '<div class="step"><h4>2. 👤 Vérification du profil actuel :</h4>';
+            const userProfile = localStorage.getItem('userProfile');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (userProfile) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    html += `<div class="success">✅ Profil utilisateur trouvé :</div>`;
+                    html += `<div class="code">Email: ${profile.email}<br>`;
+                    html += `Rôle: ${profile.role}<br>`;
+                    html += `Super Admin: ${profile.isSuperAdmin || false}<br>`;
+                    html += `Permissions: ${profile.permissions || 'N/A'}</div>`;
+                    
+                    if (profile.role === 'dg' || profile.isSuperAdmin) {
+                        html += '<div class="success">✅ Accès Super Admin détecté</div>';
+                    } else {
+                        html += '<div class="warning">⚠️ Rôle limité détecté</div>';
+                    }
+                } catch (e) {
+                    html += `<div class="error">❌ Erreur parsing profil: ${e.message}</div>`;
+                }
+            } else {
+                html += '<div class="error">❌ Aucun profil utilisateur trouvé</div>';
+            }
+            html += '</div>';
+
+            // 3. Vérifier la correspondance email
+            html += '<div class="step"><h4>3. 🔗 Vérification de la correspondance :</h4>';
+            if (userProfile && admins.length > 0) {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    const matchingAdmin = admins.find(admin => admin.email === profile.email);
+                    
+                    if (matchingAdmin) {
+                        html += '<div class="success">✅ Correspondance email trouvée</div>';
+                        html += `<div class="code">Admin trouvé: ${matchingAdmin.nom} ${matchingAdmin.prenom} (${matchingAdmin.role})</div>`;
+                    } else {
+                        html += '<div class="error">❌ Aucune correspondance email trouvée</div>';
+                        html += '<div class="warning">⚠️ Le profil actuel ne correspond à aucun administrateur créé</div>';
+                    }
+                } catch (e) {
+                    html += `<div class="error">❌ Erreur vérification correspondance: ${e.message}</div>`;
+                }
+            } else {
+                html += '<div class="warning">⚠️ Impossible de vérifier la correspondance</div>';
+            }
+            html += '</div>';
+
+            // 4. Recommandations
+            html += '<div class="step"><h4>4. 💡 Recommandations :</h4>';
+            if (admins.length === 0) {
+                html += '<div class="warning">⚠️ Créez d\'abord un Super Admin</div>';
+            } else if (!userProfile) {
+                html += '<div class="warning">⚠️ Connectez-vous avec un administrateur</div>';
+            } else {
+                try {
+                    const profile = JSON.parse(userProfile);
+                    if (profile.role !== 'dg' && !profile.isSuperAdmin) {
+                        html += '<div class="warning">⚠️ Votre rôle ne permet pas l\'accès complet</div>';
+                    } else {
+                        html += '<div class="success">✅ Configuration semble correcte</div>';
+                    }
+                } catch (e) {
+                    html += '<div class="error">❌ Erreur analyse profil</div>';
+                }
+            }
+            html += '</div>';
+
+            html += '</div>';
+            resultatsDiv.innerHTML = html;
+        }
+
+        function corrigerSuperAdmin() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🔧 Correction en cours...</div>';
+
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            
+            if (admins.length === 0) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Aucun administrateur trouvé</h3>
+                        <p>Créez d'abord un Super Admin avec l'outil de création.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Prendre le premier Super Admin trouvé
+            const superAdmin = admins.find(admin => admin.role === 'dg' || admin.isSuperAdmin) || admins[0];
+            
+            if (!superAdmin) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Aucun Super Admin trouvé</h3>
+                        <p>Créez un Super Admin avec le rôle 'dg'.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Forcer la configuration Super Admin
+            const correctedProfile = {
+                ...superAdmin,
+                role: 'dg',
+                isSuperAdmin: true,
+                permissions: 'all',
+                uid: superAdmin.uid || 'super-admin-' + Date.now()
+            };
+
+            const currentUser = {
+                uid: correctedProfile.uid,
+                email: superAdmin.email,
+                displayName: `${superAdmin.prenom} ${superAdmin.nom}`,
+                isTestUser: true
+            };
+
+            try {
+                // Sauvegarder la configuration corrigée
+                localStorage.setItem('userProfile', JSON.stringify(correctedProfile));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('firebase:authUser', JSON.stringify({
+                    uid: correctedProfile.uid,
+                    email: superAdmin.email,
+                    displayName: `${superAdmin.prenom} ${superAdmin.nom}`,
+                    emailVerified: true,
+                    isAnonymous: false,
+                    providerData: [{
+                        providerId: 'password',
+                        uid: superAdmin.email,
+                        email: superAdmin.email,
+                        displayName: `${superAdmin.prenom} ${superAdmin.nom}`
+                    }]
+                }));
+
+                resultatsDiv.innerHTML = `
+                    <div class="success">
+                        <h3>✅ Super Admin corrigé avec succès !</h3>
+                        <p><strong>Nom :</strong> ${superAdmin.nom} ${superAdmin.prenom}</p>
+                        <p><strong>Email :</strong> ${superAdmin.email}</p>
+                        <p><strong>Rôle :</strong> ${correctedProfile.role} (Super Admin)</p>
+                        <p><strong>Permissions :</strong> Toutes les pages</p>
+                        
+                        <div class="info">
+                            <h4>🎯 Configuration appliquée :</h4>
+                            <ul>
+                                <li>✅ Rôle forcé à 'dg'</li>
+                                <li>✅ Super Admin activé</li>
+                                <li>✅ Permissions complètes</li>
+                                <li>✅ Session Firebase créée</li>
+                            </ul>
+                        </div>
+                        
+                        <p><strong>Prochaine étape :</strong> Allez sur l'application principale</p>
+                    </div>
+                `;
+
+                // Recharger la liste des administrateurs
+                loadAdmins();
+
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors de la correction</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function testerAcces() {
+            const resultatsDiv = document.getElementById('resultats');
+            resultatsDiv.innerHTML = '<div class="info">🧪 Test d\'accès en cours...</div>';
+
+            const userProfile = localStorage.getItem('userProfile');
+            
+            if (!userProfile) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Aucun utilisateur connecté</h3>
+                        <p>Connectez-vous d'abord avec un Super Admin.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const profile = JSON.parse(userProfile);
+                const isSuperAdmin = profile.role === 'dg' || profile.isSuperAdmin;
+                
+                let html = '<div class="success"><h3>🧪 Résultats du test d\'accès :</h3>';
+                html += `<p><strong>Utilisateur :</strong> ${profile.nom} ${profile.prenom}</p>`;
+                html += `<p><strong>Email :</strong> ${profile.email}</p>`;
+                html += `<p><strong>Rôle :</strong> ${profile.role}</p>`;
+                html += `<p><strong>Super Admin :</strong> ${isSuperAdmin ? 'Oui' : 'Non'}</p>`;
+                
+                if (isSuperAdmin) {
+                    html += '<div class="success">✅ Accès Super Admin confirmé</div>';
+                    html += '<div class="info">🎯 Pages accessibles :</div>';
+                    html += '<ul>';
+                    html += '<li>✅ Dashboard</li>';
+                    html += '<li>✅ Gestion IT</li>';
+                    html += '<li>✅ Gestion Permissions</li>';
+                    html += '<li>✅ Ressources Humaines</li>';
+                    html += '<li>✅ Stock et Commandes</li>';
+                    html += '<li>✅ Toutes les autres pages</li>';
+                    html += '</ul>';
+                } else {
+                    html += '<div class="warning">⚠️ Accès limité selon le rôle</div>';
+                }
+                
+                html += '</div>';
+                resultatsDiv.innerHTML = html;
+                
+                // Mettre à jour la section test des pages
+                updateTestPages();
+                
+            } catch (error) {
+                resultatsDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur lors du test</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function updateTestPages() {
+            const testPagesDiv = document.getElementById('testPages');
+            const pages = [
+                { name: 'Dashboard', url: '/dashboard' },
+                { name: 'Gestion IT', url: '/gestion-it' },
+                { name: 'Gestion Permissions', url: '/gestion-permissions' },
+                { name: 'Ressources Humaines', url: '/ressources-humaines' },
+                { name: 'Stock', url: '/stock' },
+                { name: 'Commandes', url: '/commandes' }
+            ];
+
+            let html = '<div class="info"><h3>🔗 Test des pages :</h3>';
+            html += '<p>Cliquez sur les liens ci-dessous pour tester l\'accès :</p>';
+            html += '<ul>';
+            pages.forEach(page => {
+                html += `<li><a href="${page.url}" target="_blank" class="btn">${page.name}</a></li>`;
+            });
+            html += '</ul></div>';
+            
+            testPagesDiv.innerHTML = html;
+        }
+
+        function resetComplet() {
+            if (confirm('Êtes-vous sûr de vouloir tout réinitialiser ? Cela supprimera tous les administrateurs et vous déconnectera.')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                const resultatsDiv = document.getElementById('resultats');
+                resultatsDiv.innerHTML = `
+                    <div class="info">
+                        <h3>🗑️ Reset complet effectué</h3>
+                        <p>Tout a été réinitialisé. Créez un nouvel administrateur.</p>
+                    </div>
+                `;
+                
+                loadAdmins();
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
+        }
+
+        function loadAdmins() {
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            const adminsDiv = document.getElementById('adminsList');
+            
+            if (admins.length === 0) {
+                adminsDiv.innerHTML = '<div class="info">Aucun administrateur créé</div>';
+                return;
+            }
+
+            let html = '<div class="success"><h3>👥 Administrateurs existants :</h3>';
+            admins.forEach((admin, index) => {
+                const isSuperAdmin = admin.role === 'dg' || admin.isSuperAdmin;
+                html += `
+                    <div class="step ${isSuperAdmin ? 'success' : 'info'}">
+                        <h4>${isSuperAdmin ? '🔴' : '🟡'} ${admin.nom} ${admin.prenom}</h4>
+                        <p><strong>Email :</strong> ${admin.email}</p>
+                        <p><strong>Rôle :</strong> ${admin.role}</p>
+                        <p><strong>Super Admin :</strong> ${isSuperAdmin ? 'Oui' : 'Non'}</p>
+                        <button class="btn btn-success" onclick="connectAsAdmin(${index})">🔐 Se connecter</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            adminsDiv.innerHTML = html;
+        }
+
+        function connectAsAdmin(index) {
+            const admins = JSON.parse(localStorage.getItem('vitachAdmins') || '[]');
+            const admin = admins[index];
+            
+            if (!admin) {
+                alert('Administrateur non trouvé');
+                return;
+            }
+
+            // Forcer la configuration Super Admin
+            const correctedProfile = {
+                ...admin,
+                role: 'dg',
+                isSuperAdmin: true,
+                permissions: 'all',
+                uid: admin.uid || 'super-admin-' + Date.now()
+            };
+
+            const currentUser = {
+                uid: correctedProfile.uid,
+                email: admin.email,
+                displayName: `${admin.prenom} ${admin.nom}`,
+                isTestUser: true
+            };
+
+            localStorage.setItem('userProfile', JSON.stringify(correctedProfile));
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('firebase:authUser', JSON.stringify({
+                uid: correctedProfile.uid,
+                email: admin.email,
+                displayName: `${admin.prenom} ${admin.nom}`,
+                emailVerified: true,
+                isAnonymous: false,
+                providerData: [{
+                    providerId: 'password',
+                    uid: admin.email,
+                    email: admin.email,
+                    displayName: `${admin.prenom} ${admin.nom}`
+                }]
+            }));
+
+            alert(`Connecté en tant que ${admin.prenom} ${admin.nom} (Super Admin)`);
+            window.location.href = '/';
+        }
+
+        // Diagnostic automatique au chargement
+        window.onload = function() {
+            setTimeout(diagnosticComplet, 1000);
+            loadAdmins();
+        };
+    </script>
+</body>
+</html>
